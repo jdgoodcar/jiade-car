@@ -302,7 +302,8 @@
                             免費試算主要價格
                         </h2>
                         <p class="text-sm text-slate-500 mt-2 leading-relaxed">
-                            貼上 Encar 車輛網址與韓國售價，約 3 秒完成試算。
+                            貼上 Encar 車輛網址與韓國售價<br>
+                            約 <span class="text-blue-600 font-bold">3 秒內</span>完成試算
                         </p>
                     </div>
                 </div>
@@ -402,30 +403,29 @@
 
                         <!-- 警語註記區塊 -->
                         <p class="text-[11px] sm:text-xs text-slate-500 text-center mt-3 font-medium leading-relaxed">
-                            ※ 本試算金額僅供參考，實際費用依當下匯率、海關核定關稅與實際車況為準。
+                            ※ 本試算金額僅供參考，實際費用依正式合約為準。
                         </p>
 
                         <!-- LINE 諮詢按鈕與提示 -->
                         <div class="mt-5 space-y-2 text-center">
                             <button onclick="copyResult()"
                                 class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-4 px-4 rounded-xl shadow-lg shadow-emerald-600/30 transition duration-200 flex items-center justify-center gap-2 text-base md:text-lg tracking-wide whitespace-nowrap">
-                                <i class="fa-brands fa-line text-2xl"></i> 複製結果加 LINE 諮詢🔓 解鎖完整明細表
+                                <i class="fa-brands fa-line text-2xl"></i> 複製結果，加LINE問
                             </button>
 
-                            <div class="pt-1">
-                                <p class="text-xs text-slate-500 font-bold mt-0.5">
-                                    (請在 LINE 對話框貼上文字諮詢)
-                                </p>
-                            </div>
+                            <p class="text-sm text-red-600 font-bold mt-1">
+                                ⚠️ 點擊按鈕後，請到 LINE 對話框長按貼上即可。
+                            </p>
                         </div>
-
-                        <button onclick="resetCalculator()"
-                            class="w-full mt-4 bg-white hover:bg-slate-100 text-slate-600 font-bold py-3 px-4 rounded-xl border border-slate-300 shadow-sm transition duration-200 flex items-center justify-center gap-2 text-sm whitespace-nowrap">
-                            <i class="fa-solid fa-rotate-right text-slate-400"></i> 再查一台 (清空重新輸入)
-                        </button>
                     </div>
+
+                    <button onclick="resetCalculator()"
+                        class="w-full mt-4 bg-white hover:bg-slate-100 text-slate-600 font-bold py-3 px-4 rounded-xl border border-slate-300 shadow-sm transition duration-200 flex items-center justify-center gap-2 text-sm whitespace-nowrap">
+                        <i class="fa-solid fa-rotate-right text-slate-400"></i> 再查一台 (清空重新輸入)
+                    </button>
                 </div>
             </div>
+        </div>
         </div>
 
         <!-- 4 大透明安心保障 -->
