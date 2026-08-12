@@ -21,7 +21,9 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome 圖標庫 -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
     <style>
         html {
@@ -475,17 +477,74 @@
 </p>
 
 
-                        <!-- LINE 諮詢按鈕與提示 -->
-                        <div class="mt-5 space-y-2 text-center">
-                            <button onclick="copyResult()"
-                                class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-4 px-4 rounded-xl shadow-lg shadow-emerald-600/30 transition duration-200 flex items-center justify-center gap-2 text-base md:text-lg tracking-wide whitespace-nowrap">
-                                <i class="fa-brands fa-line text-2xl"></i> 複製結果，加LINE問
-                            </button>
+                        <!-- LINE 諮詢按鈕 -->
+<div class="mt-5 space-y-2 text-center">
 
-                            <p class="text-sm text-red-600 font-bold mt-1">
-                                ⬆️ 點擊後，到LINE對話框長按貼上
-                            </p>
-                        </div>
+    <!-- 📱 手機版：維持原本功能 -->
+    <div class="block md:hidden">
+        <button onclick="copyResult()"
+            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-4 px-4 rounded-xl shadow-lg shadow-emerald-600/30 transition duration-200 flex items-center justify-center gap-2 text-base tracking-wide whitespace-nowrap">
+            <i class="fa-brands fa-line text-2xl"></i> 複製結果，加LINE問
+        </button>
+
+        <p class="text-sm text-red-600 font-bold mt-1">
+            ⬆️ 點擊後，到LINE對話框長按貼上
+        </p>
+    </div>
+
+
+    <!-- 💻 電腦版：傳送試算結果到手機 -->
+    <div class="hidden md:block">
+
+        <button onclick="showPhoneTransfer()"
+            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-4 px-4 rounded-xl shadow-lg shadow-emerald-600/30 transition duration-200 flex items-center justify-center gap-2 text-base md:text-lg tracking-wide whitespace-nowrap">
+            <i class="fa-solid fa-mobile-screen-button text-2xl"></i>
+            傳送結果到手機.用LINE 洽詢
+        </button>
+
+        <!-- QR Code 區塊：預設隱藏 -->
+        <div id="phoneTransfer"
+            class="hidden mt-5 bg-gradient-to-br from-slate-50 to-blue-50/70 border border-blue-100 rounded-2xl p-5 md:p-6 shadow-inner">
+
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-11 h-11 rounded-full bg-blue-100 text-blue-600 mb-3">
+                    <i class="fa-solid fa-mobile-screen-button text-xl"></i>
+                </div>
+
+                <p class="text-base md:text-lg font-black text-slate-800">
+                    📱 用手機開啟相機掃描，將結果帶去LINE詢問
+                </p>
+
+                <p class="text-xs md:text-sm text-slate-500 mt-1 leading-relaxed">
+                    掃描後會開啟「試算結果」頁面<br>
+                    再依照畫面指示前往 LINE 洽詢
+                </p>
+            </div>
+
+            <div class="mt-4 mx-auto w-fit bg-white p-3 rounded-2xl shadow-md border border-slate-200">
+                <div id="qrCode" class="flex justify-center"></div>
+            </div>
+
+            <div class="mt-4 flex items-center justify-center gap-2 text-xs md:text-sm text-slate-600">
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 text-white font-black text-[11px]">1</span>
+                <span>拿手機掃描 QR Code</span>
+                <span class="text-slate-300">→</span>
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 text-white font-black text-[11px]">2</span>
+                <span>照畫面操作即可</span>
+            </div>
+
+            <div class="mt-4 bg-white/80 border border-blue-100 rounded-xl px-4 py-3 text-center">
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    <i class="fa-regular fa-lightbulb text-amber-500 mr-1"></i>
+                    手機掃描後，試算金額與車輛網址會自動帶入
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
                     </div>
 
                     <button onclick="resetCalculator()"
@@ -1039,12 +1098,46 @@ if (lastUpdate) {
             carUrlInput.focus();
         }
 
-        // 5. 複製結果
+// 💻 電腦版：傳送結果到手機
+function showPhoneTransfer() {
+    const total = document.getElementById('totalTwd').textContent;
+    const carUrl = document.getElementById('carUrl').value.trim();
+
+    let text = `您好，我在佳德汽車試算韓國 Encar 車輛預估主要金額約為 NT$ ${total}元\n`;
+
+    if (carUrl) {
+        text += `車輛網址：${carUrl}\n`;
+    }
+
+    text += `\n佳德汽車 · 一條龍完整服務✨從挑車、引進、過戶到售後，為您提供全面尊榮服務07-350-3737`;
+
+    const transferBox = document.getElementById('phoneTransfer');
+    const qrBox = document.getElementById('qrCode');
+
+    transferBox.classList.remove('hidden');
+
+    qrBox.innerHTML = '';
+
+const qrImage = document.createElement('img');
+
+// ⚠️ 重要：QR Code 會連到此網站的 transfer.html
+// ⚠️ 如果網站搬家、GitHub Pages 網址改變，請記得修改下面的路徑
+qrImage.src = 'https://quickchart.io/qr?text=' + encodeURIComponent('https://jdgoodcar.github.io/jiade-car/transfer.html?total=' + encodeURIComponent(total.replace(/[^0-9]/g, '')) + '&carUrl=' + encodeURIComponent(carUrl)) + '&size=220';
+
+qrImage.width = 220;
+qrImage.height = 220;
+qrImage.alt = '試算結果 QR Code';
+
+qrBox.appendChild(qrImage);
+}
+
+
+        
         function copyResult() {
             const total = document.getElementById('totalTwd').textContent;
             const carUrl = document.getElementById('carUrl').value.trim();
 
-            let text = `您好，我在佳德汽車試算韓國 Encar 車輛預估主要金額約為 NT$ ${total}！\n`;
+            let text = `您好，我在佳德汽車試算韓國 Encar 車輛預估主要金額約為 NT$ ${total}元\n`;
             if (carUrl) {
                 text += `車輛網址：${carUrl}\n`;
             }
