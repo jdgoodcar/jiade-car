@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>佳德汽車｜試算結果</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                "Noto Sans TC", sans-serif;
+            background: #f5f7f8;
+            color: #1f2937;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 520px;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 28px 24px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .result-box {
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        .label {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .total {
+            font-size: 28px;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 16px;
+        }
+
+        .car-url {
+            font-size: 13px;
+            color: #64748b;
+            word-break: break-all;
+        }
+
+        .car-url a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .hint {
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin: 18px 0;
+        }
+
+        .line-button {
+            display: block;
+            width: 100%;
+            border: 0;
+            border-radius: 12px;
+            padding: 15px 18px;
+            background: #06c755;
+            color: #ffffff;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .line-button:active {
+            transform: scale(0.98);
+        }
+
+        .copy-status {
+            text-align: center;
+            min-height: 22px;
+            margin-top: 12px;
+            color: #06a847;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .notice {
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            font-size: 13px;
+            color: #9ca3af;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <div class="logo">佳德汽車</div>
+
+    <div class="subtitle">
+        韓國 Encar 車輛試算結果
+    </div>
+
+    <div class="result-box">
+
+        <div class="label">
+            預估主要金額
+        </div>
+
+        <div class="total" id="total">
+            讀取中…
+        </div>
+
+        <div class="car-url" id="carUrlBox">
+        </div>
+
+    </div>
+
+    <div class="hint">
+        試算結果已準備完成<br>
+        點擊下方按鈕，將結果複製後開啟佳德汽車專員 LINE
+    </div>
+
+    <button class="line-button" onclick="copyAndOpenLine()">
+        💬 複製結果並開啟 LINE
+    </button>
+
+    <div class="copy-status" id="status"></div>
+
+    <div class="notice">
+        開啟 LINE 後，如果尚未加入專員好友，請先加入好友，<br>
+        再將已複製的試算結果貼上並傳送即可。
+    </div>
+
+</div>
+
+<script>
+
+    // 佳德汽車專員個人 LINE
+    const LINE_URL = "https://line.me/ti/p/Pnn6ZRFaYI";
+
+    // 取得 QR Code 帶過來的資料
+    const params = new URLSearchParams(window.location.search);
+
+    const total = params.get("total") || "";
+    const carUrl = params.get("carUrl") || "";
+
+    // 顯示試算金額
+    document.getElementById("total").textContent =
+        total ? "NT$ " + total : "試算結果";
+
+    // 顯示車輛網址
+    if (carUrl) {
+        document.getElementById("carUrlBox").innerHTML =
+            "車輛網址：<br>" +
+            '<a href="' + escapeHtml(carUrl) +
+            '" target="_blank" rel="noopener">' +
+            escapeHtml(carUrl) +
+            '</a>';
+    }
+
+    // 要複製給專員的完整訊息
+    function getMessage() {
+
+        let message =
+            "您好，我在佳德汽車試算韓國 Encar 車輛預估主要金額約為 NT$ " +
+            total + "！";
+
+        if (carUrl) {
+            message += "\n車輛網址：" + carUrl;
+        }
+
+        message +=
+            "\n\n佳德汽車 · 一條龍完整服務✨從挑車、引進、過戶到售後，為您提供全面尊榮服務";
+
+        return message;
+    }
+
+    // 複製結果後開啟專員 LINE
+    async function copyAndOpenLine() {
+
+        const message = getMessage();
+
+        try {
+
+            await navigator.clipboard.writeText(message);
+
+            document.getElementById("status").textContent =
+                "✓ 結果已複製，正在開啟 LINE…";
+
+        } catch (error) {
+
+            // 如果手機瀏覽器不允許自動複製
+            const textarea = document.createElement("textarea");
+
+            textarea.value = message;
+            textarea.style.position = "fixed";
+            textarea.style.opacity = "0";
+
+            document.body.appendChild(textarea);
+            textarea.select();
+
+            try {
+                document.execCommand("copy");
+                document.getElementById("status").textContent =
+                    "✓ 結果已複製，正在開啟 LINE…";
+            } catch (e) {
+                document.getElementById("status").textContent =
+                    "請手動複製試算結果";
+            }
+
+            document.body.removeChild(textarea);
+        }
+
+        setTimeout(() => {
+            window.location.href = LINE_URL;
+        }, 300);
+    }
+
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+</script>
+
+</body>
+</html>
