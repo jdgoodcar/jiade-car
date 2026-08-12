@@ -311,13 +311,12 @@
 
     // 顯示車輛網址
     if (carUrl) {
-        document.getElementById("carUrlBox").innerHTML =
-            "車輛網址：<br>" +
-            '<a href="' + escapeHtml(carUrl) +
-            '" target="_blank" rel="noopener">' +
-            escapeHtml(carUrl) +
-            '</a>';
-    }
+    document.getElementById("carUrlBox").innerHTML =
+        '<a href="' + escapeHtml(carUrl) +
+        '" target="_blank" rel="noopener">' +
+        '您試算的車輛網址' +
+        '</a>';
+}
 
     // 要複製給專員的完整訊息
     function getMessage() {
