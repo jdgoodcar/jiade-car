@@ -85,16 +85,17 @@
             margin-bottom: 16px;
         }
 
-        .car-url {
-            font-size: 12px;
-            color: #64748b;
-            word-break: break-all;
-            background: #ffffff;
-            border-radius: 10px;
-            padding: 10px 12px;
-            border: 1px solid #e2e8f0;
-            line-height: 1.5;
-        }
+      .car-url {
+    font-size: 12px;
+    color: #64748b;
+    word-break: break-all;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    line-height: 1.5;
+    text-align: center;
+}
 
         .car-url a {
             color: #2563eb;
@@ -284,7 +285,7 @@
     
     洽詢專線：邱經理
     <a href="tel:0929920941">0929-920941</a><br><br>
-→回到佳德汽車<a href="index.html">主網站</a>←
+→ <a href="index.html" target="_blank" rel="noopener">回到佳德汽車主網站</a> ←
 </div>
 
     <div class="footer">
@@ -307,7 +308,7 @@
 
     // 顯示試算金額
     document.getElementById("total").textContent =
-        total ? "NT$ " + total : "試算結果";
+    total ? "NT$ " + Number(total).toLocaleString("en-US") : "試算結果";
 
     // 顯示車輛網址
     if (carUrl) {
