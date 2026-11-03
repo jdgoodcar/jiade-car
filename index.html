@@ -639,12 +639,12 @@
                     <div class="flex items-start gap-3">
                         <i class="fa-solid fa-location-dot text-blue-600 text-xl mt-0.5 flex-shrink-0"></i>
                         <div>
-                            <span class="font-black text-slate-900 text-base">佳德汽車高雄外匯車展示中心：</span><br>
-                            <span class="text-base font-medium text-slate-800">813 高雄市左營區博愛三路677號</span>
-                            <a href="https://www.google.com/maps/place/%E4%BD%B3%E5%BE%B7%E6%B1%BD%E8%BB%8A%E9%AB%98%E9%9B%84%E5%A4%96%E5%8C%AF%E8%BB%8A%E5%B1%95%E7%A4%BA%E4%B8%AD%E5%BF%83/@22.680642,120.3091371,17z/data=!4m15!1m8!3m7!1s0x346e056d631e0629:0x371edd9b219fd947!2zODEz6auY6ZuE5biC5bem54ef5Y2A6I-c5YWs6YeM5Y2a5oSb5LiJ6LevNjc36Jmf!3b1!8m2!3d22.680642!4d120.3091371!16s%2Fg%2F11pw1_56tc!3m5!1s0x346e04fe8bc81acf:0x5238c1379d5645cd!8m2!3d22.680556!4d120.309147!16s%2Fg%2F11xd3sqz3?entry=ttu"
+                            <span class="font-black text-slate-900 text-base">佳德汽車外匯車專營：</span><br>
+                            <span class="text-base font-medium text-slate-800">900 屏東縣屏東市廣東路1005號</span>
+                            <a href="https://www.google.com/maps/dir/?api=1&destination=900%E5%B1%8F%E6%9D%B1%E7%B8%A3%E5%B1%8F%E6%9D%B1%E5%B8%82%E5%BB%A3%E6%9D%B1%E8%B7%AF1005%E8%99%9F&destination_place_id=ChIJ0-Ecr-QXbjQRNCcMlxE9oSs&travelmode=driving"
                                 target="_blank"
                                 class="text-blue-600 underline font-bold block mt-1 text-xs md:text-sm hover:text-blue-800 whitespace-nowrap">
-                                開啟 Google 地圖專屬地標 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                開啟 Google 地圖導航 <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                             </a>
                         </div>
                     </div>
@@ -652,7 +652,7 @@
                     <div class="flex items-center gap-3 pt-2 border-t border-slate-100">
                         <i class="fa-solid fa-clock text-blue-600 text-xl flex-shrink-0"></i>
                         <span class="text-base font-extrabold text-slate-900 tracking-wide whitespace-nowrap">
-                            服務時間：早上 8:30 ~ 晚上 9:00
+                            服務時間：早上 9:00 ~ 晚上 6:00
                         </span>
                     </div>
                 </div>
@@ -660,8 +660,8 @@
                 <div class="flex items-center gap-3 pt-3 border-t border-slate-100">
                     <i class="fa-solid fa-phone text-blue-600 text-xl flex-shrink-0"></i>
                     <span class="text-base font-extrabold text-slate-900 tracking-wide whitespace-nowrap">
-                        公司電話：<a href="tel:07-350-3737"
-                            class="font-black text-blue-700 hover:text-blue-900 underline">07-350-3737</a>
+                        公司電話：<a href="tel:08-765-6777"
+                            class="font-black text-blue-700 hover:text-blue-900 underline">08-765-6777</a>
                     </span>
                 </div>
 
@@ -701,17 +701,17 @@
             <div class="space-y-1 text-sm text-slate-400">
                 <p class="leading-relaxed">
                     <i class="fa-solid fa-location-dot text-blue-400 mr-1"></i>
-                    813 高雄市左營區博愛三路677號
+                    900 屏東縣屏東市廣東路1005號
                 </p>
 
                 <p>
                     <i class="fa-solid fa-phone text-blue-400 mr-1"></i>
-                    <a href="tel:07-350-3737" class="hover:text-white underline">07-350-3737</a>
+                    <a href="tel:08-765-6777" class="hover:text-white underline">08-765-6777</a>
                 </p>
 
                 <p>
                     <i class="fa-solid fa-clock text-blue-400 mr-1"></i>
-                    服務時間：08:30－21:00
+                    服務時間：09:00－18:00
                 </p>
             </div>
 
@@ -1109,7 +1109,7 @@ function showPhoneTransfer() {
         text += `車輛網址：${carUrl}\n`;
     }
 
-    text += `\n佳德汽車 · 一條龍完整服務✨從挑車、引進、過戶到售後，為您提供全面尊榮服務07-350-3737`;
+    text += `\n佳德汽車 · 一條龍完整服務✨從挑車、引進、過戶到售後，為您提供全面尊榮服務08-765-6777`;
 
     const transferBox = document.getElementById('phoneTransfer');
     const qrBox = document.getElementById('qrCode');
@@ -1141,7 +1141,7 @@ qrBox.appendChild(qrImage);
             if (carUrl) {
                 text += `車輛網址：${carUrl}\n`;
             }
-            text += `\n佳德汽車 · 一條龍完整服務✨從挑車、引進、過戶到售後，為您提供全面尊榮服務07-350-3737`;
+            text += `\n佳德汽車 · 一條龍完整服務✨從挑車、引進、過戶到售後，為您提供全面尊榮服務08-765-6777`;
 
             navigator.clipboard.writeText(text).then(() => {
                 alert('已複製試算結果與網址，即將為您開啟 LINE 諮詢專員！請在 LINE 對話框貼上文字。');
