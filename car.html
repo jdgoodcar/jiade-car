@@ -69,6 +69,9 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .rate .s{font-size:12.5px;color:var(--mut);flex:1;min-width:150px}
 .btn{border:1px solid var(--ln);background:transparent;color:var(--fg);border-radius:10px;padding:6px 10px;font:600 13px var(--f);cursor:pointer}
 .btn:focus-visible,.cc button:focus-visible,.seg button:focus-visible,.quick button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.rhead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.rhead .t{margin-bottom:6px}
+.rmode{font-size:12.5px;font-weight:700;color:var(--red)}
 .btn.back{background:var(--goldbg);border-color:var(--gold);color:var(--fg)}
 .man{display:none;margin-top:10px;gap:8px;align-items:center;flex-wrap:wrap}
 .man.on{display:flex}
@@ -183,7 +186,7 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   </section>
 
   <section class="card">
-    <label class="t" id="rateL">匯率（韓元 → 台幣）</label>
+    <div class="rhead"><label class="t" id="rateL">匯率（韓元 → 台幣）</label><span id="rMode" class="rmode"></span></div>
     <div class="rate">
       <span class="dot" id="rDot"></span>
       <span class="v" id="rVal">讀取中…</span>
@@ -357,6 +360,7 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
       rate=rateInfo.v;$('rDot').className='dot '+(failed?'warn':'ok');
       $('rSrc').textContent=show(rate)+(failed?`連不上網路，用上次的匯率（${d2(rateInfo.got)} 取得）`:`即時匯率，更新於 ${d2(rateInfo.t)}`);
     } else {rate=null;$('rDot').className='dot warn';$('rVal').textContent='讀不到匯率';$('rSrc').textContent='請按「手動輸入」填入匯率';$('manBox').classList.add('on')}
+    $('rMode').textContent=manual?'目前使用：手動匯率':(rate?'目前使用：網頁匯率':'');
     $('rRe').textContent=manual?'↩ 改回網頁匯率':'↻ 更新'; $('rRe').classList.toggle('back',!!manual);
     showBuf(); calc();
   }
