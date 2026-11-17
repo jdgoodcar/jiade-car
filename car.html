@@ -69,6 +69,7 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .rate .s{font-size:12.5px;color:var(--mut);flex:1;min-width:150px}
 .btn{border:1px solid var(--ln);background:transparent;color:var(--fg);border-radius:10px;padding:6px 10px;font:600 13px var(--f);cursor:pointer}
 .btn:focus-visible,.cc button:focus-visible,.seg button:focus-visible,.quick button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.btn.back{background:var(--goldbg);border-color:var(--gold);color:var(--fg)}
 .man{display:none;margin-top:10px;gap:8px;align-items:center;flex-wrap:wrap}
 .man.on{display:flex}
 .man input{width:130px;font:600 16px var(--num);padding:6px 8px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--fg)}
@@ -194,7 +195,7 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
     <div class="man" id="manBox">
       <span id="manL">1 韓元 =</span><input id="manIn" inputmode="decimal" enterkeyhint="done" placeholder="例 0.0247"><span>台幣</span>
       <button class="btn" id="manOk" type="button">套用</button>
-      <button class="btn" id="manAuto" type="button">改回即時</button>
+      <button class="btn" id="manAuto" type="button">改回網頁匯率</button>
     </div>
     <div class="buf">
       <span>匯率加成</span>
@@ -351,14 +352,15 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   function d2(t){const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
   function showRate(failed){
     const show=r=>{$('rVal').textContent=`${C.one} = ${r.toFixed(C.dp)} 台幣`;const s=C.sub2(r);return s?s+'・':''};
-    if(manual){rate=manual;$('rDot').className='dot warn';$('rSrc').textContent=show(rate)+'手動輸入的匯率';}
+    if(manual){rate=manual;$('rDot').className='dot warn';$('rSrc').textContent=show(rate)+'目前用手動輸入的匯率';}
     else if(rateInfo){
       rate=rateInfo.v;$('rDot').className='dot '+(failed?'warn':'ok');
       $('rSrc').textContent=show(rate)+(failed?`連不上網路，用上次的匯率（${d2(rateInfo.got)} 取得）`:`即時匯率，更新於 ${d2(rateInfo.t)}`);
     } else {rate=null;$('rDot').className='dot warn';$('rVal').textContent='讀不到匯率';$('rSrc').textContent='請按「手動輸入」填入匯率';$('manBox').classList.add('on')}
+    $('rRe').textContent=manual?'↩ 改回網頁匯率':'↻ 更新'; $('rRe').classList.toggle('back',!!manual);
     showBuf(); calc();
   }
-  $('rRe').onclick=()=>{if(manual){toast('目前用手動匯率，按「改回即時」才會用網路匯率');return}loadRate()};
+  $('rRe').onclick=()=>{if(manual){$('manAuto').click();toast('已改回網頁抓的匯率');return}loadRate()};
   $('rMan').onclick=()=>{$('manBox').classList.toggle('on');$('manIn').value=manual||(rate?rate.toFixed(C.dp):'');$('manIn').focus()};
   $('manOk').onclick=()=>{const v=num($('manIn').value);if(!C.manOk(v)){toast(C.manMsg);return}manual=v;store.set(K('man2'),v);$('manBox').classList.remove('on');showRate()};
   $('manAuto').onclick=()=>{manual=null;store.set(K('man2'),null);$('manBox').classList.remove('on');loadRate()};
