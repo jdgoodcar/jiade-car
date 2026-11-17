@@ -30,8 +30,15 @@ body{background:var(--bg);color:var(--fg);font:15px/1.5 var(--f);
   padding:env(safe-area-inset-top,0) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px;padding-top:16px}
 header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-radius:18px;padding:18px 18px 16px}
-.hrow{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.cur{display:flex;background:#ffffff1f;border:1px solid #ffffff40;border-radius:12px;padding:3px;gap:3px}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.hrow h1{min-width:0;white-space:nowrap}
+@media (max-width:400px){.hlk .lg{display:none}}
+@media (max-width:420px){header h1{font-size:21px!important;letter-spacing:.03em!important}.hlk{gap:4px}.hlk a{padding:4px 8px;font-size:12px}}
+.hlk{display:flex;gap:6px;flex-shrink:0}
+.hlk a{color:#fff;text-decoration:none;font:600 12.5px var(--f);padding:5px 10px;border-radius:20px;border:1px solid #ffffff55;background:#ffffff14;white-space:nowrap}
+.hlk a:hover{background:#ffffff2a}
+.hlk a:focus-visible{outline:2px solid #f3cf7a;outline-offset:2px}
+.cur{display:inline-flex;margin-top:10px;background:#ffffff1f;border:1px solid #ffffff40;border-radius:12px;padding:3px;gap:3px}
 .cur button{border:0;background:transparent;color:#fff;font:700 15px var(--f);padding:7px 14px;border-radius:9px;cursor:pointer;opacity:.75}
 .cur button.on{background:#f3cf7a;color:#16244a;opacity:1}
 .cur button:focus-visible{outline:2px solid #f3cf7a;outline-offset:2px}
@@ -125,7 +132,8 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 <div class="wrap">
   <header>
     <div class="hrow"><h1 id="hT"><b>韓國</b>車價計算</h1>
-      <div class="cur" id="cur" role="group" aria-label="幣別"><button type="button" data-c="kr">₩ 韓元</button><button type="button" data-c="us">$ 美金</button></div></div>
+      <div class="hlk"><a id="lkE" href="https://car.encar.com/" target="_blank" rel="noopener">Encar ↗</a><a href="https://jdgoodcar.github.io/jiade-car/" target="_blank" rel="noopener"><span class="lg">佳德</span>官網 ↗</a></div></div>
+      <div class="cur" id="cur" role="group" aria-label="幣別"><button type="button" data-c="kr">₩ 韓元</button><button type="button" data-c="us">$ 美金</button></div>
     <p id="hP">輸入韓元 → 即時匯率換台幣 → 套公式報價</p>
   </header>
   <div class="cols"><div class="colA">
@@ -239,7 +247,7 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   const K=k=>C.p+k;
   $('hT').innerHTML=C.head; $('hP').textContent=C.sub; $('amtL').textContent=C.amtL; $('rateL').textContent=C.rateL;
   $('manL').textContent=C.one+' ='; $('manIn').placeholder=C.manPh; $('noteC').textContent=C.cn;
-  document.querySelector('.seg').hidden=!C.seg; const pic=document.querySelector('.pic'); if(pic)pic.hidden=!C.img;
+  document.querySelector('.seg').hidden=!C.seg; $('lkE').hidden=!C.seg; const pic=document.querySelector('.pic'); if(pic)pic.hidden=!C.img;
   document.querySelectorAll('#cur button').forEach(b=>b.classList.toggle('on',b.dataset.c===ck));
   $('cur').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.c===ck)return;try{localStorage.setItem('car_cur',b.dataset.c)}catch(err){}location.hash=b.dataset.c;location.reload()};
   if(location.hash!=='#'+ck)history.replaceState(null,'','#'+ck);
