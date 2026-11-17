@@ -81,6 +81,8 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .q2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .qc{background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:4px;min-width:0}
 .qc h3{margin:-14px -14px 8px;padding:9px 14px;border-radius:15px 15px 0 0;background:var(--goldbg);border-bottom:1px solid color-mix(in srgb,var(--gold) 45%,transparent);color:var(--fg);font-size:18px;letter-spacing:.06em;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.qc h3 .fl{display:flex;align-items:baseline;gap:5px}
+.qc h3 .fl small{font:400 13px var(--f);color:var(--mut);letter-spacing:0}
 .qc h3 em{font-style:normal;font:800 24px/1 var(--num);color:var(--red);letter-spacing:0}
 .qc .fee{font-size:13px;color:var(--mut);font-variant-numeric:tabular-nums}
 .qc .tot{font:700 24px var(--num);color:var(--navy2);word-break:break-all}
@@ -192,14 +194,14 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 
   <div class="q2">
     <div class="qc">
-      <h3>現金價 <em>2%</em></h3>
+      <h3>現金價 <span class="fl"><small>手續費</small><em>2%</em></span></h3>
       <div class="fee" id="cFee">手續費 —</div>
       <div class="tot" id="cTot">—</div>
       <div class="wan" id="cWan"></div>
       <button class="btn" type="button" data-cp="cash">📋 複製報價</button>
     </div>
     <div class="qc">
-      <h3>貸款 <em>5%</em></h3>
+      <h3>貸款 <span class="fl"><small>手續費</small><em>5%</em></span></h3>
       <div class="fee" id="lFee">手續費 —</div>
       <div class="tot" id="lTot">—</div>
       <div class="wan" id="lWan"></div>
