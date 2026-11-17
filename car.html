@@ -262,7 +262,7 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
     p:'kc_',code:'KRW',lc:'krw',head:'<b>韓國</b>車價計算',sub:'輸入韓元 → 即時匯率換台幣 → 套公式報價',amtL:'韓幣車價',rateL:'匯率（韓元 → 台幣）',
     one:'1 韓元',dp:5,cn:'韓元',def:35000000,seg:true,img:true,manPh:'例 0.0247',manOk:v=>v>0&&v<1,manMsg:'請輸入 1 韓元等於多少台幣（例 0.0247）',
     sub2:r=>`1 萬韓元 ≈ ${(r*10000).toFixed(1)} 台幣`,quick:[2000,3000,4000,5000,6000,8000,10000].map(w=>w*10000),ql:v=>v>=1e8?(v/1e8)+'億 ('+(v/10000).toLocaleString('zh-TW')+'만)':(v/10000).toLocaleString('zh-TW')+'만',
-    hint:w=>`＝ ${fmt(w)} 韓元（${(w/10000).toLocaleString('zh-TW')} 萬韓元）`,amt:w=>`${fmt(w)} 韓元`,cpHead:'韓國車價報價',cpAmt:'韓幣'
+    hint:w=>`＝ ${fmt(w)} 韓元（${(w/10000).toLocaleString('zh-TW')} 萬韓元）`,amt:w=>`${(w/10000).toLocaleString("zh-TW")} 萬韓元`,cpHead:'韓國車價報價',cpAmt:'韓幣'
   };
   const K=k=>C.p+k;
   $('hT').innerHTML=C.head; $('hP').textContent=C.sub; $('amtL').textContent=C.amtL; $('rateL').textContent=C.rateL;
