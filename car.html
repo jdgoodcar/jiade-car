@@ -377,8 +377,11 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   // ---------- 複製 ----------
   function text(k){
     const h=`${C.cpHead}\n${C.cpAmt}：${C.amt(R.won)}\n車價：${fmt(R.price)} 元`;
-    const c=`現金價：${fmt(R.cash)} 元（${wan(R.cash)}，含手續費 2%）`, l=`貸款價：${fmt(R.loan)} 元（${wan(R.loan)}，含手續費 5%）`;
-    const x=`報價：${fmt(R.cust)} 元（${wan(R.cust)}，含手續費 ${R.xp}%）`;
+    const c=`現金價：${fmt(R.cash)} 元
+（${wan(R.cash)}，含手續費 2%）`, l=`貸款價：${fmt(R.loan)} 元
+（${wan(R.loan)}，含手續費 5%）`;
+    const x=`報價：${fmt(R.cust)} 元
+（${wan(R.cust)}，含手續費 ${R.xp}%）`;
     return h+'\n'+(k==='cash'?c:k==='loan'?l:k==='cust'?x:c+'\n'+l);
   }
   const feeX=$('feeX'); if(store.get(K('feex'))!=null)feeX.value=store.get(K('feex'));
