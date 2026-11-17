@@ -46,6 +46,7 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .seg button{border:0;background:transparent;color:var(--mut);font:600 14px var(--f);padding:0 12px;cursor:pointer}
 .seg button.on{background:var(--navy);color:#fff}
 .hint{font-size:12.5px;color:var(--mut);margin-top:6px;min-height:1.2em}
+.hint.bad{color:var(--red);font-weight:700;font-size:13.5px}
 .quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .quick button{border:1px solid var(--ln);background:transparent;color:var(--fg);border-radius:20px;padding:4px 10px;font:13px var(--f);cursor:pointer}
 .cc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
@@ -227,11 +228,11 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   const C=ck==='us'?{
     p:'us_',code:'USD',lc:'usd',head:'美金車價換算',sub:'輸入美金 → 即時匯率換台幣 → 套公式報價',amtL:'美金車價（USD）',rateL:'匯率（美金 → 台幣）',
     one:'1 美元',dp:3,cn:'美金',def:40000,seg:false,img:false,manPh:'例 32.5',manOk:v=>v>1,manMsg:'請輸入 1 美元等於多少台幣（例 32.5）',
-    sub2:()=>'',quick:[20000,30000,40000,50000,60000,80000],ql:v=>usd(v),hint:w=>`＝ ${usd(w)}`,amt:w=>usd(w),cpHead:'美金車價報價',cpAmt:'美金'
+    sub2:()=>'',quick:[20000,30000,40000,50000,70000,100000],ql:v=>usd(v),hint:w=>`＝ ${usd(w)}`,amt:w=>usd(w),cpHead:'美金車價報價',cpAmt:'美金'
   }:{
     p:'kc_',code:'KRW',lc:'krw',head:'韓國車價換算',sub:'輸入韓元 → 即時匯率換台幣 → 套公式報價',amtL:'韓幣車價',rateL:'匯率（韓元 → 台幣）',
     one:'1 韓元',dp:5,cn:'韓元',def:35000000,seg:true,img:true,manPh:'例 0.0247',manOk:v=>v>0&&v<1,manMsg:'請輸入 1 韓元等於多少台幣（例 0.0247）',
-    sub2:r=>`1 萬韓元 ≈ ${(r*10000).toFixed(1)} 台幣`,quick:[2000,2500,3000,3500,4000,5000].map(w=>w*10000),ql:v=>(v/10000).toLocaleString('zh-TW')+'만',
+    sub2:r=>`1 萬韓元 ≈ ${(r*10000).toFixed(1)} 台幣`,quick:[2000,3000,4000,5000,6000,8000,10000].map(w=>w*10000),ql:v=>v>=1e8?(v/1e8)+'億 ('+(v/10000).toLocaleString('zh-TW')+'만)':(v/10000).toLocaleString('zh-TW')+'만',
     hint:w=>`＝ ${fmt(w)} 韓元（${(w/10000).toLocaleString('zh-TW')} 萬韓元）`,amt:w=>`${fmt(w)} 韓元`,cpHead:'韓國車價報價',cpAmt:'韓幣'
   };
   const K=k=>C.p+k;
@@ -242,7 +243,7 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   $('cur').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.c===ck)return;try{localStorage.setItem('car_cur',b.dataset.c)}catch(err){}location.hash=b.dataset.c;location.reload()};
   if(location.hash!=='#'+ck)history.replaceState(null,'','#'+ck);
 
-  let unit=C.seg?(store.get(K('unit'))||1):1;          // 1=元, 10000=萬（只有韓元）
+  let unit=C.seg?(store.get(K('unit'))||10000):1;          // 1=元, 10000=萬（只有韓元）
   {const w=store.get(K('won')); $('krw').value=fmt((w!=null?w:C.def)/unit);}
   let mul=store.get(K('mul'))||'1.543';
   let rate=null, rateInfo=null, manual=store.get(K('man2')); // rate、manual = 1 單位外幣換多少台幣
@@ -321,7 +322,12 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   let R=null;
   function calc(){
     const won=num(krw.value)*unit, m=curMul(), b=num(base.value);
-    $('krwHint').textContent=won?C.hint(won):''; store.set(K('won'),won||null);
+    let warn='';
+    if(won&&C.seg&&won<3e6)warn=unit===1?'金額好像太小：Encar 的價格單位是「萬韓元」，請按右邊「萬韓元」再輸入一次':'金額好像太小，請再確認';
+    else if(won&&C.seg&&won>3e9)warn='金額好像太大（超過 30 億韓元），請確認單位是不是選錯了';
+    else if(won&&!C.seg&&won<3000)warn='金額好像太小，請確認是美金';
+    else if(won&&!C.seg&&won>1e6)warn='金額好像太大（超過 100 萬美金），請再確認';
+    $('krwHint').textContent=warn||(won?C.hint(won):''); $('krwHint').classList.toggle('bad',!!warn); store.set(K('won'),won||null);
     $('sMulL').textContent=`× ${m||'?'}（${mul==='1.543'?'2000cc 以下':mul==='1.61'?'2000cc 以上':'自訂'}）`;
     $('sBase').textContent=fmt(b);
     if(!won||!rate||!m){R=null;['sTwd','sMul','sPrice','cTot','lTot','xTot','bC','bL'].forEach(i=>$(i).textContent='—');$('cFee').textContent=$('lFee').textContent=$('xFee').textContent='手續費 —';$('cWan').textContent=$('lWan').textContent=$('xWan').textContent='';return}
