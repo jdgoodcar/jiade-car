@@ -85,7 +85,8 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .qc h3 .fl small{font:400 13px var(--f);color:var(--mut);letter-spacing:0}
 .qc h3 em{font-style:normal;font:800 24px/1 var(--num);color:var(--red);letter-spacing:0}
 .qc .fee{font-size:13px;color:var(--mut);font-variant-numeric:tabular-nums}
-.qc .tot{font:700 24px var(--num);color:var(--navy2);word-break:break-all}
+.qc .tot{font:700 24px var(--num);color:var(--navy2);white-space:nowrap;overflow:hidden;display:block}
+#xTot{display:inline}
 @media (prefers-color-scheme: dark){.qc .tot{color:#9fb8ff}}
 .qc .wan{font-size:15px;font-weight:700;color:var(--fg)}
 .buf{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--mut)}
@@ -130,7 +131,7 @@ body.lock{overflow:hidden}
 #bar div{flex:1;min-width:0;cursor:pointer;text-align:center}
 #bar div+div{border-left:1px solid #ffffff33}
 #bar small{display:block;font-size:12px;opacity:.8}
-#bar b{font:700 18px var(--num);color:#f3cf7a}
+#bar b{font:700 18px var(--num);color:#f3cf7a;display:block;white-space:nowrap;overflow:hidden}
 body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 .cols,.colA,.colB{display:flex;flex-direction:column;gap:14px;min-width:0}
 @media (min-width:900px){
@@ -251,6 +252,13 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 (function(){
   const $=id=>document.getElementById(id);
   const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+  // 車價只記在這個分頁（sessionStorage）：關掉網頁就清掉，下次回到預設
+  const ss={get(k){try{return JSON.parse(sessionStorage.getItem(k))}catch(e){return null}},set(k,v){try{sessionStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+  try{localStorage.removeItem('kc_won');localStorage.removeItem('us_won')}catch(e){}
+  // 金額放不下時自動縮小字，不斷行
+  function fit(el){if(!el)return;el.style.fontSize='';let s=parseFloat(getComputedStyle(el).fontSize);while(el.scrollWidth>el.clientWidth+1&&s>11){s-=1;el.style.fontSize=s+'px'}}
+  function fitAll(){['cTot','lTot','bC','bL','sPrice'].forEach(i=>fit(document.getElementById(i)))}
+  addEventListener('resize',()=>fitAll());
   const fmt=n=>Math.round(n).toLocaleString('zh-TW');
   const num=s=>{const v=parseFloat(String(s).replace(/[,\s，]/g,''));return isFinite(v)?v:0};
   const wan=n=>'約 '+Math.round(n/10000).toLocaleString('zh-TW')+' 萬元';
@@ -279,7 +287,7 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   if(location.hash!=='#'+ck)history.replaceState(null,'','#'+ck);
 
   let unit=C.seg?10000:1;          // 韓元一律預設「萬韓元」（跟 Encar 一樣）；切到「韓元」只在這次有效
-  {const w=store.get(K('won')); $('krw').value=fmt((w!=null?w:C.def)/unit);}
+  {const w=ss.get(K('won')); $('krw').value=fmt((w!=null?w:C.def)/unit);}
   let mul=store.get(K('mul'))||'1.543';
   let rate=null, rateInfo=null, manual=store.get(K('man2')); // rate、manual = 1 單位外幣換多少台幣
   let buf=store.get(K('buf2')); if(buf==null)buf=2; // 即時匯率加成 %
@@ -362,7 +370,7 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
     else if(won&&C.seg&&won>3e9)warn='金額好像太大（超過 30 億韓元），請確認單位是不是選錯了';
     else if(won&&!C.seg&&won<3000)warn='金額好像太小，請確認是美金';
     else if(won&&!C.seg&&won>1e6)warn='金額好像太大（超過 100 萬美金），請再確認';
-    $('krwHint').textContent=warn||(won?C.hint(won):''); $('krwHint').classList.toggle('bad',!!warn); store.set(K('won'),won||null);
+    $('krwHint').textContent=warn||(won?C.hint(won):''); $('krwHint').classList.toggle('bad',!!warn); ss.set(K('won'),won||null);
     $('sMulL').textContent=`× ${m||'?'}（${mul==='1.543'?'2000cc 以下':mul==='1.61'?'2000cc 以上':'自訂'}）`;
     $('sBase').textContent=fmt(b);
     if(!won||!rate||!m){R=null;['sTwd','sMul','sPrice','cTot','lTot','xTot','bC','bL'].forEach(i=>$(i).textContent='—');$('cFee').textContent=$('lFee').textContent=$('xFee').textContent='手續費 —';$('cWan').textContent=$('lWan').textContent=$('xWan').textContent='';return}
@@ -378,6 +386,7 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
     document.querySelectorAll('#feeQ button').forEach(b=>b.classList.toggle('on',+b.dataset.f===xp));
     $('bC').textContent=fmt(R.cash); $('bL').textContent=fmt(R.loan);
     $('lFee').textContent=`手續費 ${fmt(lf)}`; $('lTot').textContent=fmt(R.loan); $('lWan').textContent=wan(R.loan);
+    fitAll();
   }
 
   // ---------- 複製 ----------
