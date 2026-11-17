@@ -244,7 +244,7 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   $('cur').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.c===ck)return;try{localStorage.setItem('car_cur',b.dataset.c)}catch(err){}location.hash=b.dataset.c;location.reload()};
   if(location.hash!=='#'+ck)history.replaceState(null,'','#'+ck);
 
-  let unit=C.seg?(store.get(K('unit'))||10000):1;          // 1=元, 10000=萬（只有韓元）
+  let unit=C.seg?10000:1;          // 韓元一律預設「萬韓元」（跟 Encar 一樣）；切到「韓元」只在這次有效
   {const w=store.get(K('won')); $('krw').value=fmt((w!=null?w:C.def)/unit);}
   let mul=store.get(K('mul'))||'1.543';
   let rate=null, rateInfo=null, manual=store.get(K('man2')); // rate、manual = 1 單位外幣換多少台幣
