@@ -198,7 +198,6 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
     <div class="man" id="manBox">
       <span id="manL">1 韓元 =</span><input id="manIn" inputmode="decimal" enterkeyhint="done" placeholder="例 0.0247"><span>台幣</span>
       <button class="btn" id="manOk" type="button">套用</button>
-      <button class="btn" id="manAuto" type="button">改回網頁匯率</button>
     </div>
     <div class="buf">
       <span>匯率加成</span>
@@ -364,10 +363,9 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
     $('rRe').textContent=manual?'↩ 改回網頁匯率':'↻ 更新'; $('rRe').classList.toggle('back',!!manual);
     showBuf(); calc();
   }
-  $('rRe').onclick=()=>{if(manual){$('manAuto').click();toast('已改回網頁抓的匯率');return}loadRate()};
+  $('rRe').onclick=()=>{if(manual){manual=null;store.set(K('man2'),null);$('manBox').classList.remove('on');loadRate();toast('已改回網頁抓的匯率');return}loadRate()};
   $('rMan').onclick=()=>{$('manBox').classList.toggle('on');$('manIn').value=manual||(rate?rate.toFixed(C.dp):'');$('manIn').focus()};
   $('manOk').onclick=()=>{const v=num($('manIn').value);if(!C.manOk(v)){toast(C.manMsg);return}manual=v;store.set(K('man2'),v);$('manBox').classList.remove('on');showRate()};
-  $('manAuto').onclick=()=>{manual=null;store.set(K('man2'),null);$('manBox').classList.remove('on');loadRate()};
 
   // ---------- 計算 ----------
   let R=null;
