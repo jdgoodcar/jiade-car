@@ -201,7 +201,7 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
     <div class="st"><span id="sMulL">× 1.543</span><b id="sMul">—</b></div>
     <div class="st"><span>＋ 標準底價</span><b id="sBase">180,000</b></div>
     <div class="st sum"><span>車價</span><b id="sPrice">—</b></div>
-    <div class="fbase"><span>標準底價</span><input id="base" inputmode="numeric" value="180,000"><span>元</span></div>
+    <div class="fbase"><span>標準底價</span><input id="base" inputmode="numeric" autocomplete="off" value="180,000"><span>元</span></div>
   </section>
 
   <div class="q2">
@@ -311,8 +311,8 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   const curMul=()=>+mul;
 
   // ---------- 底價 ----------
-  const base=$('base'); if(store.get(K('base')))base.value=fmt(store.get(K('base')));
-  base.addEventListener('input',()=>{const v=num(base.value);base.value=v?fmt(v):'';store.set(K('base'),v);calc()});
+  const base=$('base'); base.value='180,000';   // 標準底價每次打開都回到 18 萬（改了只在這次有效）
+  base.addEventListener('input',()=>{const v=num(base.value);base.value=v?fmt(v):'';calc()});
 
   // ---------- 匯率 ----------
   const SRC=[
