@@ -133,13 +133,14 @@ body.lock{overflow:hidden}
 #bar b{font:700 18px var(--num);color:#f3cf7a}
 body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 .cols,.colA,.colB{display:flex;flex-direction:column;gap:14px;min-width:0}
-@media (min-width:900px){
+@media (min-width:900px){.wrap{zoom:1.12}.cpcard{zoom:1.2}
   .wrap{max-width:1040px}
   .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
   .colB{position:sticky;top:16px}
   #bar{display:none} body{padding-bottom:24px} #toast{bottom:calc(24px + env(safe-area-inset-bottom,0px))}
 }
 @media (max-width:380px){.q2{grid-template-columns:1fr}#krw{font-size:22px}}
+@media (min-width:1250px){.wrap{zoom:1.28}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -412,7 +413,7 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 
   // ---------- 手機「確定」按鈕：輸入時浮在鍵盤上方，按了收起鍵盤 ----------
   const okBtn=$('okBtn'), touch=matchMedia('(pointer:coarse)').matches, vv=window.visualViewport;
-  function okPos(){if(okBtn.hidden)return;const b=vv?vv.offsetTop+vv.height:innerHeight;okBtn.style.top=(b-okBtn.offsetHeight-10)+'px'}
+  function okPos(){if(okBtn.hidden)return;let b=vv?vv.offsetTop+vv.height:innerHeight;const bar=$('bar');if(bar&&getComputedStyle(bar).display!=='none'){const bt=innerHeight-bar.offsetHeight;if(bt<b)b=bt}okBtn.style.top=Math.max(8,b-okBtn.offsetHeight-10)+'px'}  // 鍵盤上方；藍條看得到時放在藍條上方
   document.addEventListener('focusin',e=>{if(!touch)return;const t=e.target;if(t.matches('input,textarea')){okBtn.hidden=false;okPos();setTimeout(okPos,300)}});
   document.addEventListener('focusout',()=>{setTimeout(()=>{const a=document.activeElement;if(!a||!a.matches('input,textarea'))okBtn.hidden=true},50)});
   if(vv){vv.addEventListener('resize',okPos);vv.addEventListener('scroll',okPos)}
