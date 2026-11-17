@@ -35,7 +35,8 @@ header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;bo
 .cur button{border:0;background:transparent;color:#fff;font:700 15px var(--f);padding:7px 14px;border-radius:9px;cursor:pointer;opacity:.75}
 .cur button.on{background:#f3cf7a;color:#16244a;opacity:1}
 .cur button:focus-visible{outline:2px solid #f3cf7a;outline-offset:2px}
-header h1{margin:0;font-size:24px;letter-spacing:.06em;color:#f3cf7a;text-wrap:balance}
+header h1 b{font-weight:900;color:#ffd56b;font-size:1.08em}
+header h1{font-weight:400;margin:0;font-size:24px;letter-spacing:.06em;color:#fff;text-wrap:balance}
 header p{margin:2px 0 0;font-size:13px;opacity:.85;letter-spacing:.08em}
 .card{background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:16px}
 label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-spacing:.04em}
@@ -123,7 +124,7 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 <body>
 <div class="wrap">
   <header>
-    <div class="hrow"><h1 id="hT">韓國車價換算</h1>
+    <div class="hrow"><h1 id="hT"><b>韓國</b>車價計算</h1>
       <div class="cur" id="cur" role="group" aria-label="幣別"><button type="button" data-c="kr">₩ 韓元</button><button type="button" data-c="us">$ 美金</button></div></div>
     <p id="hP">輸入韓元 → 即時匯率換台幣 → 套公式報價</p>
   </header>
@@ -226,17 +227,17 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   if(ck!=='us')ck='kr';
   const usd=n=>'US$ '+(+n).toLocaleString('en-US');
   const C=ck==='us'?{
-    p:'us_',code:'USD',lc:'usd',head:'美金車價換算',sub:'輸入美金 → 即時匯率換台幣 → 套公式報價',amtL:'美金車價（USD）',rateL:'匯率（美金 → 台幣）',
+    p:'us_',code:'USD',lc:'usd',head:'<b>美金</b>車價計算',sub:'輸入美金 → 即時匯率換台幣 → 套公式報價',amtL:'美金車價（USD）',rateL:'匯率（美金 → 台幣）',
     one:'1 美元',dp:3,cn:'美金',def:40000,seg:false,img:false,manPh:'例 32.5',manOk:v=>v>1,manMsg:'請輸入 1 美元等於多少台幣（例 32.5）',
     sub2:()=>'',quick:[20000,30000,40000,50000,70000,100000],ql:v=>usd(v),hint:w=>`＝ ${usd(w)}`,amt:w=>usd(w),cpHead:'美金車價報價',cpAmt:'美金'
   }:{
-    p:'kc_',code:'KRW',lc:'krw',head:'韓國車價換算',sub:'輸入韓元 → 即時匯率換台幣 → 套公式報價',amtL:'韓幣車價',rateL:'匯率（韓元 → 台幣）',
+    p:'kc_',code:'KRW',lc:'krw',head:'<b>韓國</b>車價計算',sub:'輸入韓元 → 即時匯率換台幣 → 套公式報價',amtL:'韓幣車價',rateL:'匯率（韓元 → 台幣）',
     one:'1 韓元',dp:5,cn:'韓元',def:35000000,seg:true,img:true,manPh:'例 0.0247',manOk:v=>v>0&&v<1,manMsg:'請輸入 1 韓元等於多少台幣（例 0.0247）',
     sub2:r=>`1 萬韓元 ≈ ${(r*10000).toFixed(1)} 台幣`,quick:[2000,3000,4000,5000,6000,8000,10000].map(w=>w*10000),ql:v=>v>=1e8?(v/1e8)+'億 ('+(v/10000).toLocaleString('zh-TW')+'만)':(v/10000).toLocaleString('zh-TW')+'만',
     hint:w=>`＝ ${fmt(w)} 韓元（${(w/10000).toLocaleString('zh-TW')} 萬韓元）`,amt:w=>`${fmt(w)} 韓元`,cpHead:'韓國車價報價',cpAmt:'韓幣'
   };
   const K=k=>C.p+k;
-  $('hT').textContent=C.head; $('hP').textContent=C.sub; $('amtL').textContent=C.amtL; $('rateL').textContent=C.rateL;
+  $('hT').innerHTML=C.head; $('hP').textContent=C.sub; $('amtL').textContent=C.amtL; $('rateL').textContent=C.rateL;
   $('manL').textContent=C.one+' ='; $('manIn').placeholder=C.manPh; $('noteC').textContent=C.cn;
   document.querySelector('.seg').hidden=!C.seg; const pic=document.querySelector('.pic'); if(pic)pic.hidden=!C.img;
   document.querySelectorAll('#cur button').forEach(b=>b.classList.toggle('on',b.dataset.c===ck));
