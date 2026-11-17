@@ -210,7 +210,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 
   <section class="card steps" aria-live="polite">
     <div class="st"><span id="sTwdL">換算台幣</span><b id="sTwd">—</b></div>
-    <div class="st" id="sLuxR" hidden><span>× 1.81 奢侈稅<small style="display:block;font-size:12.5px;color:#c0392b;font-weight:700">超過 7000 萬韓元</small></span><b id="sLux">—</b></div>
+    <div class="st" id="sLuxR" hidden><span>× 1.81 奢侈稅<small style="display:block;font-size:12.5px;color:#c0392b;font-weight:700">7000 萬韓元以上</small></span><b id="sLux">—</b></div>
     <div class="st"><span id="sMulL">× 1.543</span><b id="sMul">—</b></div>
     <div class="st"><span>＋ 標準底價</span><b id="sBase">180,000</b></div>
     <div class="st sum"><span>車價</span><b id="sPrice">—</b></div>
@@ -371,7 +371,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 
   // ---------- 計算 ----------
   let R=null;
-  const LUXW=7e7, LUX=1.81; // 韓幣超過 7000 萬：奢侈稅 ×1.81
+  const LUXW=7e7, LUX=1.81; // 韓幣 7000 萬以上：奢侈稅 ×1.81
   function calc(){
     const won=num(krw.value)*unit, m=curMul(), b=num(base.value);
     let warn='';
@@ -385,11 +385,11 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     if(!won||!rate||!m){R=null;['sTwd','sMul','sPrice','cTot','lTot','xTot','bC','bL'].forEach(i=>$(i).textContent='—');$('cFee').textContent=$('lFee').textContent=$('xFee').textContent='手續費 —';$('cWan').textContent=$('lWan').textContent=$('xWan').textContent='';return}
     const er=manual?rate:rate*(1+buf/100);
     $('sTwdL').textContent=manual||!buf?'換算台幣':`換算台幣（匯率＋${buf}%）`;
-    const lux=!!C.seg&&won>LUXW, twd=won*er, tl=lux?twd*LUX:twd, x=Math.round(tl*m), price=x+b;
+    const lux=!!C.seg&&won>=LUXW, twd=won*er, tl=lux?twd*LUX:twd, x=Math.round(tl*m), price=x+b;
     const cf=Math.round(price*0.02), lf=Math.round(price*0.05);
     R={won,twd,m,b,price,cf,lf,lux,cash:price+cf,loan:price+lf};
     $('sLuxR').hidden=!lux; $('sLux').textContent=lux?fmt(tl):'—';
-    if(lux&&!warn)$('krwHint').textContent+='　→ 超過 7000 萬，加計奢侈稅 ×1.81';
+    if(lux&&!warn)$('krwHint').textContent+='　→ 7000 萬以上，加計奢侈稅 ×1.81';
     $('sTwd').textContent=fmt(twd); $('sMul').textContent=fmt(x); $('sPrice').textContent=fmt(price);
     $('cFee').textContent=`手續費 ${fmt(cf)}`; $('cTot').textContent=fmt(R.cash); $('cWan').textContent=wan(R.cash);
     const xp=num($('feeX').value), xf=Math.round(price*xp/100); R.xp=xp; R.xf=xf; R.cust=price+xf;
