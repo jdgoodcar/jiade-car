@@ -160,7 +160,10 @@ body.lock{overflow:hidden}
 .cpr{display:flex;gap:6px;margin-top:6px}
 .cpr .btn{margin-top:0}
 .cpr [data-cp]{flex:1}
-.btn.ib{flex:0 0 46px;padding:4px 0;font-size:18px;line-height:1}
+.btn.ib{flex:0 0 38px;padding:0;display:flex;align-items:center;justify-content:center}
+.ic{width:17px;height:17px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.cpr [data-cp],[data-cp=both]{display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
+.cpr [data-cp]{padding:7px 6px;min-width:0}
 .iml{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--mut)}
 #imT{font:600 17px var(--f);padding:10px 12px;border:2px solid var(--gold);border-radius:12px;background:var(--card);color:var(--fg)}
 .imp{width:100%;border-radius:10px;border:1px solid var(--ln);display:block;background:#eef1f6;min-height:120px}
@@ -270,23 +273,23 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
       <div class="fee" id="cFee">手續費 —</div>
       <div class="tot" id="cTot">—</div>
       <div class="wan" id="cWan"></div>
-      <div class="cpr"><button class="btn" type="button" data-cp="cash">📋 複製報價</button><button class="btn ib" type="button" data-img="cash" aria-label="下載報價圖片" title="下載報價圖片">🖼️</button></div>
+      <div class="cpr"><button class="btn" type="button" data-cp="cash"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製報價</button><button class="btn ib" type="button" data-img="cash" aria-label="下載報價圖片" title="下載報價圖片"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></svg></button></div>
     </div>
     <div class="qc">
       <h3>貸款 <span class="fl"><small>手續費</small><em>5%</em></span></h3>
       <div class="fee" id="lFee">手續費 —</div>
       <div class="tot" id="lTot">—</div>
       <div class="wan" id="lWan"></div>
-      <div class="cpr"><button class="btn" type="button" data-cp="loan">📋 複製報價</button><button class="btn ib" type="button" data-img="loan" aria-label="下載報價圖片" title="下載報價圖片">🖼️</button></div>
+      <div class="cpr"><button class="btn" type="button" data-cp="loan"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製報價</button><button class="btn ib" type="button" data-img="loan" aria-label="下載報價圖片" title="下載報價圖片"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></svg></button></div>
     </div>
     <div class="qc qx">
       <h3>自訂手續費 <span class="fx"><input id="feeX" inputmode="decimal" enterkeyhint="done" value="3" aria-label="自訂手續費百分比"><em>%</em></span></h3>
       <div class="xrow"><div class="fee" id="xFee">手續費 —</div><div><span class="tot" id="xTot">—</span> <span class="wan" id="xWan"></span></div></div>
-      <div class="cpr"><button class="btn" type="button" data-cp="cust">📋 複製報價</button><button class="btn ib" type="button" data-img="cust" aria-label="下載報價圖片" title="下載報價圖片">🖼️</button></div>
+      <div class="cpr"><button class="btn" type="button" data-cp="cust"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製報價</button><button class="btn ib" type="button" data-img="cust" aria-label="下載報價圖片" title="下載報價圖片"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></svg></button></div>
     </div>
   </div>
   <div class="feeq" id="feeQ"><span>快速選：</span><button type="button" data-f="1">1%</button><button type="button" data-f="3">3%</button><button type="button" data-f="4">4%</button><button type="button" data-f="6">6%</button></div>
-  <button class="btn" type="button" data-cp="both" style="padding:10px">📋 複製兩種報價</button>
+  <button class="btn" type="button" data-cp="both" style="padding:10px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製兩種報價</button>
 
   <div class="foot" id="foot"><h4>計算公式</h4><b>車價</b><span id="fCar">美金 × 台幣匯率 × 倍率 ＋ 18 萬</span><b>手續費</b><span>車價 × 手續費 %</span><b>約 N 萬元</b><span>四捨五入到萬元，方便報價</span></div>
   </div></div>
