@@ -640,10 +640,11 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     const fx=(k,t)=>{const e=$(k);if(e)e.textContent=t||''};
     const ccF=t=>$('ccF').textContent=t||'';
     $('sBase').textContent=fmt(b)+' 台幣';
+    // 超過7000萬：排氣量倍率不適用 → 按鈕變淡，綠色按鈕改寫奢侈稅（放在提早結束之前：清空金額時按鈕要馬上恢復）
+    {const ccN0=mul==='1.61'?'2000cc 以上':'2000cc 以下';$('cc').classList.toggle('lxoff',lux); $('qcc').classList.toggle('lxoff',lux); document.querySelectorAll('#cc button,#qcc button').forEach(b=>{b.disabled=lux}); const j=$('jmpC');if(j)j.textContent=lux?'（奢侈稅 ×1.81）':'（'+ccN0+'）';
+     if(lux&&!warn)$('krwHint').innerHTML=`＝ ${fmt(won)} 韓元，<b class="lxh">超過7000萬（含）奢侈稅 ×1.81</b>`}  // 一行放得下，不會把下面推下去
     if(!won||!rate||!m||(C.via&&!krate)){R=null;ccF('');fx('kF');fx('rF');rows(C.via?rowsKR('—','—','—','—'):rowsUS('—','—'));['sPrice','cTot','lTot','xTot','bC','bL'].forEach(i=>$(i).textContent='—');$('cFee').textContent=$('lFee').textContent=$('xFee').textContent='手續費 —';$('cWan').textContent=$('lWan').textContent=$('xWan').textContent='';return}
     let price,twd,steps; const ccN=mul==='1.543'?'2000cc 以下':mul==='1.61'?'2000cc 以上':'自訂';
-    // 超過7000萬：排氣量倍率不適用 → 按鈕變淡，綠色按鈕改寫奢侈稅
-    $('cc').classList.toggle('lxoff',lux); $('qcc').classList.toggle('lxoff',lux); document.querySelectorAll('#cc button,#qcc button').forEach(b=>{b.disabled=lux}); {const j=$('jmpC');if(j)j.textContent=lux?'（奢侈稅 ×1.81）':'（'+ccN+'）'}
     if(C.via){ // 韓國：韓幣 × 倍率（超過7000萬含：改乘奢侈稅 1.81，不再乘 1.543／1.61）→ ÷ 美金匯率折美金（取整數）→ × 台幣匯率 → ＋ 底價
       const mm=lux?LUX:m, wl=won, wk=Math.round(won*mm), us=Math.round(wk/krate); /* 折美金：四捨五入到整數（2026-11-18 使用者要先用四捨五入對照老闆算法） */ twd=Math.round(us*er); price=twd+b;
       rows(rowsKR(fmt(wl)+' 韓元',fmt(wk)+' 韓元',usd(us),fmt(twd)+' 台幣'));
@@ -658,7 +659,6 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     }
     const cf=Math.round(price*0.02), lf=Math.round(price*0.05);
     R={won,twd,m,b,price,cf,lf,lux,cash:price+cf,loan:price+lf,steps:[...steps.filter(Boolean),['加底價','＋ 標準底價',fmt(b)+' 台幣']]};
-    if(lux&&!warn)$('krwHint').innerHTML=`＝ ${fmt(won)} 韓元，<b class="lxh">超過7000萬（含）奢侈稅 ×1.81</b>`;  // 一行放得下，不會把下面推下去
     $('sPrice').textContent=fmt(price);
     $('cFee').textContent=`手續費 ${fmt(cf)}`; $('cTot').textContent=fmt(R.cash); $('cWan').textContent=wan(R.cash);
     const xp=num($('feeX').value), xf=Math.round(price*xp/100); R.xp=xp; R.xf=xf; R.cust=price+xf;
