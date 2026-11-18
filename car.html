@@ -110,6 +110,7 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .krow em{font-style:normal;font-size:12.5px;color:var(--mut);flex:1;min-width:120px}
 .ccf{margin:8px 2px 0;font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums;line-height:1.5}
 .ccf:empty{display:none}
+@media (max-width:380px){.ccf,.hint{font-size:11.5px}}
 .ccf,.rbf{width:fit-content;max-width:100%;box-sizing:border-box;padding:3px 9px;border-radius:6px;background:var(--goldbg);border-left:3px solid var(--gold);color:var(--fg);font-weight:600} /* 每區小計算式標出來 */
 .krow.first{border-top:0;margin-top:0;padding-top:0}
 .rlab{font-size:13px;color:var(--mut);margin:10px 0 6px;padding-top:10px;border-top:1px dashed var(--ln)}
@@ -602,7 +603,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     }
     const cf=Math.round(price*0.02), lf=Math.round(price*0.05);
     R={won,twd,m,b,price,cf,lf,lux,cash:price+cf,loan:price+lf,steps:[...steps.filter(Boolean),['加底價','＋ 標準底價',fmt(b)+' 台幣']]};
-    if(lux&&!warn)$('krwHint').textContent+='\n→ 7000 萬以上，加計奢侈稅 ×1.81';
+    if(lux&&!warn)$('krwHint').textContent=`＝ ${fmt(won)} 韓元・7000萬以上加奢侈稅 ×1.81`;  // 一行放得下，不會把下面推下去
     $('sPrice').textContent=fmt(price);
     $('cFee').textContent=`手續費 ${fmt(cf)}`; $('cTot').textContent=fmt(R.cash); $('cWan').textContent=wan(R.cash);
     const xp=num($('feeX').value), xf=Math.round(price*xp/100); R.xp=xp; R.xf=xf; R.cust=price+xf;
