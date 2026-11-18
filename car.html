@@ -116,6 +116,7 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .st small.lx{display:block;font-size:12.5px;color:#c0392b;font-weight:700}
 .man input{width:130px;font:600 16px var(--num);padding:6px 8px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--fg)}
 .steps{display:flex;flex-direction:column;gap:10px;font-variant-numeric:tabular-nums}
+.steps>*{min-width:0}
 .st{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
 .st span{color:var(--mut);font-size:14px}
 .st b{font:600 16px var(--num);text-align:right;white-space:nowrap}
@@ -144,7 +145,7 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .adj span{font-size:12.5px;color:var(--mut)}
 .qc .btn{margin-top:6px}
 /* 標準底價這一行用格線排：標題｜輸入框（會縮）｜元｜空白｜按鈕，按鈕永遠在卡片裡 */
-.fbase{display:grid;grid-template-columns:auto minmax(60px,110px) auto 1fr auto;align-items:center;gap:8px 6px;font-size:13px;color:var(--mut)}
+.fbase{min-width:0;width:100%;max-width:100%;display:grid;grid-template-columns:auto minmax(60px,110px) auto 1fr auto;align-items:center;gap:8px 6px;font-size:13px;color:var(--mut)}
 .fbase>span{white-space:nowrap}
 @media (max-width:350px){.fbase{grid-template-columns:auto minmax(40px,110px) auto 0 auto;column-gap:4px}}
 .fbase .btn.bdef{white-space:nowrap;grid-column:1/-1;grid-row:2;justify-self:start}
@@ -460,7 +461,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   const BASE0=180000, base=$('base'); // 標準底價：跟車價一樣只記在這個分頁，關掉網頁再打開回到 18 萬；不是 18 萬時標橘色
   try{localStorage.removeItem(K('base'))}catch(e){}
   {const v=ss.get(K('base'));base.value=fmt(v>0?v:BASE0)}
-  function fitBase(){const f=$('fbase'),c=f&&f.querySelector('.fcp');if(!c)return;f.classList.remove('wr');if(c.getBoundingClientRect().right>f.getBoundingClientRect().right+1)f.classList.add('wr')}
+  function fitBase(){const f=$('fbase'),c=f&&f.querySelector('.fcp');if(!c)return;f.classList.remove('wr');const sec=f.closest('section')||f.parentNode,cs=getComputedStyle(sec),edge=Math.min(f.getBoundingClientRect().right,sec.getBoundingClientRect().right-parseFloat(cs.paddingRight||0));if(c.getBoundingClientRect().right>edge+1)f.classList.add('wr')}  // 跟卡片內緣比，超出就把按鈕移到下一行
   addEventListener('resize',fitBase); addEventListener('load',fitBase); if(document.fonts)document.fonts.ready.then(fitBase);
   function baseMark(){const v=num(base.value),c=v!==BASE0;$('fbase').classList.toggle('chg',c);$('sBase').classList.toggle('chg',c);
     $('bDef').hidden=!c; fitBase()}
