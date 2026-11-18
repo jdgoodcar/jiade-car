@@ -483,7 +483,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     if(!won||!rate||!m||(C.via&&!krate)){R=null;ccF('');fx('kF');fx('rF');rows(C.via?rowsKR('—','—','—','—'):rowsUS('—','—'));['sPrice','cTot','lTot','xTot','bC','bL'].forEach(i=>$(i).textContent='—');$('cFee').textContent=$('lFee').textContent=$('xFee').textContent='手續費 —';$('cWan').textContent=$('lWan').textContent=$('xWan').textContent='';return}
     let price,twd,steps; const ccN=mul==='1.543'?'2000cc 以下':mul==='1.61'?'2000cc 以上':'自訂';
     if(C.via){ // 韓國：韓幣（×奢侈稅）× 倍率 → ÷ 美金匯率折美金（取整數）→ × 台幣匯率 → ＋ 底價
-      const wl=lux?won*LUX:won, wk=Math.round(wl*m), us=Math.round(wk/krate); twd=Math.round(us*er); price=twd+b;
+      const wl=lux?won*LUX:won, wk=Math.round(wl*m), us=Math.floor(wk/krate+1e-9); /* 折美金：小數無條件捨去（跟老闆按計算機的算法一樣） */ twd=Math.round(us*er); price=twd+b;
       rows(rowsKR(fmt(wl)+' 韓元',fmt(wk)+' 韓元',usd(us),fmt(twd)+' 台幣'));
       steps=[['',C.amtL,fmt(won)+' 韓元'],lux&&['奢侈稅','× 1.81',fmt(wl)+' 韓元','7000 萬韓元以上'],['乘倍率',`× ${m}（${ccN}）`,fmt(wk)+' 韓元'],['換美金','÷ '+kf(krate),usd(us)],['換台幣','× '+er.toFixed(3),fmt(twd)+' 台幣']];
       fx('kF',`${fmt(wk)} 韓元 ÷ ${kf(krate)} ＝ ${usd(us)}`); fx('rF',`${usd(us)} × ${er.toFixed(3)} ＝ ${fmt(twd)} 台幣`);
