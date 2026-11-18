@@ -482,9 +482,10 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 
   let unit=C.seg?(ss.get(K('unit'))===1?1:10000):1;   // 預設「萬韓元」（跟 Encar 一樣）；切到「韓元」只在這個分頁有效（切美金再切回來也保留）
   {const w=ss.get(K('won')); $('krw').value=fmt((w!=null?w:C.def)/unit);}
-  let mul=store.get(K('mul'))||'1.543';
+  let mul=ss.get(K('mul'))||'1.543';
   const RK=C.via?'rate2':'rate', MK=C.via?'man3':'man2';  // 韓國版改成「韓元→美金→台幣」，用新的存檔名，舊的韓元→台幣匯率不再使用
-  let rate=null, rateInfo=null, manual=store.get(K(MK)), krate=null, kman=C.via?store.get(K('mank')):null; // krate = 1 美元換多少韓元 // rate、manual = 1 單位外幣換多少台幣
+  try{[MK,'mank','mul','feex'].forEach(k=>localStorage.removeItem(K(k)))}catch(e){}  // 這些改成只記在開著的分頁：關掉網頁再打開全部回預設
+  let rate=null, rateInfo=null, manual=ss.get(K(MK)), krate=null, kman=C.via?ss.get(K('mank')):null; // krate = 1 美元換多少韓元 // rate、manual = 1 單位外幣換多少台幣
   const BK='buf3'; // 美金銀行價差小，預設加成 0.5% // 韓國版改成美金換台幣後，預設加成改 0.5%（美金銀行價差小）
   try{localStorage.removeItem(K(BK))}catch(e){} // 加成只記在這個分頁，關掉網頁再打開回到 0.5%
   let buf=ss.get(K(BK)); if(buf==null)buf=0.5; // 即時匯率加成 %
@@ -526,7 +527,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   $('quick').onclick=e=>{const b=e.target.closest('button');if(!b)return;krw.value=fmt(+b.dataset.v/unit);calc()};
 
   // ---------- 排氣量 ----------
-  function setMul(m){mul=m;store.set(K('mul'),m);{const j=$('jmpC');if(j)j.textContent='（'+(m==='1.61'?'2000cc 以上':'2000cc 以下')+'）'}document.querySelectorAll('#cc>button').forEach(b=>b.classList.toggle('on',b.dataset.m===m||(m==='c'&&b.dataset.m==='c')));calc()}
+  function setMul(m){mul=m;ss.set(K('mul'),m);{const j=$('jmpC');if(j)j.textContent='（'+(m==='1.61'?'2000cc 以上':'2000cc 以下')+'）'}document.querySelectorAll('#cc>button').forEach(b=>b.classList.toggle('on',b.dataset.m===m||(m==='c'&&b.dataset.m==='c')));calc()}
   $('cc').onclick=e=>{const b=e.target.closest('button');if(!b)return;setMul(b.dataset.m)};
   const curMul=()=>+mul;
 
@@ -592,13 +593,13 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     $('kMan').textContent=kman?'↩ 改回網頁匯率':'手動輸入'; $('kMan').classList.toggle('back',!!kman);
   }
   $('rAll').onclick=async()=>{const back=!!(manual||kman); // 全部更新＝兩個都改回網頁匯率
-    if(manual){manual=null;store.set(K(MK),null)} if(kman){kman=null;store.set(K('mank'),null)} $('manBox').classList.remove('on');$('kBox').classList.remove('on');
+    if(manual){manual=null;ss.set(K(MK),null)} if(kman){kman=null;ss.set(K('mank'),null)} $('manBox').classList.remove('on');$('kBox').classList.remove('on');
     $('rAll').disabled=true;await loadRate();$('rAll').disabled=false;toast(!$('rDot').classList.contains('err')?(back?'已改回網頁匯率，並全部更新 ✓':'匯率已全部更新 ✓'):'連不上網路，暫時用上次的匯率')};
-  $('kMan').onclick=()=>{if(kman){kman=null;store.set(K('mank'),null);$('kBox').classList.remove('on');showK();calc();toast('已改回網頁抓的匯率');return}$('kBox').classList.toggle('on');$('kIn').value=krate?kf(krate).replace(/,/g,''):'';$('kIn').focus();$('kIn').select()};
-  $('kOk').onclick=()=>{const v=num($('kIn').value);if(!(v>100&&v<10000)){toast('請輸入 1 美元等於多少韓元（例 1323.66）');return}kman=v;store.set(K('mank'),v);$('kBox').classList.remove('on');showK();calc()};
-  $('rMan').onclick=()=>{if(manual){manual=null;store.set(K(MK),null);$('manBox').classList.remove('on');if(rateInfo)showRate();else loadRate();toast('已改回網頁抓的匯率');return}$('manBox').classList.toggle('on');$('manIn').value=rate?rate.toFixed(C.dp):'';$('manIn').focus();$('manIn').select()};
+  $('kMan').onclick=()=>{if(kman){kman=null;ss.set(K('mank'),null);$('kBox').classList.remove('on');showK();calc();toast('已改回網頁抓的匯率');return}$('kBox').classList.toggle('on');$('kIn').value=krate?kf(krate).replace(/,/g,''):'';$('kIn').focus();$('kIn').select()};
+  $('kOk').onclick=()=>{const v=num($('kIn').value);if(!(v>100&&v<10000)){toast('請輸入 1 美元等於多少韓元（例 1323.66）');return}kman=v;ss.set(K('mank'),v);$('kBox').classList.remove('on');showK();calc()};
+  $('rMan').onclick=()=>{if(manual){manual=null;ss.set(K(MK),null);$('manBox').classList.remove('on');if(rateInfo)showRate();else loadRate();toast('已改回網頁抓的匯率');return}$('manBox').classList.toggle('on');$('manIn').value=rate?rate.toFixed(C.dp):'';$('manIn').focus();$('manIn').select()};
   ['manIn','kIn'].forEach(i=>$(i).addEventListener('change',e=>{if(e.target.value.trim()&&$(i==='manIn'?'manBox':'kBox').classList.contains('on'))$(i==='manIn'?'manOk':'kOk').click()})); // 鍵盤按完成／點別處就自動套用
-  $('manOk').onclick=()=>{const v=num($('manIn').value);if(!C.manOk(v)){toast(C.manMsg);return}manual=v;store.set(K(MK),v);$('manBox').classList.remove('on');showRate()};
+  $('manOk').onclick=()=>{const v=num($('manIn').value);if(!C.manOk(v)){toast(C.manMsg);return}manual=v;ss.set(K(MK),v);$('manBox').classList.remove('on');showRate()};
 
   // ---------- 計算 ----------
   let R=null;
@@ -661,10 +662,10 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     if(k==='base')return `${C.cpHead}\n${C.cpAmt}：${C.amt(R.won)}${R.lux?'（含奢侈稅）':''}\n車價：${fmt(R.price)} 元\n（${wan(R.price)}，未含手續費）`;
     return h+'\n'+(k==='cash'?c:k==='loan'?l:k==='cust'?x:c+'\n'+l);
   }
-  const feeX=$('feeX'); if(store.get(K('feex'))!=null)feeX.value=store.get(K('feex'));
-  feeX.addEventListener('input',()=>{store.set(K('feex'),feeX.value);calc()});
+  const feeX=$('feeX'); if(ss.get(K('feex'))!=null)feeX.value=ss.get(K('feex'));
+  feeX.addEventListener('input',()=>{ss.set(K('feex'),feeX.value);calc()});
   feeX.addEventListener('focus',()=>setTimeout(()=>feeX.select(),0));
-  $('feeQ').onclick=e=>{const b=e.target.closest('button');if(!b)return;feeX.value=b.dataset.f;store.set(K('feex'),feeX.value);calc()};
+  $('feeQ').onclick=e=>{const b=e.target.closest('button');if(!b)return;feeX.value=b.dataset.f;ss.set(K('feex'),feeX.value);calc()};
   async function copyText(t){
     try{await navigator.clipboard.writeText(t);return true}
     catch(err){const ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand('copy')}catch(e2){}ta.remove();return ok}
@@ -816,7 +817,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('rsBox').hidden)rsClose()});
   $('rsYes').onclick=()=>{
     ['won','base','unit',BK].forEach(k=>ss.set(K(k),null)); ss.set('sy_'+ck,null); ss.set('imT',null);
-    [MK,'mank',BK,'mul','feex'].forEach(k=>{try{localStorage.removeItem(K(k))}catch(e){}});
+    [MK,'mank',BK,'mul','feex'].forEach(k=>{ss.set(K(k),null);try{localStorage.removeItem(K(k))}catch(e){}});
     ss.set('rstd',1); scrollTo(0,0); location.reload();
   };
   if(ss.get('rstd')){ss.set('rstd',null);setTimeout(()=>toast('已全部回復預設 ✓'),300)}
