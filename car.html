@@ -63,10 +63,10 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 @media (min-width:600px){.hint{white-space:normal}} /* 電腦不斷行，手機斷行 */
 .hint.bad{color:var(--red);font-weight:700;font-size:13.5px}
 .quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.jrow{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 10px;margin-top:12px}
-.jtb{font-size:14px;font-weight:800;color:var(--red);grid-column:1;grid-row:1}
-.jts{font-size:11.5px;color:var(--mut);grid-column:1;grid-row:2}
-.jrow .jpill{grid-column:2;grid-row:1/3}
+.jrow{display:flex;flex-direction:column;align-items:stretch;gap:5px;margin-top:12px}
+.jrow .jpill{justify-content:center;padding:10px 14px;font-size:14.5px}
+.jrow .jpill span{color:var(--red);margin-left:2px}
+.jts{font-size:11.5px;color:var(--mut);text-align:center}
 .jpill{display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;border:1.5px solid var(--gbd);background:var(--gbg);color:var(--fg);border-radius:999px;padding:7px 12px 7px 14px;font:700 13.5px var(--f);cursor:pointer;white-space:nowrap}
 .jpill:active{transform:translateY(1px)}
 .jpill svg{width:15px;height:15px;fill:none;stroke:var(--gic);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
@@ -253,7 +253,6 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     </div>
     <div class="hint" id="krwHint"></div>
     <div class="quick" id="quick"></div>
-    <div class="jrow"><b class="jtb">記得選下方排氣量</b><small class="jts">（未含手續費・匯率由網頁抓取）</small><button type="button" class="jpill" id="jmp">快速去看報價<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>
   </section>
 
   <section class="card">
@@ -263,6 +262,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
       <button type="button" data-m="1.61">2000cc 以上<small>× 1.61</small></button>
     </div>
     <p class="ccf" id="ccF"></p>
+    <div class="jrow"><button type="button" class="jpill" id="jmp">選好了，快速去看報價<span id="jmpC"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><small class="jts">未含手續費・匯率由網頁抓取</small></div>
   </section>
 
   <section class="card">
@@ -428,7 +428,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   $('quick').onclick=e=>{const b=e.target.closest('button');if(!b)return;krw.value=fmt(+b.dataset.v/unit);calc()};
 
   // ---------- 排氣量 ----------
-  function setMul(m){mul=m;store.set(K('mul'),m);document.querySelectorAll('#cc>button').forEach(b=>b.classList.toggle('on',b.dataset.m===m||(m==='c'&&b.dataset.m==='c')));calc()}
+  function setMul(m){mul=m;store.set(K('mul'),m);{const j=$('jmpC');if(j)j.textContent='（'+(m==='1.61'?'2000cc 以上':'2000cc 以下')+'）'}document.querySelectorAll('#cc>button').forEach(b=>b.classList.toggle('on',b.dataset.m===m||(m==='c'&&b.dataset.m==='c')));calc()}
   $('cc').onclick=e=>{const b=e.target.closest('button');if(!b)return;setMul(b.dataset.m)};
   const curMul=()=>+mul;
 
