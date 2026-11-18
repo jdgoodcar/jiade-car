@@ -58,8 +58,8 @@ header h1{font-weight:400;margin:0;font-size:24px;letter-spacing:.06em;color:#ff
 header p{margin:2px 0 0;font-size:13px;opacity:.85;letter-spacing:.08em}
 .card{background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:16px}
 /* 步驟標題：① 輸入車價 → ② 選擇排氣量 → ③ 確認匯率 */
-.sth{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;margin-bottom:10px;font:800 16.5px var(--f);color:var(--fg);letter-spacing:.04em}
-.sth i{font-style:normal;flex:0 0 26px;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#f3cf7a;display:grid;place-items:center;font:800 14px var(--num);box-shadow:0 2px 6px #16244a33}
+.sth{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;margin-bottom:10px;font:700 15.5px var(--f);color:var(--fg);letter-spacing:.03em}
+.sth i{font-style:normal;flex:0 0 22px;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--gold);color:var(--gold);display:grid;place-items:center;font:700 12.5px var(--num)}  /* 清爽版：細金框數字，不填色不陰影 */
 .sth .sts{font:500 12.5px var(--f);color:var(--mut);letter-spacing:0}
 label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-spacing:.04em}
 .inrow{display:flex;gap:8px;align-items:stretch}
@@ -190,9 +190,9 @@ input,textarea,select{font-size:max(16px,1em)}  /* iPhone 輸入框字小於 16p
 body.lock{overflow:hidden}
 /* 計算區和結果區中間的分隔 */
 .sdiv{display:flex;align-items:center;gap:12px;margin:14px 2px 4px}
-.sdiv::before,.sdiv::after{content:"";flex:1;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--gold))}
+.sdiv::before,.sdiv::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
 .sdiv::after{background:linear-gradient(90deg,var(--gold),transparent)}
-.sdiv span{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:999px;background:var(--navy);color:#f3cf7a;font:800 14px var(--f);letter-spacing:.12em;box-shadow:0 3px 10px #16244a33;white-space:nowrap}
+.sdiv span{display:inline-flex;align-items:center;gap:6px;padding:2px 4px;color:var(--gold);font:700 14px var(--f);letter-spacing:.16em;white-space:nowrap}  /* 清爽版：只有金色字＋細線 */
 .sdiv svg{width:14px;height:14px;fill:#f3cf7a}
 /* 總表做成小發票：上下是撕紙鋸齒邊，外面一層淡淡陰影 */
 .rcpt{position:relative;border:0;border-radius:4px;padding-top:24px;padding-bottom:24px;
