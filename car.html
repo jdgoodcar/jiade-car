@@ -139,23 +139,21 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .adj b{font:700 16px var(--num)}
 .adj span{font-size:12.5px;color:var(--mut)}
 .qc .btn{margin-top:6px}
-.fbase{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;font-size:13px;color:var(--mut)}
-.fbase.chg{flex-wrap:wrap}
-@media (max-width:340px){.fbase{flex-wrap:wrap}}  /* 只有出現「恢復預設」時才換行；平常一行，輸入框會自己縮 */
-.fbase>span{flex:0 0 auto;white-space:nowrap}
-.fbase .btn.bdef{white-space:nowrap}
-.fbase .fcp{margin:0 0 0 auto;flex:0 0 auto}
+/* 標準底價這一行用格線排：標題｜輸入框（會縮）｜元｜空白｜按鈕，按鈕永遠在卡片裡 */
+.fbase{display:grid;grid-template-columns:auto minmax(60px,110px) auto 1fr auto;align-items:center;gap:8px 6px;font-size:13px;color:var(--mut)}
+.fbase>span{white-space:nowrap}
+@media (max-width:350px){.fbase{grid-template-columns:auto minmax(40px,110px) auto 0 auto;column-gap:4px}}
+.fbase .btn.bdef{white-space:nowrap;grid-column:1/-1;grid-row:2;justify-self:start}
+.fbase .fcp{grid-column:5;grid-row:1;margin:0}
 .fbase .fcp .btn{background:var(--gbg);border-color:var(--gbd)}
 .fbase .fcp .ic{stroke:var(--gic)}
 .fbase .fcp [data-cp]{flex:0 0 auto;padding:7px 10px}
 @media (max-width:440px){.fbase .fcp [data-cp]{padding:7px 9px}.fbase .fcp [data-cp] .ic{display:none}}
 .fbase.chg input{border:2px solid var(--warn);background:color-mix(in srgb,var(--warn) 10%,var(--card))}
-.bwarn{flex-basis:100%;margin-top:-2px;padding-left:60px;font-size:11.5px;font-weight:600;color:var(--warn)} /* 對齊輸入框 */
+.bwarn{grid-column:1/-1;margin-top:-2px;padding-left:60px;font-size:11.5px;font-weight:600;color:var(--warn)} /* 對齊輸入框 */
 .bwarn:empty{display:none}
 #sBase.chg{color:var(--warn)}
-.fbase input{flex:0 1 auto;min-width:72px;width:110px;font:600 16px var(--num);padding:5px 8px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--fg)}
-@media (max-width:420px){.fbase{gap:6px}.fbase input{width:96px}}
-@media (max-width:380px){.fbase input{width:86px}}
+.fbase input{min-width:0;width:100%;font:600 16px var(--num);padding:5px 8px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--fg)}
 #toast{position:fixed;z-index:30;left:50%;bottom:calc(104px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1b2235;color:#fff;padding:10px 18px;border-radius:20px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s}
 #toast.on{opacity:1}
 input,textarea,select{font-size:max(16px,1em)}  /* iPhone 輸入框字小於 16px 會自動放大畫面 */
@@ -179,11 +177,10 @@ body.lock{overflow:hidden}
 #qAmt{flex:1;min-width:0;width:100%;border:0;background:transparent;font:700 19px var(--num);color:var(--fg);padding:7px 0;outline:none}
 #qU{font-size:12.5px;color:var(--mut);white-space:nowrap}
 .qa svg{width:15px;height:15px;flex:0 0 auto;fill:none;stroke:var(--gold);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.qcc{display:flex;border:1px solid var(--ln);border-radius:12px;overflow:hidden;flex:0 0 auto}
-.qcc button{border:0;background:var(--card);color:var(--mut);font:700 12.5px/1.15 var(--f);padding:5px 9px;cursor:pointer;white-space:nowrap}
-.qcc button+button{border-left:1px solid var(--ln)}
+.qcc{display:flex;gap:3px;padding:3px;border:1px solid var(--ln);border-radius:13px;background:var(--bg);flex:0 0 auto}
+.qcc button{border:2px solid transparent;border-radius:10px;background:transparent;color:var(--mut);font:700 12.5px/1.15 var(--f);padding:3px 8px;cursor:pointer;white-space:nowrap}
 .qcc button small{display:block;font:700 12.5px var(--num);color:var(--red);margin-top:1px}
-.qcc button.on{background:var(--goldbg);color:var(--fg);box-shadow:inset 0 0 0 2px var(--gold)}
+.qcc button.on{background:var(--goldbg);color:var(--fg);border-color:var(--gold)}
 .cpr{display:flex;gap:6px;margin-top:6px}
 .cpr .btn{margin-top:0}
 .cpr [data-cp]{flex:1}
