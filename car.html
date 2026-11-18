@@ -519,6 +519,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   let rateErr=[];  // 哪個來源失敗、為什麼（顯示在匯率狀態下方，方便查手機問題）
   async function loadRate(){
     $('rStT').textContent='讀取中…'; $('rDot').className='dot'; rateErr=[];
+    if(navigator.onLine===false){rateErr=['沒有網路'];rateInfo=store.get(K(RK));showRate(true);return}  // 飛航模式／沒網路：不要拿瀏覽器暫存的舊資料當成新的
     for(const s of SRC){
       const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),6000);
       try{
@@ -744,6 +745,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   // 匯率自動更新：回到畫面時、或網頁一直開著每過 5 分鐘，都會自己重抓（手動輸入的匯率不會被蓋掉）
   const rateStale=()=>!(manual&&(!C.via||kman))&&(!rateInfo||Date.now()-rateInfo.got>3e5);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&rateStale())loadRate()});
+  addEventListener('online',()=>loadRate());  // 網路恢復時馬上重抓
   setInterval(()=>{if(document.visibilityState==='visible'&&rateStale()&&document.activeElement.tagName!=='INPUT')loadRate()},60000);
   document.addEventListener('focusout',e=>{if(e.target.matches&&e.target.matches('input')&&rateStale())setTimeout(()=>{if(!document.activeElement||document.activeElement.tagName!=='INPUT')loadRate()},50)});  // 打完字（離開輸入框）時，匯率舊了就馬上更新
 
