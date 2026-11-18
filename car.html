@@ -397,12 +397,13 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   const curMul=()=>+mul;
 
   // ---------- 底價 ----------
-  const BASE0=180000, base=$('base'); // 標準底價：記住上次的數字；不是 18 萬時標橘色提醒
-  {const v=store.get(K('base'));base.value=fmt(v>0?v:BASE0)}
+  const BASE0=180000, base=$('base'); // 標準底價：跟車價一樣只記在這個分頁，關掉網頁再打開回到 18 萬；不是 18 萬時標橘色
+  try{localStorage.removeItem(K('base'))}catch(e){}
+  {const v=ss.get(K('base'));base.value=fmt(v>0?v:BASE0)}
   function baseMark(){const v=num(base.value),c=v!==BASE0;$('fbase').classList.toggle('chg',c);$('sBase').classList.toggle('chg',c);
     $('bDef').hidden=!c}
-  base.addEventListener('input',()=>{const v=num(base.value);base.value=v?fmt(v):'';store.set(K('base'),v||null);baseMark();calc()});
-  $('bDef').onclick=()=>{base.value=fmt(BASE0);store.set(K('base'),null);baseMark();calc();toast('標準底價已恢復 18 萬')};
+  base.addEventListener('input',()=>{const v=num(base.value);base.value=v?fmt(v):'';ss.set(K('base'),v||null);baseMark();calc()});
+  $('bDef').onclick=()=>{base.value=fmt(BASE0);ss.set(K('base'),null);baseMark();calc();toast('標準底價已恢復 18 萬')};
   baseMark();
   // 點數字框時自動全選，直接打新數字就會取代（不用先刪）
   ['base','manIn','kIn'].forEach(i=>$(i).addEventListener('focus',e=>setTimeout(()=>{try{e.target.select()}catch(x){}},0)));
