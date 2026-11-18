@@ -157,7 +157,10 @@ input,textarea,select{font-size:max(16px,1em)}  /* iPhone 輸入框字小於 16p
 .cpgo{border:0;border-radius:12px;padding:13px;font:700 16px var(--f);background:var(--navy);color:#fff;cursor:pointer}
 .cpgo:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 body.lock{overflow:hidden}
-.foot{text-align:center;font-size:12px;color:var(--mut)}
+.foot{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:baseline;margin:0;padding:12px 14px;border:1px dashed var(--ln);border-radius:12px;font-size:12.5px;line-height:1.55;color:var(--mut)}
+.foot h4{grid-column:1/-1;margin:0 0 2px;font-size:13px;color:var(--fg)}
+.foot i{font-style:normal;white-space:nowrap}
+.foot b{color:var(--fg);font-weight:700;white-space:nowrap}
 .qx{grid-column:1/-1}
 .qx .fx{display:flex;align-items:baseline;gap:2px}
 #feeX{width:60px;font:800 26px/1 var(--num);color:var(--red);text-align:right;border:0;border-bottom:2px solid var(--gold);background:transparent;padding:0 2px}
@@ -277,7 +280,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   <div class="feeq" id="feeQ"><span>快速選：</span><button type="button" data-f="1">1%</button><button type="button" data-f="3">3%</button><button type="button" data-f="4">4%</button><button type="button" data-f="6">6%</button></div>
   <button class="btn" type="button" data-cp="both" style="padding:10px">📋 複製兩種報價</button>
 
-  <p class="foot" id="foot">手續費＝（換算台幣 × 倍率 ＋ 18 萬）× 手續費 %。<br>金額下方的「約 N 萬元」是四捨五入到萬元，方便報價。</p>
+  <div class="foot" id="foot"><h4>計算公式</h4><b>車價</b><span id="fCar">美金 × 台幣匯率 × 倍率 ＋ 18 萬</span><b>手續費</b><span>車價 × 手續費 %</span><b>約 N 萬元</b><span>四捨五入到萬元，方便報價</span></div>
   </div></div>
   <figure class="pic" id="pic"><img src="car-formula.jpg" loading="lazy" decoding="async" width="1536" height="1024" alt="韓國車價換算公式：韓幣換算台幣，2000cc 乘以 1.543、3000cc 乘以 1.61，再加 18 萬標準底價；手續費現金價 2%、貸款 5%"></figure>
 </div>
@@ -524,7 +527,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 
   // ---------- 啟動 ----------
   setUnit(unit); setMul(mul==='1.61'?'1.61':'1.543');
-  if(C.via)$('foot').innerHTML='車價＝韓幣 × 倍率 ÷ 美金匯率（折美金）× 台幣匯率 ＋ 18 萬。<br>手續費＝車價 × 手續費 %。金額下方的「約 N 萬元」是四捨五入到萬元，方便報價。';
+  if(C.via)$('fCar').innerHTML='<i>韓幣 × 倍率 ÷ 美金匯率</i> <i>× 台幣匯率 ＋ 18 萬</i>';
   rateInfo=store.get(K(RK)); if(manual||rateInfo)showRate();
   if(!manual||(C.via&&!kman))loadRate();
 })();
