@@ -63,7 +63,9 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 @media (min-width:600px){.hint{white-space:normal}} /* 電腦不斷行，手機斷行 */
 .hint.bad{color:var(--red);font-weight:700;font-size:13.5px}
 .quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.pq{margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--goldbg);border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap}
+.jmp{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;margin-top:12px;padding:9px 12px;border:1px dashed var(--gold);border-radius:12px;background:var(--goldbg);color:var(--fg);font:600 13px/1.5 var(--f);text-align:left;cursor:pointer}
+.jmp span{font-weight:800;color:var(--gold);font-size:16px}
+.pq{margin-top:4px;padding:10px 12px;border-radius:12px;background:var(--goldbg);border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap}
 .pq small{display:block;font-size:12.5px;color:var(--mut);font-weight:600}
 .pq b{font:800 22px var(--num);color:var(--fg);white-space:nowrap}
 .pq em{font-style:normal;font-size:13px;font-weight:700;color:var(--fg);margin-left:6px;white-space:nowrap}
@@ -235,7 +237,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     </div>
     <div class="hint" id="krwHint"></div>
     <div class="quick" id="quick"></div>
-    <div class="pq"><div><small>車輛報價（未含手續費）</small><b id="pqV">—</b><em id="pqW"></em></div><div class="cpr"><button class="btn" type="button" data-cp="base"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製報價</button><button class="btn ib" type="button" data-img="base" aria-label="下載報價圖片" title="下載報價圖片"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></svg></button></div></div>
+    <button type="button" class="jmp" id="jmp">！選好下方排氣量後，點這裡直接看車輛報價（未含手續費・匯率由網頁抓取）<span>↓</span></button>
   </section>
 
   <section class="card">
@@ -276,6 +278,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     <div id="stL" class="steps"></div>
     <div class="st"><span><i class="tg">加底價</i>＋ 標準底價</span><b id="sBase">180,000</b></div>
     <div class="st sum"><span>車價</span><b id="sPrice">—</b></div>
+    <div class="pq" id="pqBox"><div><small>車輛報價（未含手續費）</small><b id="pqV">—</b><em id="pqW"></em></div><div class="cpr"><button class="btn" type="button" data-cp="base"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製報價</button><button class="btn ib" type="button" data-img="base" aria-label="下載報價圖片" title="下載報價圖片"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></svg></button></div></div>
     <div class="fbase" id="fbase"><span>標準底價</span><input id="base" inputmode="numeric" enterkeyhint="done" autocomplete="off" value="180,000"><span>元</span><button class="btn bdef" id="bDef" type="button">↻ 恢復預設 18 萬</button><span class="bwarn" id="bWarn"></span></div>
   </section>
 
@@ -548,6 +551,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     const t=text(b.dataset.cp);
     cpOpen(t,await copyText(t));
   });
+  $('jmp').onclick=()=>$('pqBox').scrollIntoView({behavior:'smooth',block:'center'});
   $('bar').onclick=e=>{const d=e.target.closest('[data-go]');if(d)$(d.dataset.go).closest('.qc').scrollIntoView({behavior:'smooth',block:'center'})};
   // ---------- 報價圖片（現金價／貸款價／手續費）----------
   const imBox=$('imBox'), imT=$('imT'); let imKind='cash', imBlob=null, imURL=null, imTo=null;
