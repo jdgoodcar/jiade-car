@@ -315,7 +315,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   if(ck!=='us')ck='kr';
   const usd=n=>(+n).toLocaleString('en-US')+' 美金';
   const C=ck==='us'?{
-    p:'us_',code:'USD',lc:'usd',head:'<b>美金</b>車價計算',sub:'輸入美金 → 即時匯率換台幣 → 套公式報價',amtL:'美金車價（USD）',rateL:'匯率（美金 → 台幣）',
+    p:'us_',code:'USD',lc:'usd',head:'<b>美金</b>車價計算',sub:'輸入美金 → 即時匯率換台幣 → 套公式報價',amtL:'美金車價',rateL:'匯率（美金 → 台幣）',
     one:'1 美元',dp:3,cn:'美金',def:40000,seg:false,img:false,manPh:'例 32.5',manOk:v=>v>1,manMsg:'請輸入 1 美元等於多少台幣（例 32.5）',
     sub2:()=>'',quick:[20000,30000,40000,50000,70000,100000],ql:v=>usd(v),hint:w=>`＝ ${usd(w)}`,amt:w=>usd(w),cpHead:'美金車價報價',cpAmt:'美金'
   }:{
