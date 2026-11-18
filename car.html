@@ -63,6 +63,13 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 @media (min-width:600px){.hint{white-space:normal}} /* 電腦不斷行，手機斷行 */
 .hint.bad{color:var(--red);font-weight:700;font-size:13.5px}
 .quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.pq{margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--goldbg);border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap}
+.pq small{display:block;font-size:12.5px;color:var(--mut);font-weight:600}
+.pq b{font:800 22px var(--num);color:var(--fg);white-space:nowrap}
+.pq em{font-style:normal;font-size:13px;font-weight:700;color:var(--fg);margin-left:6px;white-space:nowrap}
+.pq .cpr{margin-top:0}
+.pq .cpr [data-cp]{background:var(--card)}
+.pq .btn.ib{background:var(--card);height:auto}
 .quick button{border:1px solid var(--ln);background:transparent;color:var(--fg);border-radius:20px;padding:4px 10px;font:13px var(--f);cursor:pointer}
 .cc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
 .cc button{border:2px solid var(--ln);background:var(--card);color:var(--fg);border-radius:12px;padding:8px 4px;cursor:pointer;font:600 15px var(--f);line-height:1.25}
@@ -228,6 +235,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     </div>
     <div class="hint" id="krwHint"></div>
     <div class="quick" id="quick"></div>
+    <div class="pq"><div><small>車輛報價（未含手續費）</small><b id="pqV">—</b><em id="pqW"></em></div><div class="cpr"><button class="btn" type="button" data-cp="base"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製報價</button><button class="btn ib" type="button" data-img="base" aria-label="下載報價圖片" title="下載報價圖片"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></svg></button></div></div>
   </section>
 
   <section class="card">
@@ -481,7 +489,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     const fx=(k,t)=>{const e=$(k);if(e)e.textContent=t||''};
     const ccF=t=>$('ccF').textContent=t||'';
     $('sBase').textContent=fmt(b)+' 台幣';
-    if(!won||!rate||!m||(C.via&&!krate)){R=null;ccF('');fx('kF');fx('rF');rows(C.via?rowsKR('—','—','—','—'):rowsUS('—','—'));['sPrice','cTot','lTot','xTot','bC','bL'].forEach(i=>$(i).textContent='—');$('cFee').textContent=$('lFee').textContent=$('xFee').textContent='手續費 —';$('cWan').textContent=$('lWan').textContent=$('xWan').textContent='';return}
+    if(!won||!rate||!m||(C.via&&!krate)){R=null;ccF('');fx('kF');fx('rF');rows(C.via?rowsKR('—','—','—','—'):rowsUS('—','—'));['sPrice','cTot','lTot','xTot','bC','bL','pqV'].forEach(i=>$(i).textContent='—');$('pqW').textContent='';$('cFee').textContent=$('lFee').textContent=$('xFee').textContent='手續費 —';$('cWan').textContent=$('lWan').textContent=$('xWan').textContent='';return}
     let price,twd,steps; const ccN=mul==='1.543'?'2000cc 以下':mul==='1.61'?'2000cc 以上':'自訂';
     if(C.via){ // 韓國：韓幣（×奢侈稅）× 倍率 → ÷ 美金匯率折美金（取整數）→ × 台幣匯率 → ＋ 底價
       const wl=lux?won*LUX:won, wk=Math.round(wl*m), us=Math.round(wk/krate); /* 折美金：四捨五入到整數（2026-11-18 使用者要先用四捨五入對照老闆算法） */ twd=Math.round(us*er); price=twd+b;
@@ -498,7 +506,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     const cf=Math.round(price*0.02), lf=Math.round(price*0.05);
     R={won,twd,m,b,price,cf,lf,lux,cash:price+cf,loan:price+lf,steps:[...steps.filter(Boolean),['加底價','＋ 標準底價',fmt(b)+' 台幣']]};
     if(lux&&!warn)$('krwHint').textContent+='\n→ 7000 萬以上，加計奢侈稅 ×1.81';
-    $('sPrice').textContent=fmt(price);
+    $('sPrice').textContent=fmt(price); $('pqV').textContent=fmt(price); $('pqW').textContent=wan(price);
     $('cFee').textContent=`手續費 ${fmt(cf)}`; $('cTot').textContent=fmt(R.cash); $('cWan').textContent=wan(R.cash);
     const xp=num($('feeX').value), xf=Math.round(price*xp/100); R.xp=xp; R.xf=xf; R.cust=price+xf;
     $('xFee').textContent=`手續費 ${fmt(xf)}`; $('xTot').textContent=fmt(R.cust); $('xWan').textContent=wan(R.cust);
@@ -516,6 +524,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 （${wan(R.loan)}，含手續費 5%）`;
     const x=`報價：${fmt(R.cust)} 元
 （${wan(R.cust)}，含手續費 ${R.xp}%）`;
+    if(k==='base')return `${C.cpHead}\n${C.cpAmt}：${C.amt(R.won)}${R.lux?'（含奢侈稅）':''}\n車價：${fmt(R.price)} 元\n（${wan(R.price)}，未含手續費）`;
     return h+'\n'+(k==='cash'?c:k==='loan'?l:k==='cust'?x:c+'\n'+l);
   }
   const feeX=$('feeX'); if(store.get(K('feex'))!=null)feeX.value=store.get(K('feex'));
@@ -547,11 +556,11 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   function drawImg(kind,title){
     const W=1080,P=48,IN=40,F='"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif',N='"SF Mono",Menlo,Consolas,"Roboto Mono",monospace';
     const navy='#16244a',gold='#c8952e',goldbg='#fbf1dc',red='#c8202b',fg='#141c2e',mut='#5d6679',ln='#d9dfea';
-    const name=kind==='cash'?'現金價':kind==='loan'?'貸款價':'報價', fee=kind==='cash'?2:kind==='loan'?5:R.xp;
-    const fv=kind==='cash'?R.cf:kind==='loan'?R.lf:R.xf, tot=kind==='cash'?R.cash:kind==='loan'?R.loan:R.cust;
+    const base=kind==='base', name=base?'車輛報價':kind==='cash'?'現金價':kind==='loan'?'貸款價':'報價', fee=kind==='cash'?2:kind==='loan'?5:R.xp;
+    const fv=kind==='cash'?R.cf:kind==='loan'?R.lf:R.xf, tot=base?R.price:kind==='cash'?R.cash:kind==='loan'?R.loan:R.cust;
     const st=R.steps, rowH=74, hdH=title?250:200;
     const c1H=IN+st.reduce((h,r)=>h+(r[3]?rowH+30:rowH),0)+24+96+IN-10;
-    const c2H=96+IN+ 2*64 + 30 + 110 + 50 + IN-10;
+    const c2H=96+IN+(base?0:2*64+30)+110+50+IN-10;
     const H=hdH+36+c1H+30+c2H+90;
     const cv=document.createElement('canvas'); cv.width=W; cv.height=H; const x=cv.getContext('2d');
     x.fillStyle='#eef1f6'; x.fillRect(0,0,W,H);
@@ -583,13 +592,14 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     x.fillStyle='#fff'; rr(x,P,y,W-2*P,c2H,28); x.fill(); x.strokeStyle=gold; x.lineWidth=3; x.stroke();
     x.save(); rr(x,P,y,W-2*P,c2H,28); x.clip(); x.fillStyle=goldbg; x.fillRect(P,y,W-2*P,96); x.fillStyle='#e7cf9e'; x.fillRect(P,y+94,W-2*P,2); x.restore();
     x.font=`800 44px ${F}`; x.fillStyle=fg; x.fillText(name,L,y+64);
-    x.textAlign='right'; x.font=`800 50px ${N}`; x.fillStyle=red; const fw=x.measureText(fee+'%').width; x.fillText(fee+'%',Rr,y+66);
-    x.font=`500 28px ${F}`; x.fillStyle=mut; x.fillText('手續費',Rr-fw-12,y+64); x.textAlign='left';
+    if(base){x.textAlign='right';x.font=`600 30px ${F}`;x.fillStyle=mut;x.fillText('未含手續費',Rr,y+62);x.textAlign='left'}
+    else{x.textAlign='right'; x.font=`800 50px ${N}`; x.fillStyle=red; const fw=x.measureText(fee+'%').width; x.fillText(fee+'%',Rr,y+66);
+    x.font=`500 28px ${F}`; x.fillStyle=mut; x.fillText('手續費',Rr-fw-12,y+64); x.textAlign='left';}
     ry=y+96+IN;
     const line=(l,v)=>{x.font=`500 30px ${F}`;x.fillStyle=mut;x.fillText(l,L,ry+40);x.font=`700 34px ${N}`;x.fillStyle=fg;x.textAlign='right';x.fillText(v,Rr,ry+40);x.textAlign='left';ry+=64};
-    line('車價',fmt(R.price)); line(`手續費 ${fee}%`,'＋ '+fmt(fv));
-    x.setLineDash([10,8]); x.strokeStyle=ln; x.lineWidth=2; x.beginPath(); x.moveTo(L,ry+14); x.lineTo(Rr,ry+14); x.stroke(); x.setLineDash([]); ry+=30;
-    x.font=`800 36px ${F}`; x.fillStyle=fg; x.fillText(name,L,ry+80);
+    if(!base){line('車價',fmt(R.price)); line(`手續費 ${fee}%`,'＋ '+fmt(fv));
+    x.setLineDash([10,8]); x.strokeStyle=ln; x.lineWidth=2; x.beginPath(); x.moveTo(L,ry+14); x.lineTo(Rr,ry+14); x.stroke(); x.setLineDash([]); ry+=30;}
+    x.font=`800 36px ${F}`; x.fillStyle=fg; x.fillText(base?'車價':name,L,ry+80);
     x.font=`800 84px ${N}`; x.fillStyle='#22366b'; x.textAlign='right'; x.fillText(fmt(tot),Rr,ry+86);
     x.font=`700 32px ${F}`; x.fillStyle=fg; x.fillText(wan(tot),Rr,ry+138); x.textAlign='left';
     // 頁尾
@@ -614,7 +624,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   document.addEventListener('click',e=>{const b=e.target.closest('[data-img]');if(b)imOpen(b.dataset.img)});
   $('imGo').onclick=async()=>{
     if(!imBlob){toast('圖片還在產生，請再按一次');return}
-    const nm=imKind==='cash'?'現金價':imKind==='loan'?'貸款價':'報價';
+    const nm=imKind==='base'?'車價':imKind==='cash'?'現金價':imKind==='loan'?'貸款價':'報價';
     const fn=((imT.value.trim()||C.cpHead)+'-'+nm).replace(/[\\/:*?"<>|]/g,' ')+'.png';
     const f=new File([imBlob],fn,{type:'image/png'});
     if(canShare(f)){try{await navigator.share({files:[f]});return}catch(err){if(err&&err.name==='AbortError')return}}
