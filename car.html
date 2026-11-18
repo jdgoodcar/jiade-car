@@ -212,6 +212,7 @@ body.lock{overflow:hidden}
 /* 現金價／貸款／自訂手續費 也放進同一張票：裡面的小卡片改成淡框 */
 .rq2{padding:18px 10px 24px}
 .rq2 .q2{gap:8px}
+.rq2 .bothb{width:100%;margin-top:10px;padding:10px;display:flex;align-items:center;justify-content:center;gap:5px}
 .rq2 .qc{padding:12px}
 .rq2 .qc h3{margin:-12px -12px 8px;padding:8px 12px;font-size:17px;letter-spacing:.02em;white-space:nowrap}
 .rq2 .qc h3 .fl small{font-size:12px}
@@ -388,8 +389,8 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
       <div class="cpr"><button class="btn" type="button" data-cp="cust"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製報價</button><button class="btn ib" type="button" data-img="cust" aria-label="下載報價圖片" title="下載報價圖片"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></svg></button></div>
     </div>
   </div>
+    <button class="btn bothb" type="button" data-cp="both"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製兩種報價</button>
   </section></div>
-  <button class="btn" type="button" data-cp="both" style="padding:10px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製兩種報價</button>
 
   <div class="foot" id="foot"><h4>計算公式</h4><b>車價</b><span id="fCar">美金 × 台幣匯率 × 倍率 ＋ 18 萬</span><b>手續費</b><span>車價 × 手續費 %</span><b>約 N 萬元</b><span>四捨五入到萬元，方便報價</span></div>
   </div></div>
