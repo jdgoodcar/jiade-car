@@ -60,6 +60,8 @@ header p{margin:2px 0 0;font-size:13px;opacity:.85;letter-spacing:.08em}
 /* 步驟標題：① 輸入車價 → ② 選擇排氣量 → ③ 確認匯率 */
 .sth{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;margin-bottom:10px;font:700 15.5px var(--f);color:var(--fg);letter-spacing:.03em}
 .sth i{font-style:normal;flex:0 0 22px;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--gold);color:var(--gold);display:grid;place-items:center;font:700 12.5px var(--num)}  /* 清爽版：細金框數字，不填色不陰影 */
+.rcpt .rsth{margin:0 2px 2px}  /* 計算結果裡的區塊標題（接著上面 1～3 編號） */
+.rq2 .rsth{margin:0 4px 12px}
 .sth .sts{font:500 12.5px var(--f);color:var(--mut);letter-spacing:0}
 label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-spacing:.04em}
 .inrow{display:flex;gap:8px;align-items:stretch}
@@ -388,6 +390,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 
   <div class="sdiv" role="separator"><span>✦ 計算結果 ✦</span></div>
   <div class="rcptw"><section class="card steps rcpt" aria-live="polite">
+    <div class="sth rsth"><i>4</i><span>算出車價</span></div>
     <div id="stL" class="steps"></div>
     <div class="st"><span><i class="tg">加底價</i>＋ 標準底價</span><b id="sBase">180,000</b></div>
     <div class="st sum"><span>車價</span><b id="sPrice">—</b></div>
@@ -395,6 +398,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   </section></div>
 
   <div class="rcptw"><section class="card rcpt rq2" aria-label="報價">
+  <div class="sth rsth"><i>5</i><span>加手續費報價</span></div>
   <div class="q2">
     <div class="duo">
     <div class="qc">
