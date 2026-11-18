@@ -345,8 +345,10 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     showT();
   }
   const rtag=(id,t,m)=>{const e=$(id);e.textContent='目前使用：'+t;e.className='rtag'+(m?' m':'')};
+  // 計算用的匯率：先四捨五入到畫面顯示的位數，拿計算機照畫面數字算會一模一樣
+  const ER=()=>rate?(manual?rate:Math.round(rate*(1+buf/100)*1000)/1000):null;
   function showT(){ // 美金 → 台幣
-    const er=rate&&(manual?rate:rate*(1+buf/100));
+    const er=ER();
     $('rVal').textContent=er?`${C.one} = ${er.toFixed(C.dp)} 台幣`:'讀不到';
     rtag('rTag',manual?'手動輸入':(rate?(buf?`網頁匯率 ${rate.toFixed(C.dp)} ＋ ${buf}%`:'網頁匯率（不加成）'):'請按「手動輸入」'),!!manual||!rate);
     $('rMan').textContent=manual?'↩ 改回網頁匯率':'手動輸入'; $('rMan').classList.toggle('back',!!manual);
@@ -419,7 +421,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   const kf=v=>(+v).toLocaleString('en-US',{maximumFractionDigits:2});
   function showK(){
     if(!C.via)return; $('rbK').hidden=false;
-    krate=kman||(rateInfo&&rateInfo.k)||null;
+    krate=kman||(rateInfo&&rateInfo.k?Math.round(rateInfo.k*100)/100:null); // 取到小數 2 位（跟畫面一樣）
     $('kVal').textContent=krate?`1 美元 = ${kf(krate)} 韓元`:'讀不到';
     rtag('kTag',kman?'手動輸入':(krate?'網頁匯率（不加成）':'請按「手動輸入」'),!!kman||!krate);
     $('kMan').textContent=kman?'↩ 改回網頁匯率':'手動輸入'; $('kMan').classList.toggle('back',!!kman);
@@ -445,7 +447,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     else if(won&&!C.seg&&won>1e6)warn='金額好像太大（超過 100 萬美金），請再確認';
     $('krwHint').textContent=warn||(won?C.hint(won):''); $('krwHint').classList.toggle('bad',!!warn); ss.set(K('won'),won||null);
     const mL=`× ${m||'?'}（${mul==='1.543'?'2000cc 以下':mul==='1.61'?'2000cc 以上':'自訂'}）`;
-    const er=rate&&(manual?rate:rate*(1+buf/100)), bt=manual||!buf?'':`（＋${buf}%）`;
+    const er=ER(), bt=manual||!buf?'':`（＋${buf}%）`;
     const T=(t,x)=>`<i class="tg">${t}</i>${x}`;
     const lux=!!C.seg&&won>=LUXW;
     const LX=T('奢侈稅','× 1.81')+'<small class="lx">7000 萬韓元以上</small>';
@@ -524,6 +526,9 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   okBtn.addEventListener('pointerdown',e=>e.preventDefault());
   okBtn.onclick=()=>{const a=document.activeElement;if(a&&a.blur)a.blur();okBtn.hidden=true};
   document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('input')){e.preventDefault();const ok={manIn:'manOk',kIn:'kOk'}[e.target.id];if(ok)$(ok).click();else e.target.blur()}});
+
+  // 主畫面 App 常常開著不關：回到畫面時，匯率超過 1 小時就自動重抓
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!(manual&&(!C.via||kman))&&(!rateInfo||Date.now()-rateInfo.got>36e5))loadRate()});
 
   // ---------- 啟動 ----------
   setUnit(unit); setMul(mul==='1.61'?'1.61':'1.543');
