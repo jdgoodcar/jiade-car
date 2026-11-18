@@ -57,6 +57,10 @@ header h1 b{font-weight:900;color:#ffd56b;font-size:1.08em}
 header h1{font-weight:400;margin:0;font-size:24px;letter-spacing:.06em;color:#fff;text-wrap:balance}
 header p{margin:2px 0 0;font-size:13px;opacity:.85;letter-spacing:.08em}
 .card{background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:16px}
+/* 步驟標題：① 輸入車價 → ② 選擇排氣量 → ③ 確認匯率 */
+.sth{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;margin-bottom:10px;font:800 16.5px var(--f);color:var(--fg);letter-spacing:.04em}
+.sth i{font-style:normal;flex:0 0 26px;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#f3cf7a;display:grid;place-items:center;font:800 14px var(--num);box-shadow:0 2px 6px #16244a33}
+.sth .sts{font:500 12.5px var(--f);color:var(--mut);letter-spacing:0}
 label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-spacing:.04em}
 .inrow{display:flex;gap:8px;align-items:stretch}
 #krw{flex:1;min-width:0;font:600 26px var(--num);padding:10px 12px;border:2px solid var(--gold);border-radius:12px;background:var(--card);color:var(--fg);outline:none}
@@ -289,7 +293,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   <div class="cols"><div class="colA">
 
   <section class="card">
-    <label class="t" for="krw" id="amtL">韓幣車價</label>
+    <div class="sth"><i>1</i><span>輸入車價</span><label for="krw" id="amtL" class="sts">韓幣車價</label></div>
     <div class="inrow">
       <input id="krw" inputmode="decimal" enterkeyhint="done" autocomplete="off" placeholder="0" value="35,000,000">
       <div class="seg" role="group" aria-label="單位">
@@ -302,7 +306,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   </section>
 
   <section class="card">
-    <label class="t">排氣量</label>
+    <div class="sth"><i>2</i><span>選擇排氣量</span></div>
     <div class="cc" id="cc">
       <button type="button" data-m="1.543" class="on">2000cc 以下<small>× 1.543</small></button>
       <button type="button" data-m="1.61">2000cc 以上<small>× 1.61</small></button>
@@ -312,7 +316,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   </section>
 
   <section class="card">
-    <div class="rhead r2"><label class="t" id="rateL">匯率</label><button class="btn" id="rAll" type="button">↻ 匯率全部更新</button></div>
+    <div class="rhead r2"><div class="sth" style="margin:0"><i>3</i><span id="rateL">確認匯率</span></div><button class="btn" id="rAll" type="button">↻ 匯率全部更新</button></div>
     <div class="rst"><span class="dot" id="rDot"></span><span id="rStT">讀取中…</span></div>
     <div class="rb" id="rbK" hidden>
       <div class="rbh"><span class="rbn">① 韓元 → 美金</span><button class="btn" id="kMan" type="button">手動輸入</button></div>
@@ -430,7 +434,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     hint:w=>`＝ ${fmt(w)} 韓元（${(w/10000).toLocaleString('zh-TW')} 萬韓元）`,amt:w=>`${(w/10000).toLocaleString("zh-TW")} 萬韓元`,cpHead:'韓國車價報價',cpAmt:'韓幣'
   };
   const K=k=>C.p+k;
-  $('hT').innerHTML=C.head; $('hP').textContent=C.sub; $('amtL').textContent=C.amtL; $('rateL').textContent='匯率'; if(C.via){$('tN').textContent='② 美金 → 台幣';$('bufL').textContent='匯率加成（加在 ② 美金 → 台幣）'}
+  $('hT').innerHTML=C.head; $('hP').textContent=C.sub; $('amtL').textContent=C.amtL;  if(C.via){$('tN').textContent='② 美金 → 台幣';$('bufL').textContent='匯率加成（加在 ② 美金 → 台幣）'}
   $('manL').textContent=C.one+' ='; $('manIn').placeholder=C.manPh; $('noteC').textContent=C.cn; $('noteR').textContent='0.3%～0.5%';
   document.querySelector('.seg').hidden=!C.seg; const pic=document.querySelector('.pic'); if(pic)pic.hidden=!C.img;
   document.querySelectorAll('#cur button').forEach(b=>b.classList.toggle('on',b.dataset.c===ck));
@@ -780,7 +784,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   setUnit(unit); setMul(mul==='1.61'?'1.61':'1.543');
   if(C.via)$('fCar').innerHTML='<i>韓幣 × 倍率 ÷ 美金匯率</i> <i>× 台幣匯率 ＋ 18 萬</i>';
   rateInfo=store.get(K(RK)); if(manual||rateInfo)showRate();
-  if(!manual||(C.via&&!kman))loadRate();
+  if((!manual||(C.via&&!kman))&&!(rateInfo&&rateInfo.live&&Date.now()-rateInfo.got<18e4))loadRate();  // 3 分鐘內剛抓過的即時匯率就直接用（切換韓元／美金、重新整理不重抓，省免費額度）
   {const y=ss.get('sy_'+ck);if(y>0)requestAnimationFrame(()=>scrollTo(0,y))}  // 切幣別回來時回到原本捲到的位置
 })();
 </script>
