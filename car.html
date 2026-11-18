@@ -84,6 +84,11 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .rate .v{font:700 17px var(--num)}
 .dot{width:9px;height:9px;border-radius:50%;background:var(--mut);flex-shrink:0}
 .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)}
+/* 每日匯率（即時都失效）：橘色慢閃；全部連不上：紅色稍快閃 */
+.dot.slow{background:#f08c00;animation:dotb 1.6s ease-in-out infinite}
+.dot.err{background:#e03131;animation:dotb .8s ease-in-out infinite}
+@keyframes dotb{0%,100%{opacity:1}50%{opacity:.2}}
+@media (prefers-reduced-motion:reduce){.dot.slow,.dot.err{animation:none}}
 .rate .s{font-size:12.5px;color:var(--mut);flex:1;min-width:150px}
 .btn{border:1px solid var(--ln);background:transparent;color:var(--fg);border-radius:10px;padding:6px 10px;font:600 13px var(--f);cursor:pointer}
 .btn:focus-visible,.cc button:focus-visible,.seg button:focus-visible,.quick button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
@@ -501,7 +506,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   const SRC=[
     {n:'FXRatesAPI',live:1,u:`https://api.fxratesapi.com/latest?base=${C.code}&currencies=KRW,TWD`,p:j=>j.success&&j.rates&&j.rates.TWD,k:j=>j.rates.KRW,t:j=>j.timestamp?j.timestamp*1000:Date.now()},
     {n:'Coinbase',live:1,u:`https://api.coinbase.com/v2/exchange-rates?currency=${C.code}`,p:j=>j.data&&j.data.rates&&j.data.rates.TWD,k:j=>j.data.rates.KRW,t:()=>Date.now()},
-    {n:'ExchangeRate-API',u:`https://open.er-api.com/v6/latest/${C.code}`,p:j=>j.result==='success'&&j.rates.TWD,k:j=>j.rates.KRW,t:j=>j.time_last_update_unix*1000},
+    {n:'ExchangeRate-API',nb:1,u:`https://open.er-api.com/v6/latest/${C.code}`,p:j=>j.result==='success'&&j.rates.TWD,k:j=>j.rates.KRW,t:j=>j.time_last_update_unix*1000},
     {n:'Currency API',u:`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${C.lc}.json`,p:j=>j[C.lc]&&j[C.lc].twd,k:j=>j[C.lc].krw,t:j=>Date.parse(j.date)},
     {n:'Currency API',u:`https://latest.currency-api.pages.dev/v1/currencies/${C.lc}.json`,p:j=>j[C.lc]&&j[C.lc].twd,k:j=>j[C.lc].krw,t:j=>Date.parse(j.date)}
   ];
@@ -512,7 +517,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
       const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),6000);
       try{
         // 不用 cache:'no-store'：iPhone Safari 會因此多送標頭，Coinbase 會拒絕；改在網址後面加時間，確保拿到最新的
-        const r=await fetch(s.u+(s.u.includes('?')?'&':'?')+'_='+Date.now(),{signal:ctl.signal});
+        const r=await fetch(s.nb?s.u:s.u+(s.u.includes('?')?'&':'?')+'_='+Date.now(),{signal:ctl.signal}); // nb：這個來源網址不能加參數（會被擋）
         if(!r.ok)throw new Error('HTTP '+r.status);
         const j=await r.json(); const v=+s.p(j), k=+s.k(j);
         if(v>0&&(!C.via||k>0)){rateInfo={v,k,src:s.n,live:!!s.live,t:s.t(j)||Date.now(),got:Date.now()};store.set(K(RK),rateInfo);showRate();return}
@@ -525,12 +530,12 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   function d2(t){const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
   function showRate(failed){
     rate=manual||(rateInfo&&rateInfo.v)||null;
-    if(rateInfo){$('rDot').className='dot '+(failed?'warn':'ok');
+    if(rateInfo){$('rDot').className='dot '+(failed?'err':rateInfo.live?'ok':'slow');
       const bad=rateErr.map(x=>x.split('：')[0]).filter((x,i,a)=>a.indexOf(x)===i);
       $('rStT').innerHTML=failed?`<b>連不上網路</b>・用上次的匯率<small>${d2(rateInfo.got)} 取得</small>`
         :`<b>${rateInfo.live?'網頁即時匯率':'網頁匯率（每日更新）'}</b>・更新於 ${d2(rateInfo.t)}<small>來源：${rateInfo.src||''}${bad.length?'（'+bad.join('、')+' 連不上，已自動改用這個）':''}</small>`;
       $('rStT').title=rateErr.join('\n')}
-    else{$('rDot').className='dot warn';$('rStT').textContent='讀不到網頁匯率，請用「手動輸入」';if(!manual)$('manBox').classList.add('on');if(C.via&&!kman)$('kBox').classList.add('on')}
+    else{$('rDot').className='dot err';$('rStT').textContent='讀不到網頁匯率，請用「手動輸入」';if(!manual)$('manBox').classList.add('on');if(C.via&&!kman)$('kBox').classList.add('on')}
     showK(); showBuf(); calc();
   }
   // 韓國版：韓元 → 美金 的匯率（即時，或手動；不加成）
@@ -544,7 +549,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   }
   $('rAll').onclick=async()=>{const back=!!(manual||kman); // 全部更新＝兩個都改回網頁匯率
     if(manual){manual=null;store.set(K(MK),null)} if(kman){kman=null;store.set(K('mank'),null)} $('manBox').classList.remove('on');$('kBox').classList.remove('on');
-    $('rAll').disabled=true;await loadRate();$('rAll').disabled=false;toast($('rDot').classList.contains('ok')?(back?'已改回網頁匯率，並全部更新 ✓':'匯率已全部更新 ✓'):'連不上網路，暫時用上次的匯率')};
+    $('rAll').disabled=true;await loadRate();$('rAll').disabled=false;toast(!$('rDot').classList.contains('err')?(back?'已改回網頁匯率，並全部更新 ✓':'匯率已全部更新 ✓'):'連不上網路，暫時用上次的匯率')};
   $('kMan').onclick=()=>{if(kman){kman=null;store.set(K('mank'),null);$('kBox').classList.remove('on');showK();calc();toast('已改回網頁抓的匯率');return}$('kBox').classList.toggle('on');$('kIn').value=krate?kf(krate).replace(/,/g,''):'';$('kIn').focus();$('kIn').select()};
   $('kOk').onclick=()=>{const v=num($('kIn').value);if(!(v>100&&v<10000)){toast('請輸入 1 美元等於多少韓元（例 1323.66）');return}kman=v;store.set(K('mank'),v);$('kBox').classList.remove('on');showK();calc()};
   $('rMan').onclick=()=>{if(manual){manual=null;store.set(K(MK),null);$('manBox').classList.remove('on');if(rateInfo)showRate();else loadRate();toast('已改回網頁抓的匯率');return}$('manBox').classList.toggle('on');$('manIn').value=rate?rate.toFixed(C.dp):'';$('manIn').focus();$('manIn').select()};
@@ -734,6 +739,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   const rateStale=()=>!(manual&&(!C.via||kman))&&(!rateInfo||Date.now()-rateInfo.got>3e5);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&rateStale())loadRate()});
   setInterval(()=>{if(document.visibilityState==='visible'&&rateStale()&&document.activeElement.tagName!=='INPUT')loadRate()},60000);
+  document.addEventListener('focusout',e=>{if(e.target.matches&&e.target.matches('input')&&rateStale())setTimeout(()=>{if(!document.activeElement||document.activeElement.tagName!=='INPUT')loadRate()},50)});  // 打完字（離開輸入框）時，匯率舊了就馬上更新
 
   // ---------- 快速修改列（往下滑時出現）----------
   const qbar=$('qbar'), qAmt=$('qAmt');
