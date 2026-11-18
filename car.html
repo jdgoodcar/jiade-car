@@ -169,6 +169,19 @@ input,textarea,select{font-size:max(16px,1em)}  /* iPhone 輸入框字小於 16p
 .cpgo{border:0;border-radius:12px;padding:13px;font:700 16px var(--f);background:var(--navy);color:#fff;cursor:pointer}
 .cpgo:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 body.lock{overflow:hidden}
+/* 往下滑時出現在最上方的快速修改列：車價金額＋排氣量 */
+.qbar{position:fixed;left:0;right:0;top:0;z-index:20;padding:8px 12px;padding-top:calc(8px + env(safe-area-inset-top,0px));background:color-mix(in srgb,var(--card) 94%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-bottom:1px solid var(--ln);box-shadow:0 4px 14px #16244a22;transform:translateY(-120%);transition:transform .22s ease;visibility:hidden}
+.qbar.on{transform:none;visibility:visible}
+.qin{max-width:720px;margin:0 auto;display:flex;gap:8px;align-items:stretch}
+.qa{flex:1;min-width:0;display:flex;align-items:center;gap:5px;border:2px solid var(--gold);border-radius:12px;padding:0 10px;background:var(--card);cursor:text}
+#qAmt{flex:1;min-width:0;width:100%;border:0;background:transparent;font:700 19px var(--num);color:var(--fg);padding:7px 0;outline:none}
+#qU{font-size:12.5px;color:var(--mut);white-space:nowrap}
+.qa svg{width:15px;height:15px;flex:0 0 auto;fill:none;stroke:var(--gold);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.qcc{display:flex;border:1px solid var(--ln);border-radius:12px;overflow:hidden;flex:0 0 auto}
+.qcc button{border:0;background:var(--card);color:var(--mut);font:700 12.5px/1.15 var(--f);padding:5px 9px;cursor:pointer;white-space:nowrap}
+.qcc button+button{border-left:1px solid var(--ln)}
+.qcc button small{display:block;font:700 12.5px var(--num);color:var(--red);margin-top:1px}
+.qcc button.on{background:var(--goldbg);color:var(--fg);box-shadow:inset 0 0 0 2px var(--gold)}
 .cpr{display:flex;gap:6px;margin-top:6px}
 .cpr .btn{margin-top:0}
 .cpr [data-cp]{flex:1}
@@ -312,6 +325,10 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   </div></div>
   <figure class="pic" id="pic"><img src="car-formula3.jpg" loading="lazy" decoding="async" width="1536" height="1024" alt="韓國車價換算公式：韓幣車價 × 倍率（2000cc 以下 1.543、2000cc 以上 1.61）→ 除以美金匯率換算美金 → 乘以台幣匯率換算台幣，再加 18 萬標準底價；手續費現金價 2%、貸款 5%"></figure>
 </div>
+<div id="qbar" class="qbar"><div class="qin">
+  <label class="qa" for="qAmt"><input id="qAmt" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="快速修改車價"><span id="qU">萬韓元</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></label>
+  <div class="qcc" id="qcc" role="group" aria-label="排氣量"><button type="button" data-m="1.543">2000 以下<small>× 1.543</small></button><button type="button" data-m="1.61">2000 以上<small>× 1.61</small></button></div>
+</div></div>
 <div id="bar" title="點一下看明細"><div data-go="cTot"><small>現金價（點看明細）</small><b id="bC">—</b></div><div data-go="lTot"><small>貸款價（點看明細）</small><b id="bL">—</b></div></div>
 <button type="button" id="okBtn" class="okbtn" hidden>✓ 確定</button>
 <div id="toast"></div>
@@ -482,7 +499,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     else if(won&&C.seg&&won>3e9)warn='金額好像太大（超過 30 億韓元），請確認單位是不是選錯了';
     else if(won&&!C.seg&&won<3000)warn='金額好像太小，請確認是美金';
     else if(won&&!C.seg&&won>1e6)warn='金額好像太大（超過 100 萬美金），請再確認';
-    $('krwHint').textContent=warn||(won?C.hint(won):''); $('krwHint').classList.toggle('bad',!!warn); ss.set(K('won'),won||null);
+    $('krwHint').textContent=warn||(won?C.hint(won):''); $('krwHint').classList.toggle('bad',!!warn); ss.set(K('won'),won||null); qSync();
     const mL=`× ${m||'?'}（${mul==='1.543'?'2000cc 以下':mul==='1.61'?'2000cc 以上':'自訂'}）`;
     const er=ER(), bt=manual||!buf?'':`（＋${buf}%）`;
     const T=(t,x)=>`<i class="tg">${t}</i>${x}`;
@@ -652,6 +669,25 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 
   // 主畫面 App 常常開著不關：回到畫面時，匯率超過 5 分鐘就自動重抓
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!(manual&&(!C.via||kman))&&(!rateInfo||Date.now()-rateInfo.got>3e5))loadRate()});
+
+  // ---------- 快速修改列（往下滑時出現）----------
+  const qbar=$('qbar'), qAmt=$('qAmt');
+  function qSync(){
+    const q=$('qAmt'); if(!q)return; if(document.activeElement!==q)q.value=krw.value;
+    $('qU').textContent=C.seg?(unit===1?'韓元':'萬韓元'):'美金';
+    document.querySelectorAll('#qcc button').forEach(b=>b.classList.toggle('on',b.dataset.m===mul));
+  }
+  qAmt.addEventListener('input',()=>{
+    const pos=qAmt.value.length-qAmt.selectionStart;
+    krw.value=qAmt.value; krw.dispatchEvent(new Event('input'));
+    qAmt.value=krw.value; const p=Math.max(0,qAmt.value.length-pos); try{qAmt.setSelectionRange(p,p)}catch(e){}
+  });
+  qAmt.addEventListener('focus',()=>setTimeout(()=>{try{qAmt.select()}catch(e){}},0));
+  qAmt.addEventListener('blur',qSync);
+  $('qcc').onclick=e=>{const b=e.target.closest('button');if(b)setMul(b.dataset.m)};
+  {const sec=krw.closest('section');
+   if('IntersectionObserver' in window)new IntersectionObserver(es=>{const en=es[0];const show=!en.isIntersecting&&en.boundingClientRect.top<0;
+     if(!show&&document.activeElement===qAmt)return; qbar.classList.toggle('on',show)}).observe(sec);}
 
   // ---------- 啟動 ----------
   setUnit(unit); setMul(mul==='1.61'?'1.61':'1.543');
