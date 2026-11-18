@@ -133,9 +133,10 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .adj span{font-size:12.5px;color:var(--mut)}
 .qc .btn{margin-top:6px}
 .fbase{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--mut)}
-.fbase .btn.bdef{padding:5px 10px}
+.fbase .btn.bdef{padding:5px 10px;margin-left:auto;font-size:12.5px;color:var(--mut)}
 .fbase.chg input{border:2px solid var(--warn);background:color-mix(in srgb,var(--warn) 10%,var(--card))}
-.bwarn{flex-basis:100%;font-size:11.5px;font-weight:600;color:var(--warn)}
+@media (max-width:360px){.fbase input{width:90px}}
+.bwarn{flex-basis:100%;margin-top:-2px;padding-left:60px;font-size:11.5px;font-weight:600;color:var(--warn)} /* 對齊輸入框 */
 .bwarn:empty{display:none}
 #sBase.chg{color:var(--warn)}
 .fbase input{width:110px;font:600 16px var(--num);padding:5px 8px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--fg)}
@@ -247,7 +248,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     <div id="stL" class="steps"></div>
     <div class="st"><span><i class="tg">加底價</i>＋ 標準底價</span><b id="sBase">180,000</b></div>
     <div class="st sum"><span>車價</span><b id="sPrice">—</b></div>
-    <div class="fbase" id="fbase"><span>標準底價</span><input id="base" inputmode="numeric" enterkeyhint="done" autocomplete="off" value="180,000"><span>元</span><button class="btn bdef" id="bDef" type="button">↩ 恢復預設 18 萬</button><span class="bwarn" id="bWarn"></span></div>
+    <div class="fbase" id="fbase"><span>標準底價</span><input id="base" inputmode="numeric" enterkeyhint="done" autocomplete="off" value="180,000"><span>元</span><button class="btn bdef" id="bDef" type="button">恢復 18 萬</button><span class="bwarn" id="bWarn"></span></div>
   </section>
 
   <div class="q2">
