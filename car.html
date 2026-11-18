@@ -213,18 +213,24 @@ body.lock{overflow:hidden}
 .rq2{padding:18px 10px 24px}
 .rq2 .q2{gap:8px;row-gap:18px}
 /* 現金價＋貸款＋複製兩種報價：同一個外框，中間細線分隔，按鈕是框的最下排 */
-.duo{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;border:1px solid color-mix(in srgb,var(--gold) 35%,var(--ln));border-radius:16px;overflow:hidden;background:var(--card)}
+.duo{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;border:1px solid color-mix(in srgb,var(--gold) 55%,var(--ln));border-radius:0;overflow:hidden;background:var(--card)}
 .duo .qc{border:0;border-radius:0}
 .duo .qc h3{border-radius:0}
-.duo .qc+.qc{border-left:1px solid color-mix(in srgb,var(--gold) 35%,var(--ln))}
-.rq2 .duo .bothb{border:0;border-top:1px solid color-mix(in srgb,var(--gold) 35%,var(--ln));border-radius:0;background:color-mix(in srgb,var(--goldbg) 45%,var(--card));padding:12px}
+.duo .qc+.qc{border-left:1px solid color-mix(in srgb,var(--gold) 55%,var(--ln))}
+.rq2 .duo .bothb{border:0;border-top:1px solid color-mix(in srgb,var(--gold) 55%,var(--ln));border-radius:0;background:color-mix(in srgb,var(--goldbg) 45%,var(--card));padding:12px}
 @media (max-width:380px){.duo{grid-template-columns:1fr}.duo .qc+.qc{border-left:0;border-top:1px solid color-mix(in srgb,var(--gold) 35%,var(--ln))}}
 .rq2 .bothb{grid-column:1/-1;width:100%;margin-top:0;padding:10px;display:flex;align-items:center;justify-content:center;gap:5px}
 .rq2 .qc{padding:12px}
 .rq2 .qc h3{margin:-12px -12px 8px;padding:8px 12px;font-size:17px;letter-spacing:.02em;white-space:nowrap}
 .rq2 .qc h3 .fl small{font-size:12px}
 .rq2 .qc h3 em{font-size:21px}
-.rq2 .qc{border-color:color-mix(in srgb,var(--gold) 35%,var(--ln));box-shadow:none}
+.rq2 .qc{border-color:color-mix(in srgb,var(--gold) 55%,var(--ln));box-shadow:none}
+/* 直角（圓角在電腦上邊線看起來比較淡）；自訂卡片的複製列做成跟「複製兩種報價」同款的底排 */
+.rq2 .qx{border-radius:0;overflow:hidden}
+.rq2 .qx h3{border-radius:0}
+.rq2 .qx .cpr{margin:10px -12px -12px;gap:0;border-top:1px solid color-mix(in srgb,var(--gold) 55%,var(--ln));background:color-mix(in srgb,var(--goldbg) 45%,var(--card))}
+.rq2 .qx .cpr .btn{border:0;border-radius:0;background:transparent;padding:12px}
+.rq2 .qx .cpr .btn.ib{flex:0 0 56px;border-left:1px solid color-mix(in srgb,var(--gold) 55%,var(--ln))}
 .rcptw{filter:drop-shadow(0 3px 6px #16244a26);margin-bottom:8px}
 @media (prefers-color-scheme: dark){.rcptw{filter:drop-shadow(0 3px 8px #0008)}}
 /* 回到最上面的小三角形 */
