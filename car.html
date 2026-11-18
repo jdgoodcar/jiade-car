@@ -175,6 +175,11 @@ input,textarea,select{font-size:max(16px,1em)}  /* iPhone 輸入框字小於 16p
 .cpgo{border:0;border-radius:12px;padding:13px;font:700 16px var(--f);background:var(--navy);color:#fff;cursor:pointer}
 .cpgo:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 body.lock{overflow:hidden}
+/* 回到最上面的小三角形 */
+.totop{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(104px + env(safe-area-inset-bottom,0px));z-index:6;width:42px;height:42px;border-radius:50%;border:1.5px solid #f3cf7a;background:var(--navy);box-shadow:0 4px 12px #16244a40;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .2s,transform .2s}
+.totop.on{opacity:.92;transform:none;pointer-events:auto}
+.totop svg{width:16px;height:16px;fill:#f3cf7a}
+@media (min-width:900px){.totop{bottom:calc(110px + env(safe-area-inset-bottom,0px));right:24px}}
 /* 全部回復預設的確認視窗 */
 .rsl{list-style:none;margin:0;padding:4px 12px;border:1px solid var(--ln);border-radius:12px;background:var(--bg)}
 .rsl li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;font-size:14px;color:var(--mut)}
@@ -347,6 +352,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   <label class="qa" for="qAmt"><input id="qAmt" inputmode="decimal" enterkeyhint="done" autocomplete="off" aria-label="快速修改車價"><span id="qU">萬韓元</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg></label>
   <div class="qcc" id="qcc" role="group" aria-label="排氣量"><button type="button" data-m="1.543">2000 以下<small>× 1.543</small></button><button type="button" data-m="1.61">2000 以上<small>× 1.61</small></button></div>
 </div></div>
+<button type="button" class="totop" id="toTop" aria-label="回到最上面" title="回到最上面"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5 20 17.5H4z" stroke="#f3cf7a" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
 <div id="bar" title="點一下看明細"><div data-go="cTot"><small>現金價（點看明細）</small><b id="bC">—</b></div><div data-go="lTot"><small>貸款價（點看明細）</small><b id="bL">—</b></div></div>
 <button type="button" id="okBtn" class="okbtn" hidden>✓ 確定</button>
 <div id="toast"></div>
@@ -710,10 +716,11 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   });
   qAmt.addEventListener('focus',()=>setTimeout(()=>{try{qAmt.select()}catch(e){}},0));
   qAmt.addEventListener('blur',qSync);
+  $('toTop').onclick=()=>{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();scrollTo({top:0,behavior:'smooth'});setTimeout(()=>{if(scrollY>50)scrollTo(0,0)},900)};
   $('qcc').onclick=e=>{const b=e.target.closest('button');if(b)setMul(b.dataset.m)};
   {const sec=krw.closest('section');
    if('IntersectionObserver' in window)new IntersectionObserver(es=>{const en=es[0];const show=!en.isIntersecting&&en.boundingClientRect.top<0;
-     if(!show&&document.activeElement===qAmt)return; qbar.classList.toggle('on',show)}).observe(sec);}
+     if(!show&&document.activeElement===qAmt)return; qbar.classList.toggle('on',show); $('toTop').classList.toggle('on',show)}).observe(sec);}
 
   // ---------- 全部回復預設：車價、單位、排氣量、匯率（改回網頁匯率）、加成 0.5%、底價 18 萬、自訂手續費 ----------
   $('rstAll').onclick=()=>{
