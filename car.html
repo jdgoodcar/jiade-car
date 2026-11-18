@@ -72,8 +72,8 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 @media (min-width:600px){.hint{white-space:normal}} /* 電腦不斷行，手機斷行 */
 .hint.bad{color:var(--red);font-weight:700;font-size:13.5px}
 .quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-/* 手機：快速金額改成一行左右滑、標題列的流程小字拿掉，讓「選好了」按鈕在第一個畫面就看得到 */
-@media (max-width:600px){.quick{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-16px;padding-right:16px;-webkit-overflow-scrolling:touch}.quick::-webkit-scrollbar{display:none}.quick button{flex:0 0 auto}header p#hP{display:none}header{padding-bottom:14px}}
+/* 手機：輸入框、按鈕、卡片稍微扁一點，讓「選好了」按鈕在第一個畫面看得到 */
+@media (max-width:600px){.card{padding:13px 16px}#krw{padding:6px 12px;font-size:24px}.quick{margin-top:6px}.quick button{padding:3px 10px}.cc button{padding:5px 4px}.cc button small{font-size:17px}.sth{margin-bottom:8px}.ccf{margin-top:6px}.jrow{margin-top:9px}.jrow .jpill{padding:8px 14px}.cols,.colA,.colB{gap:12px}header{padding:15px 18px 13px}}
 .jrow{display:flex;flex-direction:column;align-items:stretch;gap:5px;margin-top:12px}
 .jrow .jpill{justify-content:center;padding:10px 14px;font-size:14.5px}
 .jrow .jpill span{color:var(--red);margin-left:2px}
