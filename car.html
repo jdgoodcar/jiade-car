@@ -415,7 +415,8 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   ['base','manIn','kIn'].forEach(i=>$(i).addEventListener('focus',e=>setTimeout(()=>{try{e.target.select()}catch(x){}},0)));
 
   // ---------- 匯率 ----------
-  const SRC=[
+  const SRC=[ // 第一個是即時匯率（Coinbase，約每分鐘更新，跟 Google 很接近）；失敗才用後面每日更新的
+    {n:'Coinbase',u:`https://api.coinbase.com/v2/exchange-rates?currency=${C.code}`,p:j=>j.data&&j.data.rates&&j.data.rates.TWD,k:j=>j.data.rates.KRW,t:()=>Date.now()},
     {n:'ExchangeRate-API',u:`https://open.er-api.com/v6/latest/${C.code}`,p:j=>j.result==='success'&&j.rates.TWD,k:j=>j.rates.KRW,t:j=>j.time_last_update_unix*1000},
     {n:'Currency API',u:`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${C.lc}.json`,p:j=>j[C.lc]&&j[C.lc].twd,k:j=>j[C.lc].krw,t:j=>Date.parse(j.date)},
     {n:'Currency API',u:`https://latest.currency-api.pages.dev/v1/currencies/${C.lc}.json`,p:j=>j[C.lc]&&j[C.lc].twd,k:j=>j[C.lc].krw,t:j=>Date.parse(j.date)}
@@ -632,8 +633,8 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   okBtn.onclick=()=>{const a=document.activeElement;if(a&&a.blur)a.blur();okBtn.hidden=true};
   document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('input')){e.preventDefault();const ok={manIn:'manOk',kIn:'kOk'}[e.target.id];if(ok)$(ok).click();else e.target.blur()}});
 
-  // 主畫面 App 常常開著不關：回到畫面時，匯率超過 1 小時就自動重抓
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!(manual&&(!C.via||kman))&&(!rateInfo||Date.now()-rateInfo.got>36e5))loadRate()});
+  // 主畫面 App 常常開著不關：回到畫面時，匯率超過 5 分鐘就自動重抓
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!(manual&&(!C.via||kman))&&(!rateInfo||Date.now()-rateInfo.got>3e5))loadRate()});
 
   // ---------- 啟動 ----------
   setUnit(unit); setMul(mul==='1.61'?'1.61':'1.543');
