@@ -833,7 +833,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 
   // ---------- 啟動 ----------
   setUnit(unit); setMul(mul==='1.61'?'1.61':'1.543');
-  if(C.via){$('fCar').innerHTML='<i>韓幣 × 倍率 ÷ 美金匯率</i> <i>× 台幣匯率 ＋ 18 萬</i>';$('fCar').insertAdjacentHTML('afterend','<b>奢侈稅</b><span>超過7000萬（含）倍率改用 1.81（不再乘 1.543／1.61）</span>')}
+  if(C.via){$('fCar').innerHTML='<i>韓幣 × 倍率 ÷ 美金匯率</i> <i>× 台幣匯率 ＋ 18 萬</i>';$('fCar').insertAdjacentHTML('afterend','<b>奢侈稅</b><span><i>超過7000萬（含）倍率改用 1.81</i> <i>不乘 1.543／1.61</i></span>')}
   rateInfo=store.get(K(RK)); if(manual||rateInfo)showRate();
   if((!manual||(C.via&&!kman))&&!(rateInfo&&rateInfo.live&&Date.now()-rateInfo.got<18e4))loadRate();  // 3 分鐘內剛抓過的即時匯率就直接用（切換韓元／美金、重新整理不重抓，省免費額度）
   {const y=ss.get('sy_'+ck);if(y>0)requestAnimationFrame(()=>scrollTo(0,y))}  // 切幣別回來時回到原本捲到的位置
