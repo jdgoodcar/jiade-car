@@ -204,6 +204,11 @@ body.lock{overflow:hidden}
   -webkit-mask:radial-gradient(circle 5px at 50% 0,#0000 97%,#000) top/14px 51% repeat-x,radial-gradient(circle 5px at 50% 100%,#0000 97%,#000) bottom/14px 51% repeat-x;
   mask:radial-gradient(circle 5px at 50% 0,#0000 97%,#000) top/14px 51% repeat-x,radial-gradient(circle 5px at 50% 100%,#0000 97%,#000) bottom/14px 51% repeat-x;
   background:linear-gradient(var(--card),var(--card)) padding-box}
+/* 撕線：車價上面一條虛線，左右各挖一個半圓缺口（像電影票的票根） */
+.rcpt .st.sum{position:relative;border-top:2px dashed color-mix(in srgb,var(--gold) 70%,transparent);margin-top:10px;padding-top:12px}
+.rcpt .st.sum::before,.rcpt .st.sum::after{content:"";position:absolute;top:-10px;width:18px;height:18px;border-radius:50%;background:var(--bg)}
+.rcpt .st.sum::before{left:-25px}
+.rcpt .st.sum::after{right:-25px}
 .rcptw{filter:drop-shadow(0 3px 6px #16244a26);margin-bottom:8px}
 @media (prefers-color-scheme: dark){.rcptw{filter:drop-shadow(0 3px 8px #0008)}}
 /* 回到最上面的小三角形 */
