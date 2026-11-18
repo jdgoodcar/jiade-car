@@ -155,7 +155,7 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .fbase .fcp .btn{background:var(--gbg);border-color:var(--gbd)}
 .fbase .fcp .ic{stroke:var(--gic)}
 .fbase .fcp [data-cp]{flex:0 0 auto;padding:7px 10px}
-@media (max-width:440px){.fbase .fcp [data-cp]{padding:7px 9px}.fbase .fcp [data-cp] .ic{display:none}}
+@media (max-width:440px){.fbase{grid-template-columns:auto minmax(60px,130px) auto 1fr}.fbase .fcp,.fbase.wr .fcp{grid-column:1/-1;grid-row:3;justify-self:stretch}.fbase .fcp [data-cp]{flex:1}.fbase .btn.bdef{grid-column:1/-1}}  /* 手機：複製、圖片按鈕自己一整行，不跟底價擠 */
 .fbase.chg input{border:2px solid var(--warn);background:color-mix(in srgb,var(--warn) 10%,var(--card))}
 .bwarn{grid-column:1/-1;margin-top:-2px;padding-left:60px;font-size:11.5px;font-weight:600;color:var(--warn)} /* 對齊輸入框 */
 .bwarn:empty{display:none}
@@ -319,7 +319,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     <div id="stL" class="steps"></div>
     <div class="st"><span><i class="tg">加底價</i>＋ 標準底價</span><b id="sBase">180,000</b></div>
     <div class="st sum"><span>車價</span><b id="sPrice">—</b></div>
-    <div class="fbase" id="fbase"><span>標準底價</span><input id="base" size="6" inputmode="numeric" enterkeyhint="done" autocomplete="off" value="180,000"><span>元</span><button class="btn bdef" id="bDef" type="button">↻ 恢復預設 18 萬</button><div class="cpr fcp"><button class="btn" type="button" data-cp="base" title="複製報價（未含手續費）" aria-label="複製報價（未含手續費）"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製</button><button class="btn ib" type="button" data-img="base" aria-label="下載報價圖片" title="下載報價圖片"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></svg></button></div><span class="bwarn" id="bWarn"></span></div>
+    <div class="fbase" id="fbase"><span>標準底價</span><input id="base" size="6" inputmode="numeric" enterkeyhint="done" autocomplete="off" value="180,000"><span>元</span><button class="btn bdef" id="bDef" type="button">↻ 恢復預設 18 萬</button><div class="cpr fcp"><button class="btn" type="button" data-cp="base" title="複製報價（未含手續費）" aria-label="複製報價（未含手續費）"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製報價</button><button class="btn ib" type="button" data-img="base" aria-label="下載報價圖片" title="下載報價圖片"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></svg></button></div><span class="bwarn" id="bWarn"></span></div>
   </section>
 
   <div class="q2">
@@ -491,7 +491,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     for(const s of SRC){
       try{
         const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),6000);
-        const r=await fetch(s.u,{cache:'no-store',signal:ctl.signal}); clearTimeout(to);
+        const r=await fetch(s.u+(s.u.includes('?')?'&':'?')+'_='+Date.now(),{signal:ctl.signal}); // 不用 cache:'no-store'：iPhone Safari 會因此多送標頭，Coinbase 會拒絕 clearTimeout(to);
         const j=await r.json(); const v=+s.p(j);
         const k=+s.k(j); if(v>0&&(!C.via||k>0)){rateInfo={v,k,src:s.n,t:s.t(j)||Date.now(),got:Date.now()};store.set(K(RK),rateInfo);showRate();return}
       }catch(e){}
