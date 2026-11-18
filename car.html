@@ -29,6 +29,7 @@
   --ok:#4fc68c; --warn:#f0a840; --gbg:#14301f; --gbd:#3f8f5d; --gic:#6fd197; color-scheme:dark;
 }}
 *{box-sizing:border-box}
+html,button,a,input,label,[role=group]{touch-action:manipulation}  /* 快速連點按鈕時不會被當成「點兩下放大」（兩指縮放仍可用） */
 [hidden]{display:none!important}
 html,body{margin:0}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}  /* 不讓手機瀏覽器自己放大／縮小字 */
