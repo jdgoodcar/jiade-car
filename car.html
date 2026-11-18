@@ -421,7 +421,8 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   const RK=C.via?'rate2':'rate', MK=C.via?'man3':'man2';  // 韓國版改成「韓元→美金→台幣」，用新的存檔名，舊的韓元→台幣匯率不再使用
   let rate=null, rateInfo=null, manual=store.get(K(MK)), krate=null, kman=C.via?store.get(K('mank')):null; // krate = 1 美元換多少韓元 // rate、manual = 1 單位外幣換多少台幣
   const BK='buf3'; // 美金銀行價差小，預設加成 0.5% // 韓國版改成美金換台幣後，預設加成改 0.5%（美金銀行價差小）
-  let buf=store.get(K(BK)); if(buf==null)buf=0.5; // 即時匯率加成 %
+  try{localStorage.removeItem(K(BK))}catch(e){} // 加成只記在這個分頁，關掉網頁再打開回到 0.5%
+  let buf=ss.get(K(BK)); if(buf==null)buf=0.5; // 即時匯率加成 %
   function showBuf(){
     document.querySelectorAll('#bufQ button').forEach(b=>{b.classList.toggle('on',!manual&&+b.dataset.b===buf);b.disabled=!!manual});
     
@@ -436,7 +437,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     rtag('rTag',manual?'手動輸入':(rate?(buf?`網頁匯率 ${rate.toFixed(C.dp)} ＋ ${buf}%`:'網頁匯率（不加成）'):'請按「手動輸入」'),!!manual||!rate);
     $('rMan').textContent=manual?'↩ 改回網頁匯率':'手動輸入'; $('rMan').classList.toggle('back',!!manual);
   }
-  $('bufQ').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;buf=+b.dataset.b;store.set(K(BK),buf);showBuf();calc()};
+  $('bufQ').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;buf=+b.dataset.b;ss.set(K(BK),buf);showBuf();calc()};
 
   // ---------- 輸入 ----------
   const krw=$('krw');
@@ -500,7 +501,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   function d2(t){const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
   function showRate(failed){
     rate=manual||(rateInfo&&rateInfo.v)||null;
-    if(rateInfo){$('rDot').className='dot '+(failed?'warn':'ok');$('rStT').textContent=failed?`連不上網路，用上次的匯率（${d2(rateInfo.got)} 取得）`:`網頁即時匯率，更新於 ${d2(rateInfo.t)}`}
+    if(rateInfo){$('rDot').className='dot '+(failed?'warn':'ok');$('rStT').textContent=failed?`連不上網路，用上次的匯率（${d2(rateInfo.got)} 取得）`:`網頁即時匯率，更新於 ${d2(rateInfo.t)}（${rateInfo.src||""}）`}
     else{$('rDot').className='dot warn';$('rStT').textContent='讀不到網頁匯率，請用「手動輸入」';if(!manual)$('manBox').classList.add('on');if(C.via&&!kman)$('kBox').classList.add('on')}
     showK(); showBuf(); calc();
   }
@@ -732,7 +733,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   $('rsNo').onclick=rsClose; $('rsBox').onclick=e=>{if(e.target===$('rsBox'))rsClose()};
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('rsBox').hidden)rsClose()});
   $('rsYes').onclick=()=>{
-    ['won','base','unit'].forEach(k=>ss.set(K(k),null)); ss.set('sy_'+ck,null); ss.set('imT',null);
+    ['won','base','unit',BK].forEach(k=>ss.set(K(k),null)); ss.set('sy_'+ck,null); ss.set('imT',null);
     [MK,'mank',BK,'mul','feex'].forEach(k=>{try{localStorage.removeItem(K(k))}catch(e){}});
     ss.set('rstd',1); scrollTo(0,0); location.reload();
   };
