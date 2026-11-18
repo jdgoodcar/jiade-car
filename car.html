@@ -174,6 +174,17 @@ input,textarea,select{font-size:max(16px,1em)}  /* iPhone 輸入框字小於 16p
 .cpgo{border:0;border-radius:12px;padding:13px;font:700 16px var(--f);background:var(--navy);color:#fff;cursor:pointer}
 .cpgo:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 body.lock{overflow:hidden}
+/* 全部回復預設的確認視窗 */
+.rsl{list-style:none;margin:0;padding:4px 12px;border:1px solid var(--ln);border-radius:12px;background:var(--bg)}
+.rsl li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;font-size:14px;color:var(--mut)}
+.rsl li+li{border-top:1px dashed var(--ln)}
+.rsl b{color:var(--fg);font-weight:700;text-align:right}
+.rsb{display:grid;grid-template-columns:1fr 1.4fr;gap:8px}
+.rsb button{border-radius:12px;padding:13px;font:700 16px var(--f);cursor:pointer}
+.rsno{border:1px solid var(--ln);background:var(--card);color:var(--fg)}
+.rsyes{border:0;background:var(--navy);color:#fff}
+.rsyes span{color:#f3cf7a}
+.rsh{margin:0;font-size:13px;color:var(--mut)}
 /* 往下滑時出現在最上方的快速修改列：車價金額＋排氣量 */
 /* 往下滑時出現在最上方的快速修改列：車價金額＋排氣量 */
 .qbar{position:fixed;left:0;right:0;top:0;z-index:20;padding:8px 12px;padding-top:calc(8px + env(safe-area-inset-top,0px));background:var(--navy);color:#fff;border-bottom:2px solid #f3cf7a;box-shadow:0 4px 14px #16244a22;transform:translateY(-120%);transition:transform .22s ease;visibility:hidden}
@@ -338,6 +349,12 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 <div id="bar" title="點一下看明細"><div data-go="cTot"><small>現金價（點看明細）</small><b id="bC">—</b></div><div data-go="lTot"><small>貸款價（點看明細）</small><b id="bL">—</b></div></div>
 <button type="button" id="okBtn" class="okbtn" hidden>✓ 確定</button>
 <div id="toast"></div>
+<div id="rsBox" class="cpbox" hidden role="dialog" aria-modal="true" aria-labelledby="rsH"><div class="cpcard">
+  <div class="cph"><h2 id="rsH">全部回復預設？</h2></div>
+  <p class="rsh">下面這些會回到預設值：</p>
+  <ul class="rsl" id="rsL"></ul>
+  <div class="rsb"><button type="button" class="rsno" id="rsNo">取消</button><button type="button" class="rsyes" id="rsYes"><span>↻</span> 確定回復</button></div>
+</div></div>
 <div id="imBox" class="cpbox" hidden role="dialog" aria-modal="true" aria-labelledby="imH"><div class="cpcard">
   <div class="cph"><h2 id="imH">報價圖片</h2><button type="button" id="imX" class="btn" aria-label="關閉">✕ 關閉</button></div>
   <label class="iml">標題（可不填）<input id="imT" maxlength="40" autocomplete="off" enterkeyhint="done" placeholder="例：GLC300 COUPE AMG"></label>
@@ -699,7 +716,13 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 
   // ---------- 全部回復預設：車價、單位、排氣量、匯率（改回網頁匯率）、加成 0.5%、底價 18 萬、自訂手續費 ----------
   $('rstAll').onclick=()=>{
-    if(!confirm('全部回復預設？\n車價 '+(C.seg?(C.def/10000)+' 萬韓元':usd(C.def))+'、2000cc 以下（× 1.543）、網頁匯率（加 0.5%）、標準底價 18 萬、自訂手續費 2%（同現金價）'))return;
+    $('rsL').innerHTML=[['車價',C.seg?(C.def/10000).toLocaleString('zh-TW')+' 萬韓元':usd(C.def)],['排氣量','2000cc 以下（× 1.543）'],['匯率','網頁即時匯率（加 0.5%）'],['標準底價','18 萬'],['自訂手續費','2%（同現金價）']].map(([a,b])=>`<li><span>${a}</span><b>${b}</b></li>`).join('');
+    $('rsBox').hidden=false; document.body.classList.add('lock');
+  };
+  const rsClose=()=>{$('rsBox').hidden=true;document.body.classList.remove('lock')};
+  $('rsNo').onclick=rsClose; $('rsBox').onclick=e=>{if(e.target===$('rsBox'))rsClose()};
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('rsBox').hidden)rsClose()});
+  $('rsYes').onclick=()=>{
     ['won','base','unit'].forEach(k=>ss.set(K(k),null)); ss.set('sy_'+ck,null); ss.set('imT',null);
     [MK,'mank',BK,'mul','feex'].forEach(k=>{try{localStorage.removeItem(K(k))}catch(e){}});
     ss.set('rstd',1); scrollTo(0,0); location.reload();
