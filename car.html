@@ -287,6 +287,7 @@ body.lock{overflow:hidden}
 .foot .tri{display:inline-block;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid var(--gold);margin-right:6px;vertical-align:0}  /* 往右的小三角形（用線條畫的，不會變成 emoji） */
 .foot i{font-style:normal;white-space:nowrap}
 .foot b{color:var(--fg);font-weight:700;white-space:nowrap}
+.foot>b{text-align:justify;text-align-last:justify}  /* 左邊標題分散對齊，跟最長的「約 N 萬元」一樣寬 */
 .qx{grid-column:1/-1}
 .qx .fx{display:flex;align-items:baseline;gap:2px}
 .qx .fx .fxl{font:400 13px var(--f);color:var(--mut);letter-spacing:0;margin-right:4px}
@@ -296,6 +297,8 @@ body.lock{overflow:hidden}
 .qx .feeq{justify-content:flex-end;flex-wrap:nowrap;gap:5px;margin:0 0 10px}
 .qx .feeq button{padding:4px 9px}  /* 快速選放在 % 輸入框（標題列）正下方 */
 .qx .feeq span{font-size:12.5px}
+/* 寬螢幕：結果放左邊、快速選放右邊同一排，不會整塊縮在左邊 */
+@media (min-width:600px){.qx{display:grid;grid-template-columns:1fr auto;column-gap:16px;align-items:center}.qx>h3,.qx>.cpr{grid-column:1/-1}.qx>.xb{grid-row:2;grid-column:1}.qx>.feeq{grid-row:2;grid-column:2;margin:0}}
 .feeq{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;color:var(--mut)}
 .feeq button{border:1px solid var(--ln);background:var(--card);color:var(--fg);border-radius:20px;padding:4px 12px;font:600 13px var(--num);cursor:pointer}
 .feeq button.on{border-color:var(--gold);background:var(--goldbg)}
