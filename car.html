@@ -104,8 +104,10 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .rlab{font-size:13px;color:var(--mut);margin:10px 0 6px;padding-top:10px;border-top:1px dashed var(--ln)}
 .st.st0 span{color:var(--fg)}
 .rhead.r2{align-items:center}
-#rStT{white-space:pre-line}
-.rst{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--mut)}
+.rst{display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--mut);line-height:1.45;margin-top:2px}
+.rst .dot{margin-top:5px}
+#rStT b{color:var(--fg);font-weight:700}
+#rStT small{display:block;font-size:11.5px;color:var(--mut);margin-top:1px}
 .rb{border-top:1px dashed var(--ln);padding-top:10px;margin-top:10px}
 .rbh{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .rbn{font-size:14px;font-weight:700;color:var(--fg)}
@@ -497,8 +499,8 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   // ---------- 匯率 ----------
   // 匯率來源：前兩個是即時（約每分鐘更新，跟 Google 只差零點幾）；都失敗才用後面每天更新一次的
   const SRC=[
-    {n:'Coinbase',live:1,u:`https://api.coinbase.com/v2/exchange-rates?currency=${C.code}`,p:j=>j.data&&j.data.rates&&j.data.rates.TWD,k:j=>j.data.rates.KRW,t:()=>Date.now()},
     {n:'FXRatesAPI',live:1,u:`https://api.fxratesapi.com/latest?base=${C.code}&currencies=KRW,TWD`,p:j=>j.success&&j.rates&&j.rates.TWD,k:j=>j.rates.KRW,t:j=>j.timestamp?j.timestamp*1000:Date.now()},
+    {n:'Coinbase',live:1,u:`https://api.coinbase.com/v2/exchange-rates?currency=${C.code}`,p:j=>j.data&&j.data.rates&&j.data.rates.TWD,k:j=>j.data.rates.KRW,t:()=>Date.now()},
     {n:'ExchangeRate-API',u:`https://open.er-api.com/v6/latest/${C.code}`,p:j=>j.result==='success'&&j.rates.TWD,k:j=>j.rates.KRW,t:j=>j.time_last_update_unix*1000},
     {n:'Currency API',u:`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${C.lc}.json`,p:j=>j[C.lc]&&j[C.lc].twd,k:j=>j[C.lc].krw,t:j=>Date.parse(j.date)},
     {n:'Currency API',u:`https://latest.currency-api.pages.dev/v1/currencies/${C.lc}.json`,p:j=>j[C.lc]&&j[C.lc].twd,k:j=>j[C.lc].krw,t:j=>Date.parse(j.date)}
@@ -523,8 +525,11 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   function d2(t){const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
   function showRate(failed){
     rate=manual||(rateInfo&&rateInfo.v)||null;
-    if(rateInfo){$('rDot').className='dot '+(failed?'warn':'ok');$('rStT').textContent=failed?`連不上網路，用上次的匯率（${d2(rateInfo.got)} 取得）`:`${rateInfo.live?"網頁即時匯率":"網頁匯率（每日更新）"}，更新於 ${d2(rateInfo.t)}（${rateInfo.src||""}）`+(rateErr.length?`
-（${rateErr.join("、")}）`:"")}
+    if(rateInfo){$('rDot').className='dot '+(failed?'warn':'ok');
+      const bad=rateErr.map(x=>x.split('：')[0]).filter((x,i,a)=>a.indexOf(x)===i);
+      $('rStT').innerHTML=failed?`<b>連不上網路</b>・用上次的匯率<small>${d2(rateInfo.got)} 取得</small>`
+        :`<b>${rateInfo.live?'網頁即時匯率':'網頁匯率（每日更新）'}</b>・更新於 ${d2(rateInfo.t)}<small>來源：${rateInfo.src||''}${bad.length?'（'+bad.join('、')+' 連不上，已自動改用這個）':''}</small>`;
+      $('rStT').title=rateErr.join('\n')}
     else{$('rDot').className='dot warn';$('rStT').textContent='讀不到網頁匯率，請用「手動輸入」';if(!manual)$('manBox').classList.add('on');if(C.via&&!kman)$('kBox').classList.add('on')}
     showK(); showBuf(); calc();
   }
