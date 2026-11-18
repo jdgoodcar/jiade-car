@@ -194,20 +194,15 @@ input,textarea,select{font-size:max(16px,1em)}  /* iPhone 輸入框字小於 16p
 .cpgo:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 body.lock{overflow:hidden}
 /* 計算區和結果區中間的分隔 */
-/* 結果區：外框把計算結果、現金價、貸款、自訂手續費框在一起，標題壓在框線上 */
-.rzone{position:relative;display:flex;flex-direction:column;gap:14px;margin-top:22px;padding:30px 6px 10px;border:1.5px solid color-mix(in srgb,var(--gold) 55%,transparent);border-radius:20px;background:color-mix(in srgb,var(--goldbg) 40%,transparent)}
-.rzone>.sdiv{position:absolute;left:0;right:0;top:-17px;margin:0;justify-content:center}
-.rzone>.sdiv::before,.rzone>.sdiv::after{display:none}
-@media (max-width:440px){.rzone .qc h3{letter-spacing:.02em;font-size:17px}.rzone .q2{gap:8px}}
 .sdiv{display:flex;align-items:center;gap:12px;margin:14px 2px 4px}
 .sdiv::before,.sdiv::after{content:"";flex:1;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--gold))}
 .sdiv::after{background:linear-gradient(90deg,var(--gold),transparent)}
 .sdiv span{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:999px;background:var(--navy);color:#f3cf7a;font:800 14px var(--f);letter-spacing:.12em;box-shadow:0 3px 10px #16244a33;white-space:nowrap}
 .sdiv svg{width:14px;height:14px;fill:#f3cf7a}
 /* 總表做成小發票：上下是撕紙鋸齒邊，外面一層淡淡陰影 */
-.rcpt{position:relative;border:0;border-radius:14px 14px 0 0;padding-bottom:26px;
-  -webkit-mask:linear-gradient(#000 0 0) top/100% calc(100% - 10px) no-repeat,conic-gradient(from 135deg at top,#0000,#000 1deg 89deg,#0000 90deg) bottom/16px 10px repeat-x;
-  mask:linear-gradient(#000 0 0) top/100% calc(100% - 10px) no-repeat,conic-gradient(from 135deg at top,#0000,#000 1deg 89deg,#0000 90deg) bottom/16px 10px repeat-x;
+.rcpt{position:relative;border:0;border-radius:6px;padding-top:22px;padding-bottom:22px;  /* 票根／電影票：上下邊是一排圓形缺口 */
+  -webkit-mask:radial-gradient(circle 5px at 50% 0,#0000 97%,#000) top/14px 51% repeat-x,radial-gradient(circle 5px at 50% 100%,#0000 97%,#000) bottom/14px 51% repeat-x;
+  mask:radial-gradient(circle 5px at 50% 0,#0000 97%,#000) top/14px 51% repeat-x,radial-gradient(circle 5px at 50% 100%,#0000 97%,#000) bottom/14px 51% repeat-x;
   background:linear-gradient(var(--card),var(--card)) padding-box}
 .rcptw{filter:drop-shadow(0 3px 6px #16244a26);margin-bottom:8px}
 @media (prefers-color-scheme: dark){.rcptw{filter:drop-shadow(0 3px 8px #0008)}}
@@ -350,7 +345,6 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   </section>
   </div><div class="colB">
 
-  <div class="rzone">
   <div class="sdiv" role="separator"><span>✦ 計算結果 ✦</span></div>
   <div class="rcptw"><section class="card steps rcpt" aria-live="polite">
     <div id="stL" class="steps"></div>
@@ -381,7 +375,6 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     </div>
   </div>
   <button class="btn" type="button" data-cp="both" style="padding:10px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製兩種報價</button>
-  </div>
 
   <div class="foot" id="foot"><h4>計算公式</h4><b>車價</b><span id="fCar">美金 × 台幣匯率 × 倍率 ＋ 18 萬</span><b>手續費</b><span>車價 × 手續費 %</span><b>約 N 萬元</b><span>四捨五入到萬元，方便報價</span></div>
   </div></div>
