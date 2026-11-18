@@ -157,6 +157,14 @@ input,textarea,select{font-size:max(16px,1em)}  /* iPhone 輸入框字小於 16p
 .cpgo{border:0;border-radius:12px;padding:13px;font:700 16px var(--f);background:var(--navy);color:#fff;cursor:pointer}
 .cpgo:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 body.lock{overflow:hidden}
+.cpr{display:flex;gap:6px;margin-top:6px}
+.cpr .btn{margin-top:0}
+.cpr [data-cp]{flex:1}
+.btn.ib{flex:0 0 46px;padding:4px 0;font-size:18px;line-height:1}
+.iml{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--mut)}
+#imT{font:600 17px var(--f);padding:10px 12px;border:2px solid var(--gold);border-radius:12px;background:var(--card);color:var(--fg)}
+.imp{width:100%;border-radius:10px;border:1px solid var(--ln);display:block;background:#eef1f6;min-height:120px}
+.imh{margin:0;font-size:12.5px;color:var(--mut);text-align:center}
 .foot{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:baseline;margin:0;padding:12px 14px;border:1px dashed var(--ln);border-radius:12px;font-size:12.5px;line-height:1.55;color:var(--mut)}
 .foot h4{grid-column:1/-1;margin:0 0 2px;font-size:13px;color:var(--fg)}
 .foot i{font-style:normal;white-space:nowrap}
@@ -262,19 +270,19 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
       <div class="fee" id="cFee">手續費 —</div>
       <div class="tot" id="cTot">—</div>
       <div class="wan" id="cWan"></div>
-      <button class="btn" type="button" data-cp="cash">📋 複製報價</button>
+      <div class="cpr"><button class="btn" type="button" data-cp="cash">📋 複製報價</button><button class="btn ib" type="button" data-img="cash" aria-label="下載報價圖片" title="下載報價圖片">🖼️</button></div>
     </div>
     <div class="qc">
       <h3>貸款 <span class="fl"><small>手續費</small><em>5%</em></span></h3>
       <div class="fee" id="lFee">手續費 —</div>
       <div class="tot" id="lTot">—</div>
       <div class="wan" id="lWan"></div>
-      <button class="btn" type="button" data-cp="loan">📋 複製報價</button>
+      <div class="cpr"><button class="btn" type="button" data-cp="loan">📋 複製報價</button><button class="btn ib" type="button" data-img="loan" aria-label="下載報價圖片" title="下載報價圖片">🖼️</button></div>
     </div>
     <div class="qc qx">
       <h3>自訂手續費 <span class="fx"><input id="feeX" inputmode="decimal" enterkeyhint="done" value="3" aria-label="自訂手續費百分比"><em>%</em></span></h3>
       <div class="xrow"><div class="fee" id="xFee">手續費 —</div><div><span class="tot" id="xTot">—</span> <span class="wan" id="xWan"></span></div></div>
-      <button class="btn" type="button" data-cp="cust">📋 複製報價</button>
+      <div class="cpr"><button class="btn" type="button" data-cp="cust">📋 複製報價</button><button class="btn ib" type="button" data-img="cust" aria-label="下載報價圖片" title="下載報價圖片">🖼️</button></div>
     </div>
   </div>
   <div class="feeq" id="feeQ"><span>快速選：</span><button type="button" data-f="1">1%</button><button type="button" data-f="3">3%</button><button type="button" data-f="4">4%</button><button type="button" data-f="6">6%</button></div>
@@ -287,6 +295,13 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 <div id="bar" title="點一下看明細"><div data-go="cTot"><small>現金價（點看明細）</small><b id="bC">—</b></div><div data-go="lTot"><small>貸款價（點看明細）</small><b id="bL">—</b></div></div>
 <button type="button" id="okBtn" class="okbtn" hidden>✓ 確定</button>
 <div id="toast"></div>
+<div id="imBox" class="cpbox" hidden role="dialog" aria-modal="true" aria-labelledby="imH"><div class="cpcard">
+  <div class="cph"><h2 id="imH">報價圖片</h2><button type="button" id="imX" class="btn" aria-label="關閉">✕ 關閉</button></div>
+  <label class="iml">標題（可不填）<input id="imT" maxlength="40" autocomplete="off" enterkeyhint="done" placeholder="例：GLC300 COUPE AMG"></label>
+  <img id="imP" class="imp" alt="" aria-label="報價圖片預覽">
+  <button type="button" id="imGo" class="cpgo">⬇ 下載圖片</button>
+  <p class="imh" id="imHint"></p>
+</div></div>
 <div id="cpBox" class="cpbox" hidden role="dialog" aria-modal="true" aria-labelledby="cpH"><div class="cpcard">
   <div class="cph"><h2 id="cpH">複製的內容</h2><button type="button" id="cpX" class="btn" aria-label="關閉">✕ 關閉</button></div>
   <p id="cpMsg" class="cpmsg"></p>
@@ -459,19 +474,21 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     const ccF=t=>$('ccF').textContent=t||'';
     $('sBase').textContent=fmt(b)+' 台幣';
     if(!won||!rate||!m||(C.via&&!krate)){R=null;ccF('');fx('kF');fx('rF');rows(C.via?rowsKR('—','—','—','—'):rowsUS('—','—'));['sPrice','cTot','lTot','xTot','bC','bL'].forEach(i=>$(i).textContent='—');$('cFee').textContent=$('lFee').textContent=$('xFee').textContent='手續費 —';$('cWan').textContent=$('lWan').textContent=$('xWan').textContent='';return}
-    let price,twd;
+    let price,twd,steps; const ccN=mul==='1.543'?'2000cc 以下':mul==='1.61'?'2000cc 以上':'自訂';
     if(C.via){ // 韓國：韓幣（×奢侈稅）× 倍率 → ÷ 美金匯率折美金（取整數）→ × 台幣匯率 → ＋ 底價
       const wl=lux?won*LUX:won, wk=Math.round(wl*m), us=Math.round(wk/krate); twd=Math.round(us*er); price=twd+b;
       rows(rowsKR(fmt(wl)+' 韓元',fmt(wk)+' 韓元',usd(us),fmt(twd)+' 台幣'));
+      steps=[['',C.amtL,fmt(won)+' 韓元'],lux&&['奢侈稅','× 1.81',fmt(wl)+' 韓元','7000 萬韓元以上'],['乘倍率',`× ${m}（${ccN}）`,fmt(wk)+' 韓元'],['換美金','÷ '+kf(krate),usd(us)],['換台幣','× '+er.toFixed(3),fmt(twd)+' 台幣']];
       fx('kF',`${fmt(wk)} 韓元 ÷ ${kf(krate)} ＝ ${usd(us)}`); fx('rF',`${usd(us)} × ${er.toFixed(3)} ＝ ${fmt(twd)} 台幣`);
       ccF(`${(won/10000).toLocaleString('zh-TW')}萬韓幣${lux?' × 1.81':''} × ${m} ＝ ${fmt(wk)} 韓元`);
     } else {
       twd=won*er; const x=Math.round(twd*m); price=x+b;
-      rows(rowsUS(fmt(twd)+' 台幣',fmt(x)+' 台幣')); fx('rF',`${usd(won)} × ${er.toFixed(C.dp)} ＝ ${fmt(twd)} 台幣`);
+      rows(rowsUS(fmt(twd)+' 台幣',fmt(x)+' 台幣'));
+      steps=[['',C.amtL,usd(won)],['換台幣','× '+er.toFixed(C.dp),fmt(twd)+' 台幣'],['乘倍率',`× ${m}（${ccN}）`,fmt(x)+' 台幣']]; fx('rF',`${usd(won)} × ${er.toFixed(C.dp)} ＝ ${fmt(twd)} 台幣`);
       ccF(`${fmt(twd)} 台幣 × ${m} ＝ ${fmt(x)} 台幣`);
     }
     const cf=Math.round(price*0.02), lf=Math.round(price*0.05);
-    R={won,twd,m,b,price,cf,lf,lux,cash:price+cf,loan:price+lf};
+    R={won,twd,m,b,price,cf,lf,lux,cash:price+cf,loan:price+lf,steps:[...steps.filter(Boolean),['加底價','＋ 標準底價',fmt(b)+' 台幣']]};
     if(lux&&!warn)$('krwHint').textContent+='\n→ 7000 萬以上，加計奢侈稅 ×1.81';
     $('sPrice').textContent=fmt(price);
     $('cFee').textContent=`手續費 ${fmt(cf)}`; $('cTot').textContent=fmt(R.cash); $('cWan').textContent=wan(R.cash);
@@ -515,6 +532,87 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     cpOpen(t,await copyText(t));
   });
   $('bar').onclick=e=>{const d=e.target.closest('[data-go]');if(d)$(d.dataset.go).closest('.qc').scrollIntoView({behavior:'smooth',block:'center'})};
+  // ---------- 報價圖片（現金價／貸款價／手續費）----------
+  const imBox=$('imBox'), imT=$('imT'); let imKind='cash', imBlob=null, imURL=null, imTo=null;
+  function rr(x,l,t,w,h,r){x.beginPath();x.moveTo(l+r,t);x.arcTo(l+w,t,l+w,t+h,r);x.arcTo(l+w,t+h,l,t+h,r);x.arcTo(l,t+h,l,t,r);x.arcTo(l,t,l+w,t,r);x.closePath()}
+  function today(){const d=new Date();return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`}
+  function drawImg(kind,title){
+    const W=1080,P=48,IN=40,F='"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif',N='"SF Mono",Menlo,Consolas,"Roboto Mono",monospace';
+    const navy='#16244a',gold='#c8952e',goldbg='#fbf1dc',red='#c8202b',fg='#141c2e',mut='#5d6679',ln='#d9dfea';
+    const name=kind==='cash'?'現金價':kind==='loan'?'貸款價':'報價', fee=kind==='cash'?2:kind==='loan'?5:R.xp;
+    const fv=kind==='cash'?R.cf:kind==='loan'?R.lf:R.xf, tot=kind==='cash'?R.cash:kind==='loan'?R.loan:R.cust;
+    const st=R.steps, rowH=74, hdH=title?250:200;
+    const c1H=IN+st.reduce((h,r)=>h+(r[3]?rowH+30:rowH),0)+24+96+IN-10;
+    const c2H=96+IN+ 2*64 + 30 + 110 + 50 + IN-10;
+    const H=hdH+36+c1H+30+c2H+90;
+    const cv=document.createElement('canvas'); cv.width=W; cv.height=H; const x=cv.getContext('2d');
+    x.fillStyle='#eef1f6'; x.fillRect(0,0,W,H);
+    // 標題列
+    const g=x.createLinearGradient(0,0,W,hdH); g.addColorStop(0,'#22366b'); g.addColorStop(1,navy); x.fillStyle=g; x.fillRect(0,0,W,hdH);
+    x.fillStyle=gold; x.fillRect(0,hdH-8,W,8);
+    x.textBaseline='alphabetic'; x.textAlign='left';
+    const t1=title||C.cpHead; let fs=title?68:60; x.font=`800 ${fs}px ${F}`; while(x.measureText(t1).width>W-2*P&&fs>30){fs-=2;x.font=`800 ${fs}px ${F}`}
+    x.fillStyle='#f3cf7a'; x.fillText(t1,P,title?120:112);
+    x.font=`500 30px ${F}`; x.fillStyle='#ffffffcc'; x.fillText(title?`${C.cpHead}　${today()}`:today(),P,title?186:164);
+    // 卡片 1：計算過程
+    let y=hdH+36;
+    x.fillStyle='#fff'; rr(x,P,y,W-2*P,c1H,28); x.fill(); x.strokeStyle=ln; x.lineWidth=2; x.stroke();
+    let ry=y+IN; const L=P+IN, Rr=W-P-IN;
+    for(const r of st){
+      const cy=ry+rowH/2+11; let lx=L;
+      if(r[0]){x.font=`700 28px ${F}`;const tw=x.measureText(r[0]).width+28;x.fillStyle=goldbg;rr(x,lx,cy-36,tw,48,10);x.fill();x.fillStyle=fg;x.fillText(r[0],lx+14,cy-2);lx+=tw+16;
+        x.font=`400 31px ${F}`;x.fillStyle=mut;x.fillText(r[1],lx,cy-2)}
+      else{x.font=`700 32px ${F}`;x.fillStyle=fg;x.fillText(r[1],lx,cy-2)}
+      x.font=`700 34px ${N}`; x.fillStyle=r[0]==='加底價'&&R.b!==BASE0?'#b56a00':fg; x.textAlign='right'; x.fillText(r[2],Rr,cy-2); x.textAlign='left';
+      if(r[3]){x.font=`700 25px ${F}`;x.fillStyle=red;x.fillText(r[3],L,cy+34)}
+      ry+=r[3]?rowH+30:rowH;
+    }
+    ry+=12; x.fillStyle=gold; x.fillRect(L,ry,Rr-L,4); ry+=4;
+    x.font=`800 36px ${F}`; x.fillStyle=fg; x.fillText('車價',L,ry+66);
+    x.font=`800 52px ${N}`; x.fillStyle=gold; x.textAlign='right'; x.fillText(fmt(R.price),Rr,ry+70); x.textAlign='left';
+    // 卡片 2：現金價／貸款價／手續費
+    y+=c1H+30;
+    x.fillStyle='#fff'; rr(x,P,y,W-2*P,c2H,28); x.fill(); x.strokeStyle=gold; x.lineWidth=3; x.stroke();
+    x.save(); rr(x,P,y,W-2*P,c2H,28); x.clip(); x.fillStyle=goldbg; x.fillRect(P,y,W-2*P,96); x.fillStyle='#e7cf9e'; x.fillRect(P,y+94,W-2*P,2); x.restore();
+    x.font=`800 44px ${F}`; x.fillStyle=fg; x.fillText(name,L,y+64);
+    x.textAlign='right'; x.font=`800 50px ${N}`; x.fillStyle=red; const fw=x.measureText(fee+'%').width; x.fillText(fee+'%',Rr,y+66);
+    x.font=`500 28px ${F}`; x.fillStyle=mut; x.fillText('手續費',Rr-fw-12,y+64); x.textAlign='left';
+    ry=y+96+IN;
+    const line=(l,v)=>{x.font=`500 30px ${F}`;x.fillStyle=mut;x.fillText(l,L,ry+40);x.font=`700 34px ${N}`;x.fillStyle=fg;x.textAlign='right';x.fillText(v,Rr,ry+40);x.textAlign='left';ry+=64};
+    line('車價',fmt(R.price)); line(`手續費 ${fee}%`,'＋ '+fmt(fv));
+    x.setLineDash([10,8]); x.strokeStyle=ln; x.lineWidth=2; x.beginPath(); x.moveTo(L,ry+14); x.lineTo(Rr,ry+14); x.stroke(); x.setLineDash([]); ry+=30;
+    x.font=`800 36px ${F}`; x.fillStyle=fg; x.fillText(name,L,ry+80);
+    x.font=`800 84px ${N}`; x.fillStyle='#22366b'; x.textAlign='right'; x.fillText(fmt(tot),Rr,ry+86);
+    x.font=`700 32px ${F}`; x.fillStyle=fg; x.fillText(wan(tot),Rr,ry+138); x.textAlign='left';
+    // 頁尾
+    x.font=`500 26px ${F}`; x.fillStyle=mut; x.textAlign='center'; x.fillText('佳德汽車',W/2,H-36); x.textAlign='left';
+    return cv;
+  }
+  function imDraw(){
+    if(!R)return; const cv=drawImg(imKind,imT.value.trim());
+    cv.toBlob(b=>{if(!b)return;imBlob=b;if(imURL)URL.revokeObjectURL(imURL);imURL=URL.createObjectURL(b);$('imP').src=imURL},'image/png');
+  }
+  const canShare=f=>{try{return touch&&!!navigator.canShare&&navigator.canShare({files:[f]})}catch(e){return false}};
+  function imOpen(k){
+    if(!R){toast('請先輸入'+C.amtL);return}
+    imKind=k; imT.value=ss.get('imT')||''; imBlob=null; $('imP').removeAttribute('src');
+    $('imHint').textContent=canShare(new File([''],'a.png',{type:'image/png'}))?'手機會跳出分享選單，選「儲存影像」就會存到相簿':'';
+    imBox.hidden=false; document.body.classList.add('lock'); imDraw();
+  }
+  function imClose(){imBox.hidden=true;document.body.classList.remove('lock')}
+  $('imX').onclick=imClose; imBox.onclick=e=>{if(e.target===imBox)imClose()};
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!imBox.hidden)imClose()});
+  imT.addEventListener('input',()=>{ss.set('imT',imT.value);clearTimeout(imTo);imTo=setTimeout(imDraw,200)});
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-img]');if(b)imOpen(b.dataset.img)});
+  $('imGo').onclick=async()=>{
+    if(!imBlob){toast('圖片還在產生，請再按一次');return}
+    const nm=imKind==='cash'?'現金價':imKind==='loan'?'貸款價':'報價';
+    const fn=((imT.value.trim()||C.cpHead)+'-'+nm).replace(/[\\/:*?"<>|]/g,' ')+'.png';
+    const f=new File([imBlob],fn,{type:'image/png'});
+    if(canShare(f)){try{await navigator.share({files:[f]});return}catch(err){if(err&&err.name==='AbortError')return}}
+    const a=document.createElement('a');a.href=imURL;a.download=fn;document.body.appendChild(a);a.click();a.remove();toast('圖片已下載 ✓');
+  };
+
   let tt;function toast(m){const el=$('toast');el.textContent=m;el.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('on'),1800)}
 
   // ---------- 手機「確定」按鈕：輸入時浮在鍵盤上方，按了收起鍵盤 ----------
