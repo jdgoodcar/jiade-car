@@ -304,7 +304,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   const K=k=>C.p+k;
   $('hT').innerHTML=C.head; $('hP').textContent=C.sub; $('amtL').textContent=C.amtL; $('rateL').textContent=C.rateL;
   if(C.via){const rt=document.querySelector('.rate'),kr=$('kRow');kr.classList.add('first');rt.before(kr,$('kBox'),$('rLab'));$('rLab').hidden=false}
-  $('manL').textContent=C.one+' ='; $('manIn').placeholder=C.manPh; $('noteC').textContent=C.cn; if(C.via)$('noteR').textContent='0.3%～0.5%';
+  $('manL').textContent=C.one+' ='; $('manIn').placeholder=C.manPh; $('noteC').textContent=C.cn; $('noteR').textContent='0.3%～0.5%';
   document.querySelector('.seg').hidden=!C.seg; const pic=document.querySelector('.pic'); if(pic)pic.hidden=!C.img;
   document.querySelectorAll('#cur button').forEach(b=>b.classList.toggle('on',b.dataset.c===ck));
   $('cur').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.c===ck)return;try{localStorage.setItem('car_cur',b.dataset.c)}catch(err){}location.hash=b.dataset.c;location.reload()};
@@ -315,8 +315,8 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   let mul=store.get(K('mul'))||'1.543';
   const RK=C.via?'rate2':'rate', MK=C.via?'man3':'man2';  // 韓國版改成「韓元→美金→台幣」，用新的存檔名，舊的韓元→台幣匯率不再使用
   let rate=null, rateInfo=null, manual=store.get(K(MK)), krate=null, kman=C.via?store.get(K('mank')):null; // krate = 1 美元換多少韓元 // rate、manual = 1 單位外幣換多少台幣
-  const BK=C.via?'buf3':'buf2'; // 韓國版改成美金換台幣後，預設加成改 0.5%（美金銀行價差小）
-  let buf=store.get(K(BK)); if(buf==null)buf=C.via?0.5:2; // 即時匯率加成 %
+  const BK='buf3'; // 韓國版改成美金換台幣後，預設加成改 0.5%（美金銀行價差小）
+  let buf=store.get(K(BK)); if(buf==null)buf=0.5; // 即時匯率加成 %
   function showBuf(){
     document.querySelectorAll('#bufQ button').forEach(b=>{b.classList.toggle('on',!manual&&+b.dataset.b===buf);b.disabled=!!manual});
     $('bufTxt').textContent=buf?buf+'%':'0%（目前不加）';
