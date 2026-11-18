@@ -539,8 +539,8 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     rate=manual||(rateInfo&&rateInfo.v)||null;
     if(rateInfo){$('rDot').className='dot '+(failed?'err':rateInfo.live?'ok':'slow');
       const bad=rateErr.map(x=>x.split('：')[0]).filter((x,i,a)=>a.indexOf(x)===i);
-      $('rStT').innerHTML=failed?`<b>連不上網路</b>・用上次的匯率<small>${d2(rateInfo.got)} 取得</small>`
-        :`<b>${rateInfo.live?'網頁即時匯率':'網頁匯率（每日更新）'}</b>・更新於 ${d2(rateInfo.t)}<small>來源：${rateInfo.src||''}${bad.length?'（'+bad.join('、')+' 連不上，已自動改用這個）':''}</small>`;
+      $('rStT').innerHTML=failed?`<b>連不上網路</b>・用上次的匯率<small><b>${d2(rateInfo.got)}</b> 取得</small>`
+        :`<b>${rateInfo.live?'網頁即時匯率':'網頁匯率（每日更新）'}</b>・更新於 <b>${d2(rateInfo.t)}</b><small>來源：${rateInfo.src||''}${bad.length?'（'+bad.join('、')+' 連不上，已自動改用這個）':''}</small>`;
       $('rStT').title=rateErr.join('\n')}
     else{$('rDot').className='dot err';$('rStT').textContent='讀不到網頁匯率，請用「手動輸入」';if(!manual)$('manBox').classList.add('on');if(C.via&&!kman)$('kBox').classList.add('on')}
     showK(); showBuf(); calc();
