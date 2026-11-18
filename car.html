@@ -315,7 +315,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
       <button type="button" data-m="1.61">2000cc 以上<small>× 1.61</small></button>
     </div>
     <p class="ccf" id="ccF"></p>
-    <div class="jrow"><button type="button" class="jpill" id="jmp">選好了，快速去看結果<span id="jmpC"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><small class="jts">未含手續費・匯率由網頁抓取</small></div>
+    <div class="jrow"><button type="button" class="jpill" id="jmp">選好了，快速去看結果<span id="jmpC"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button><small class="jts">未含手續費，匯率由網頁抓取</small></div>
   </section>
 
   <section class="card">
@@ -540,8 +540,8 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     rate=manual||(rateInfo&&rateInfo.v)||null;
     if(rateInfo){$('rDot').className='dot '+(failed?'err':rateInfo.live?'ok':'slow');
       const bad=rateErr.map(x=>x.split('：')[0]).filter((x,i,a)=>a.indexOf(x)===i);
-      $('rStT').innerHTML=failed?`<b>連不上網路</b>・用上次的匯率<small><b>${d2(rateInfo.got)}</b> 取得</small>`
-        :`<b>${rateInfo.live?'網頁即時匯率':'網頁匯率（每日更新）'}</b>・更新於 <b>${d2(rateInfo.t)}</b><small>來源：${rateInfo.src||''}${bad.length?'（'+bad.join('、')+' 連不上，已自動改用這個）':''}</small>`;
+      $('rStT').innerHTML=failed?`<b>連不上網路</b>，用上次的匯率<small><b>${d2(rateInfo.got)}</b> 取得</small>`
+        :`<b>${rateInfo.live?'網頁即時匯率':'網頁匯率（每日更新）'}</b>　更新於 <b>${d2(rateInfo.t)}</b><small>來源：${rateInfo.src||''}${bad.length?'（'+bad.join('、')+' 連不上，已自動改用這個）':''}</small>`;
       $('rStT').title=rateErr.join('\n')}
     else{$('rDot').className='dot err';$('rStT').textContent='讀不到網頁匯率，請用「手動輸入」';if(!manual)$('manBox').classList.add('on');if(C.via&&!kman)$('kBox').classList.add('on')}
     showK(); showBuf(); calc();
@@ -603,7 +603,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     }
     const cf=Math.round(price*0.02), lf=Math.round(price*0.05);
     R={won,twd,m,b,price,cf,lf,lux,cash:price+cf,loan:price+lf,steps:[...steps.filter(Boolean),['加底價','＋ 標準底價',fmt(b)+' 台幣']]};
-    if(lux&&!warn)$('krwHint').textContent=`＝ ${fmt(won)} 韓元・7000萬以上加奢侈稅 ×1.81`;  // 一行放得下，不會把下面推下去
+    if(lux&&!warn)$('krwHint').textContent=`＝ ${fmt(won)} 韓元，7000萬以上加奢侈稅 ×1.81`;  // 一行放得下，不會把下面推下去
     $('sPrice').textContent=fmt(price);
     $('cFee').textContent=`手續費 ${fmt(cf)}`; $('cTot').textContent=fmt(R.cash); $('cWan').textContent=wan(R.cash);
     const xp=num($('feeX').value), xf=Math.round(price*xp/100); R.xp=xp; R.xf=xf; R.cust=price+xf;
