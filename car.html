@@ -216,13 +216,13 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
       <span id="manL">1 韓元 =</span><input id="manIn" inputmode="decimal" enterkeyhint="done" placeholder="例 0.0247"><span>台幣</span>
       <button class="btn" id="manOk" type="button">套用</button>
     </div>
-    <div class="krow" id="kRow" hidden><span>① 韓元 → 美金</span><b id="kVal">—</b><em id="kSrc"></em><button class="btn" id="kMan" type="button">手動輸入</button></div>
+    <div class="krow" id="kRow" hidden><span>① 韓元 → 美金</span><b id="kVal">—</b><em id="kSrc"></em><button class="btn" id="kRe" type="button">↻ 更新</button><button class="btn" id="kMan" type="button">手動輸入</button></div>
     <div class="man" id="kBox"><span>1 美元 =</span><input id="kIn" inputmode="decimal" enterkeyhint="done" placeholder="例 1323.66"><span>韓元</span><button class="btn" id="kOk" type="button">套用</button></div>
     <div class="buf">
       <span>匯率加成</span>
       <div class="bufq" id="bufQ"><button type="button" data-b="0">不加</button><button type="button" data-b="0.5">0.5%</button><button type="button" data-b="1">1%</button><button type="button" data-b="1.5">1.5%</button><button type="button" data-b="2">2%</button></div>
     </div>
-    <p class="note">網頁抓的是國際「中間價」，銀行實際換<span id="noteC">韓元</span>會貴一點（約 1%～2%），所以計算時把匯率多加 <b id="bufTxt">2%</b> 當緩衝，避免報價報低。<br>用「手動輸入」填銀行牌告匯率時，就不會再加。</p>
+    <p class="note">網頁抓的是國際「中間價」，銀行實際換<span id="noteC">韓元</span>會貴一點（約 <span id="noteR">1%～2%</span>），所以計算時把匯率多加 <b id="bufTxt">2%</b> 當緩衝，避免報價報低。<br>用「手動輸入」填銀行牌告匯率時，就不會再加。</p>
   </section>
   </div><div class="colB">
 
@@ -304,7 +304,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   const K=k=>C.p+k;
   $('hT').innerHTML=C.head; $('hP').textContent=C.sub; $('amtL').textContent=C.amtL; $('rateL').textContent=C.rateL;
   if(C.via){const rt=document.querySelector('.rate'),kr=$('kRow');kr.classList.add('first');rt.before(kr,$('kBox'),$('rLab'));$('rLab').hidden=false}
-  $('manL').textContent=C.one+' ='; $('manIn').placeholder=C.manPh; $('noteC').textContent=C.cn;
+  $('manL').textContent=C.one+' ='; $('manIn').placeholder=C.manPh; $('noteC').textContent=C.cn; if(C.via)$('noteR').textContent='0.3%～0.5%';
   document.querySelector('.seg').hidden=!C.seg; const pic=document.querySelector('.pic'); if(pic)pic.hidden=!C.img;
   document.querySelectorAll('#cur button').forEach(b=>b.classList.toggle('on',b.dataset.c===ck));
   $('cur').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.c===ck)return;try{localStorage.setItem('car_cur',b.dataset.c)}catch(err){}location.hash=b.dataset.c;location.reload()};
@@ -315,13 +315,14 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   let mul=store.get(K('mul'))||'1.543';
   const RK=C.via?'rate2':'rate', MK=C.via?'man3':'man2';  // 韓國版改成「韓元→美金→台幣」，用新的存檔名，舊的韓元→台幣匯率不再使用
   let rate=null, rateInfo=null, manual=store.get(K(MK)), krate=null, kman=C.via?store.get(K('mank')):null; // krate = 1 美元換多少韓元 // rate、manual = 1 單位外幣換多少台幣
-  let buf=store.get(K('buf2')); if(buf==null)buf=2; // 即時匯率加成 %
+  const BK=C.via?'buf3':'buf2'; // 韓國版改成美金換台幣後，預設加成改 0.5%（美金銀行價差小）
+  let buf=store.get(K(BK)); if(buf==null)buf=C.via?0.5:2; // 即時匯率加成 %
   function showBuf(){
     document.querySelectorAll('#bufQ button').forEach(b=>{b.classList.toggle('on',!manual&&+b.dataset.b===buf);b.disabled=!!manual});
     $('bufTxt').textContent=buf?buf+'%':'0%（目前不加）';
     const a=$('rAdj'); if(!manual&&rate&&buf){const r=rate*(1+buf/100);a.hidden=false;a.innerHTML=`加 ${buf}% 後（計算用這個）：<b>${C.one} = ${r.toFixed(C.dp)} 台幣</b><span>${C.sub2(r)}</span>`}else a.hidden=true;
   }
-  $('bufQ').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;buf=+b.dataset.b;store.set(K('buf2'),buf);showBuf();calc()};
+  $('bufQ').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;buf=+b.dataset.b;store.set(K(BK),buf);showBuf();calc()};
 
   // ---------- 輸入 ----------
   const krw=$('krw');
@@ -389,9 +390,11 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     if(!C.via)return; $('kRow').hidden=false;
     krate=kman||(rateInfo&&rateInfo.k)||null;
     $('kVal').textContent=krate?`1 美元 = ${kf(krate)} 韓元`:'讀不到';
-    $('kSrc').textContent=kman?'手動輸入（不加成）':(krate?'網頁匯率（不加成）':'請按「手動輸入」');
+    $('kSrc').textContent=kman?'手動輸入（不加成）':(krate?`網頁即時匯率（不加成），更新於 ${d2(rateInfo.t)}`:'請按「手動輸入」');
+    $('kRe').hidden=!!kman;
     $('kMan').textContent=kman?'↩ 改回網頁匯率':'手動輸入'; $('kMan').classList.toggle('back',!!kman);
   }
+  $('kRe').onclick=()=>{$('kVal').textContent='讀取中…';loadRate()};
   $('kMan').onclick=()=>{if(kman){kman=null;store.set(K('mank'),null);$('kBox').classList.remove('on');showK();calc();toast('已改回網頁抓的匯率');return}$('kBox').classList.toggle('on');$('kIn').value=krate?kf(krate).replace(/,/g,''):'';$('kIn').focus()};
   $('kOk').onclick=()=>{const v=num($('kIn').value);if(!(v>100&&v<10000)){toast('請輸入 1 美元等於多少韓元（例 1323.66）');return}kman=v;store.set(K('mank'),v);$('kBox').classList.remove('on');showK();calc()};
   $('rRe').onclick=()=>{if(manual){manual=null;store.set(K(MK),null);$('manBox').classList.remove('on');loadRate();toast('已改回網頁抓的匯率');return}loadRate()};
