@@ -633,7 +633,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     const t=text(b.dataset.cp);
     cpOpen(t,await copyText(t));
   });
-  $('jmp').onclick=()=>$('fbase').scrollIntoView({behavior:'smooth',block:'center'});
+  $('jmp').onclick=()=>{const t=document.querySelector('.sdiv')||$('fbase'),qh=($('qbar')&&$('qbar').offsetHeight)||0;scrollTo({top:Math.max(0,t.getBoundingClientRect().top+scrollY-qh-8),behavior:'smooth'})};  // 跳到「計算結果」標題，整張總表都看得到（扣掉上方快速列的高度）
   $('bar').onclick=e=>{const d=e.target.closest('[data-go]');if(d)$(d.dataset.go).closest('.qc').scrollIntoView({behavior:'smooth',block:'center'})};
   // ---------- 報價圖片（現金價／貸款價／手續費）----------
   const imBox=$('imBox'), imT=$('imT'); let imKind='cash', imBlob=null, imURL=null, imTo=null;
