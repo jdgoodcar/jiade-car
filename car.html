@@ -662,13 +662,13 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 
   // ---------- 複製 ----------
   function text(k){
-    const h=`${C.cpHead}\n${C.cpAmt}：${C.amt(R.won)}${R.lux?'（含奢侈稅）':''}\n車價：${fmt(R.price)} 元`;
+    const h=`${C.cpHead}\n${C.cpAmt}：${C.amt(R.won)}\n車價：${fmt(R.price)} 元${R.lux?'（含奢侈稅）':''}`;
     const c=`現金價：${fmt(R.cash)} 元
 （${wan(R.cash)}，含手續費 2%）`, l=`貸款價：${fmt(R.loan)} 元
 （${wan(R.loan)}，含手續費 5%）`;
     const x=`報價：${fmt(R.cust)} 元
 （${wan(R.cust)}，含手續費 ${R.xp}%）`;
-    if(k==='base')return `${C.cpHead}\n${C.cpAmt}：${C.amt(R.won)}${R.lux?'（含奢侈稅）':''}\n車價：${fmt(R.price)} 元\n（${wan(R.price)}，未含手續費）`;
+    if(k==='base')return `${C.cpHead}\n${C.cpAmt}：${C.amt(R.won)}\n車價：${fmt(R.price)} 元${R.lux?'（含奢侈稅）':''}\n（${wan(R.price)}，未含手續費）`;
     return h+'\n'+(k==='cash'?c:k==='loan'?l:k==='cust'?x:c+'\n'+l);
   }
   const feeX=$('feeX'); if(ss.get(K('feex'))!=null)feeX.value=ss.get(K('feex'));
