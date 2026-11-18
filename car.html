@@ -119,7 +119,6 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .qc h3 em{font-style:normal;font:800 24px/1 var(--num);color:var(--red);letter-spacing:0}
 .qc .fee{font-size:13px;color:var(--mut);font-variant-numeric:tabular-nums}
 .qc .tot{font:700 24px var(--num);color:var(--navy2);white-space:nowrap;overflow:hidden;display:block}
-#xTot{display:inline}
 @media (prefers-color-scheme: dark){.qc .tot{color:#9fb8ff}}
 .qc .wan{font-size:15px;font-weight:700;color:var(--fg)}
 .buf{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--mut)}
@@ -176,7 +175,10 @@ body.lock{overflow:hidden}
 .qx{grid-column:1/-1}
 .qx .fx{display:flex;align-items:baseline;gap:2px}
 #feeX{width:60px;font:800 26px/1 var(--num);color:var(--red);text-align:right;border:0;border-bottom:2px solid var(--gold);background:transparent;padding:0 2px}
-.xrow{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.xb{display:flex;justify-content:space-between;align-items:flex-end;gap:10px 16px;flex-wrap:wrap}
+.xl{display:flex;flex-direction:column;gap:4px;min-width:0}
+.qx .feeq{justify-content:flex-end;padding-bottom:4px}
+.qx .feeq span{font-size:12.5px}
 .feeq{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;color:var(--mut)}
 .feeq button{border:1px solid var(--ln);background:var(--card);color:var(--fg);border-radius:20px;padding:4px 12px;font:600 13px var(--num);cursor:pointer}
 .feeq button.on{border-color:var(--gold);background:var(--goldbg)}
@@ -286,11 +288,10 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     </div>
     <div class="qc qx">
       <h3>自訂手續費 <span class="fx"><input id="feeX" inputmode="decimal" enterkeyhint="done" value="3" aria-label="自訂手續費百分比"><em>%</em></span></h3>
-      <div class="xrow"><div class="fee" id="xFee">手續費 —</div><div><span class="tot" id="xTot">—</span> <span class="wan" id="xWan"></span></div></div>
+      <div class="xb"><div class="xl"><div class="fee" id="xFee">手續費 —</div><div class="tot" id="xTot">—</div><div class="wan" id="xWan"></div></div><div class="feeq" id="feeQ"><span>快速選</span><button type="button" data-f="1">1%</button><button type="button" data-f="3">3%</button><button type="button" data-f="4">4%</button><button type="button" data-f="6">6%</button></div></div>
       <div class="cpr"><button class="btn" type="button" data-cp="cust"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製報價</button><button class="btn ib" type="button" data-img="cust" aria-label="下載報價圖片" title="下載報價圖片"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></svg></button></div>
     </div>
   </div>
-  <div class="feeq" id="feeQ"><span>快速選：</span><button type="button" data-f="1">1%</button><button type="button" data-f="3">3%</button><button type="button" data-f="4">4%</button><button type="button" data-f="6">6%</button></div>
   <button class="btn" type="button" data-cp="both" style="padding:10px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製兩種報價</button>
 
   <div class="foot" id="foot"><h4>計算公式</h4><b>車價</b><span id="fCar">美金 × 台幣匯率 × 倍率 ＋ 18 萬</span><b>手續費</b><span>車價 × 手續費 %</span><b>約 N 萬元</b><span>四捨五入到萬元，方便報價</span></div>
