@@ -603,7 +603,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     }
     const cf=Math.round(price*0.02), lf=Math.round(price*0.05);
     R={won,twd,m,b,price,cf,lf,lux,cash:price+cf,loan:price+lf,steps:[...steps.filter(Boolean),['加底價','＋ 標準底價',fmt(b)+' 台幣']]};
-    if(lux&&!warn)$('krwHint').textContent=`＝ ${fmt(won)} 韓元，7000萬以上加奢侈稅 ×1.81`;  // 一行放得下，不會把下面推下去
+    if(lux&&!warn)$('krwHint').innerHTML=`＝ ${fmt(won)} 韓元，<b style="font-weight:700;color:var(--fg)">7000萬以上加奢侈稅 ×1.81</b>`;  // 一行放得下，不會把下面推下去
     $('sPrice').textContent=fmt(price);
     $('cFee').textContent=`手續費 ${fmt(cf)}`; $('cTot').textContent=fmt(R.cash); $('cWan').textContent=wan(R.cash);
     const xp=num($('feeX').value), xf=Math.round(price*xp/100); R.xp=xp; R.xf=xf; R.cust=price+xf;
