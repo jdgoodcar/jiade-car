@@ -141,16 +141,19 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .adj b{font:700 16px var(--num)}
 .adj span{font-size:12.5px;color:var(--mut)}
 .qc .btn{margin-top:6px}
-.fbase{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--mut)}
+.fbase{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;font-size:13px;color:var(--mut)}
+.fbase.chg{flex-wrap:wrap}
+@media (max-width:340px){.fbase{flex-wrap:wrap}}  /* 只有出現「恢復預設」時才換行；平常一行，輸入框會自己縮 */
+.fbase>span{flex:0 0 auto;white-space:nowrap}
 .fbase .btn.bdef{white-space:nowrap}
-.fbase .fcp{margin:0 0 0 auto}
+.fbase .fcp{margin:0 0 0 auto;flex:0 0 auto}
 .fbase .fcp [data-cp]{flex:0 0 auto;padding:7px 10px}
-@media (max-width:380px){.fbase .fcp [data-cp]{padding:7px 8px}.fbase .fcp [data-cp] .ic{display:none}}
+@media (max-width:440px){.fbase .fcp [data-cp]{padding:7px 9px}.fbase .fcp [data-cp] .ic{display:none}}
 .fbase.chg input{border:2px solid var(--warn);background:color-mix(in srgb,var(--warn) 10%,var(--card))}
 .bwarn{flex-basis:100%;margin-top:-2px;padding-left:60px;font-size:11.5px;font-weight:600;color:var(--warn)} /* 對齊輸入框 */
 .bwarn:empty{display:none}
 #sBase.chg{color:var(--warn)}
-.fbase input{width:110px;font:600 16px var(--num);padding:5px 8px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--fg)}
+.fbase input{flex:0 1 auto;min-width:72px;width:110px;font:600 16px var(--num);padding:5px 8px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--fg)}
 @media (max-width:420px){.fbase{gap:6px}.fbase input{width:96px}}
 @media (max-width:380px){.fbase input{width:86px}}
 #toast{position:fixed;z-index:30;left:50%;bottom:calc(104px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#1b2235;color:#fff;padding:10px 18px;border-radius:20px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s}
