@@ -730,7 +730,10 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('input')){e.preventDefault();const ok={manIn:'manOk',kIn:'kOk'}[e.target.id];if(ok)$(ok).click();else e.target.blur()}});
 
   // 主畫面 App 常常開著不關：回到畫面時，匯率超過 5 分鐘就自動重抓
-  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!(manual&&(!C.via||kman))&&(!rateInfo||Date.now()-rateInfo.got>3e5))loadRate()});
+  // 匯率自動更新：回到畫面時、或網頁一直開著每過 5 分鐘，都會自己重抓（手動輸入的匯率不會被蓋掉）
+  const rateStale=()=>!(manual&&(!C.via||kman))&&(!rateInfo||Date.now()-rateInfo.got>3e5);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&rateStale())loadRate()});
+  setInterval(()=>{if(document.visibilityState==='visible'&&rateStale()&&document.activeElement.tagName!=='INPUT')loadRate()},60000);
 
   // ---------- 快速修改列（往下滑時出現）----------
   const qbar=$('qbar'), qAmt=$('qAmt');
