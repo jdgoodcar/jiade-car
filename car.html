@@ -135,8 +135,7 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .fbase{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--mut)}
 .fbase .btn.bdef{padding:5px 10px}
 .fbase.chg input{border:2px solid var(--warn);background:color-mix(in srgb,var(--warn) 10%,var(--card))}
-.fbase.chg .bdef{border-color:var(--warn);color:var(--warn);background:color-mix(in srgb,var(--warn) 10%,transparent)}
-.bwarn{flex-basis:100%;font-size:12.5px;font-weight:700;color:var(--warn)}
+.bwarn{flex-basis:100%;font-size:11.5px;font-weight:600;color:var(--warn)}
 .bwarn:empty{display:none}
 #sBase.chg{color:var(--warn)}
 .fbase input{width:110px;font:600 16px var(--num);padding:5px 8px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--fg)}
@@ -378,7 +377,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   const BASE0=180000, base=$('base'); // 標準底價：記住上次的數字；不是 18 萬時標橘色提醒
   {const v=store.get(K('base'));base.value=fmt(v>0?v:BASE0)}
   function baseMark(){const v=num(base.value),c=v!==BASE0;$('fbase').classList.toggle('chg',c);$('sBase').classList.toggle('chg',c);
-    $('bWarn').textContent=c?'⚠ 目前不是預設 18 萬，報價前請確認是不是要用這個數字':'';$('bDef').hidden=!c}
+    $('bWarn').textContent=c?'⚠ 不是預設 18 萬，請確認':'';$('bDef').hidden=!c}
   base.addEventListener('input',()=>{const v=num(base.value);base.value=v?fmt(v):'';store.set(K('base'),v||null);baseMark();calc()});
   $('bDef').onclick=()=>{base.value=fmt(BASE0);store.set(K('base'),null);baseMark();calc();toast('標準底價已恢復 18 萬')};
   baseMark();
