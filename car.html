@@ -209,6 +209,14 @@ body.lock{overflow:hidden}
 .rcpt .st.sum::before,.rcpt .st.sum::after{content:"";position:absolute;top:-10px;width:18px;height:18px;border-radius:50%;background:var(--bg)}
 .rcpt .st.sum::before{left:-25px}
 .rcpt .st.sum::after{right:-25px}
+/* 現金價／貸款／自訂手續費 也放進同一張票：裡面的小卡片改成淡框 */
+.rq2{padding:10px 8px 24px}
+.rq2 .q2{gap:8px}
+.rq2 .qc{padding:12px}
+.rq2 .qc h3{margin:-12px -12px 8px;padding:8px 12px;font-size:17px;letter-spacing:.02em;white-space:nowrap}
+.rq2 .qc h3 .fl small{font-size:12px}
+.rq2 .qc h3 em{font-size:21px}
+.rq2 .qc{border-color:color-mix(in srgb,var(--gold) 35%,var(--ln));box-shadow:none}
 .rcptw{filter:drop-shadow(0 3px 6px #16244a26);margin-bottom:8px}
 @media (prefers-color-scheme: dark){.rcptw{filter:drop-shadow(0 3px 8px #0008)}}
 /* 回到最上面的小三角形 */
@@ -358,6 +366,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     <div class="fbase" id="fbase"><span>標準底價</span><input id="base" size="6" inputmode="numeric" enterkeyhint="done" autocomplete="off" value="180,000"><span>元</span><button class="btn bdef" id="bDef" type="button">↻ 恢復預設 18 萬</button><div class="cpr fcp"><button class="btn" type="button" data-cp="base" title="複製報價（未含手續費）" aria-label="複製報價（未含手續費）"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製報價</button><button class="btn ib" type="button" data-img="base" aria-label="下載報價圖片" title="下載報價圖片"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></svg></button></div><span class="bwarn" id="bWarn"></span></div>
   </section></div>
 
+  <div class="rcptw"><section class="card rcpt rq2" aria-label="報價">
   <div class="q2">
     <div class="qc">
       <h3>現金價 <span class="fl"><small>手續費</small><em>2%</em></span></h3>
@@ -379,6 +388,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
       <div class="cpr"><button class="btn" type="button" data-cp="cust"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製報價</button><button class="btn ib" type="button" data-img="cust" aria-label="下載報價圖片" title="下載報價圖片"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></svg></button></div>
     </div>
   </div>
+  </section></div>
   <button class="btn" type="button" data-cp="both" style="padding:10px"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製兩種報價</button>
 
   <div class="foot" id="foot"><h4>計算公式</h4><b>車價</b><span id="fCar">美金 × 台幣匯率 × 倍率 ＋ 18 萬</span><b>手續費</b><span>車價 × 手續費 %</span><b>約 N 萬元</b><span>四捨五入到萬元，方便報價</span></div>
