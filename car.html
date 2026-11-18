@@ -104,6 +104,7 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .rlab{font-size:13px;color:var(--mut);margin:10px 0 6px;padding-top:10px;border-top:1px dashed var(--ln)}
 .st.st0 span{color:var(--fg)}
 .rhead.r2{align-items:center}
+#rStT{white-space:pre-line}
 .rst{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--mut)}
 .rb{border-top:1px dashed var(--ln);padding-top:10px;margin-top:10px}
 .rbh{display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -176,6 +177,12 @@ input,textarea,select{font-size:max(16px,1em)}  /* iPhone 輸入框字小於 16p
 .cpgo{border:0;border-radius:12px;padding:13px;font:700 16px var(--f);background:var(--navy);color:#fff;cursor:pointer}
 .cpgo:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 body.lock{overflow:hidden}
+/* 計算區和結果區中間的分隔 */
+.sdiv{display:flex;align-items:center;gap:12px;margin:8px 2px 0}
+.sdiv::before,.sdiv::after{content:"";flex:1;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--gold))}
+.sdiv::after{background:linear-gradient(90deg,var(--gold),transparent)}
+.sdiv span{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:999px;background:var(--navy);color:#f3cf7a;font:800 14px var(--f);letter-spacing:.12em;box-shadow:0 3px 10px #16244a33;white-space:nowrap}
+.sdiv svg{width:14px;height:14px;fill:#f3cf7a}
 /* 回到最上面的小三角形 */
 .totop{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(104px + env(safe-area-inset-bottom,0px));z-index:6;width:42px;height:42px;border-radius:50%;border:1.5px solid #f3cf7a;background:var(--navy);box-shadow:0 4px 12px #16244a40;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .2s,transform .2s}
 .totop.on{opacity:.92;transform:none;pointer-events:auto}
@@ -322,6 +329,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     <div class="fbase" id="fbase"><span>標準底價</span><input id="base" size="6" inputmode="numeric" enterkeyhint="done" autocomplete="off" value="180,000"><span>元</span><button class="btn bdef" id="bDef" type="button">↻ 恢復預設 18 萬</button><div class="cpr fcp"><button class="btn" type="button" data-cp="base" title="複製報價（未含手續費）" aria-label="複製報價（未含手續費）"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製報價</button><button class="btn ib" type="button" data-img="base" aria-label="下載報價圖片" title="下載報價圖片"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></svg></button></div><span class="bwarn" id="bWarn"></span></div>
   </section>
 
+  <div class="sdiv" role="separator"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg>報價結果</span></div>
   <div class="q2">
     <div class="qc">
       <h3>現金價 <span class="fl"><small>手續費</small><em>2%</em></span></h3>
@@ -480,28 +488,36 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   ['base','manIn','kIn'].forEach(i=>$(i).addEventListener('focus',e=>setTimeout(()=>{try{e.target.select()}catch(x){}},0)));
 
   // ---------- 匯率 ----------
-  const SRC=[ // 第一個是即時匯率（Coinbase，約每分鐘更新，跟 Google 很接近）；失敗才用後面每日更新的
-    {n:'Coinbase',u:`https://api.coinbase.com/v2/exchange-rates?currency=${C.code}`,p:j=>j.data&&j.data.rates&&j.data.rates.TWD,k:j=>j.data.rates.KRW,t:()=>Date.now()},
+  // 匯率來源：前兩個是即時（約每分鐘更新，跟 Google 只差零點幾）；都失敗才用後面每天更新一次的
+  const SRC=[
+    {n:'Coinbase',live:1,u:`https://api.coinbase.com/v2/exchange-rates?currency=${C.code}`,p:j=>j.data&&j.data.rates&&j.data.rates.TWD,k:j=>j.data.rates.KRW,t:()=>Date.now()},
+    {n:'FXRatesAPI',live:1,u:`https://api.fxratesapi.com/latest?base=${C.code}&currencies=KRW,TWD`,p:j=>j.success&&j.rates&&j.rates.TWD,k:j=>j.rates.KRW,t:j=>j.timestamp?j.timestamp*1000:Date.now()},
     {n:'ExchangeRate-API',u:`https://open.er-api.com/v6/latest/${C.code}`,p:j=>j.result==='success'&&j.rates.TWD,k:j=>j.rates.KRW,t:j=>j.time_last_update_unix*1000},
     {n:'Currency API',u:`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${C.lc}.json`,p:j=>j[C.lc]&&j[C.lc].twd,k:j=>j[C.lc].krw,t:j=>Date.parse(j.date)},
     {n:'Currency API',u:`https://latest.currency-api.pages.dev/v1/currencies/${C.lc}.json`,p:j=>j[C.lc]&&j[C.lc].twd,k:j=>j[C.lc].krw,t:j=>Date.parse(j.date)}
   ];
+  let rateErr=[];  // 哪個來源失敗、為什麼（顯示在匯率狀態下方，方便查手機問題）
   async function loadRate(){
-    $('rStT').textContent='讀取中…'; $('rDot').className='dot';
+    $('rStT').textContent='讀取中…'; $('rDot').className='dot'; rateErr=[];
     for(const s of SRC){
+      const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),6000);
       try{
-        const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),6000);
-        const r=await fetch(s.u+(s.u.includes('?')?'&':'?')+'_='+Date.now(),{signal:ctl.signal}); // 不用 cache:'no-store'：iPhone Safari 會因此多送標頭，Coinbase 會拒絕 clearTimeout(to);
-        const j=await r.json(); const v=+s.p(j);
-        const k=+s.k(j); if(v>0&&(!C.via||k>0)){rateInfo={v,k,src:s.n,t:s.t(j)||Date.now(),got:Date.now()};store.set(K(RK),rateInfo);showRate();return}
-      }catch(e){}
+        // 不用 cache:'no-store'：iPhone Safari 會因此多送標頭，Coinbase 會拒絕；改在網址後面加時間，確保拿到最新的
+        const r=await fetch(s.u+(s.u.includes('?')?'&':'?')+'_='+Date.now(),{signal:ctl.signal});
+        if(!r.ok)throw new Error('HTTP '+r.status);
+        const j=await r.json(); const v=+s.p(j), k=+s.k(j);
+        if(v>0&&(!C.via||k>0)){rateInfo={v,k,src:s.n,live:!!s.live,t:s.t(j)||Date.now(),got:Date.now()};store.set(K(RK),rateInfo);showRate();return}
+        throw new Error('資料不完整');
+      }catch(e){rateErr.push(s.n+'：'+(e&&e.name==='AbortError'?'逾時':(e&&e.message)||'失敗'))}
+      finally{clearTimeout(to)}
     }
     rateInfo=store.get(K(RK)); showRate(true);
   }
   function d2(t){const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
   function showRate(failed){
     rate=manual||(rateInfo&&rateInfo.v)||null;
-    if(rateInfo){$('rDot').className='dot '+(failed?'warn':'ok');$('rStT').textContent=failed?`連不上網路，用上次的匯率（${d2(rateInfo.got)} 取得）`:`網頁即時匯率，更新於 ${d2(rateInfo.t)}（${rateInfo.src||""}）`}
+    if(rateInfo){$('rDot').className='dot '+(failed?'warn':'ok');$('rStT').textContent=failed?`連不上網路，用上次的匯率（${d2(rateInfo.got)} 取得）`:`${rateInfo.live?"網頁即時匯率":"網頁匯率（每日更新）"}，更新於 ${d2(rateInfo.t)}（${rateInfo.src||""}）`+(rateErr.length?`
+（${rateErr.join("、")}）`:"")}
     else{$('rDot').className='dot warn';$('rStT').textContent='讀不到網頁匯率，請用「手動輸入」';if(!manual)$('manBox').classList.add('on');if(C.via&&!kman)$('kBox').classList.add('on')}
     showK(); showBuf(); calc();
   }
