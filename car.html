@@ -115,7 +115,7 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 /* 超過7000萬：排氣量不適用 → 兩顆都反白、不能點 */
 .cc.lxoff button,.qcc.lxoff button{opacity:.4;pointer-events:none;cursor:default;filter:grayscale(1)}
 .cc.lxoff button.on{border-color:var(--ln);background:var(--card)}
-.qcc.lxoff button.on{background:transparent;color:#ffffffcc}
+.qcc.lxoff button.on{background:transparent;color:#ffffffcc;border-color:transparent}
 .qcc.lxoff button.on small{color:#ff9a9a}
 @media (max-width:380px){.ccf,.hint{font-size:11.5px}}
 .ccf,.rbf{width:fit-content;max-width:100%;box-sizing:border-box;padding:3px 9px;border-radius:6px;background:var(--goldbg);border-left:3px solid var(--gold);color:var(--fg);font-weight:600} /* 每區小計算式標出來 */
@@ -136,7 +136,7 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .rbf{margin:6px 0 0;font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums}
 .rbf:empty{display:none}
 .tg{display:inline-block;font-style:normal;font-size:12px;font-weight:700;line-height:1.6;padding:0 6px;border-radius:6px;background:var(--goldbg);color:var(--fg);margin-right:6px;min-width:4.3em;text-align:center}
-.st small.lx{display:block;font-size:12.5px;color:#c0392b;font-weight:700}
+.st small.lx{display:block;white-space:nowrap;font-size:12px;color:#c0392b;font-weight:700}
 .man input{width:130px;font:600 16px var(--num);padding:6px 8px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--fg)}
 .steps{display:flex;flex-direction:column;gap:10px;font-variant-numeric:tabular-nums}
 .steps>*{min-width:0}
@@ -623,7 +623,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     const er=ER(), bt=manual||!buf?'':`（＋${buf}%）`;
     const T=(t,x)=>`<i class="tg">${t}</i>${x}`;
     const lux=!!C.seg&&won>=LUXW;
-    const LX=T('奢侈稅','× 1.81')+'<small class="lx">超過7000萬（含），不乘倍率</small>';
+    const LX=T('奢侈稅','× 1.81')+'<small class="lx">超過7000萬（含）不乘倍率</small>';
     const rows=v=>$('stL').innerHTML=v.filter(Boolean).map(([l,x],i)=>`<div class="st${i?'':' st0'}"><span>${l}</span><b>${x}</b></div>`).join('');
     const st0=[C.amtL,won?(C.via?fmt(won)+' 韓元':usd(won)):'—'];
     const rowsKR=(a,c,d,e)=>[st0,lux?[LX,c]:[T('乘倍率','× '+(m||'?')),c],[T('換美金',`÷ ${krate?kf(krate):'?'}`),d],[T('換台幣',`× ${er?er.toFixed(3):'?'}`),e]];
@@ -638,7 +638,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     if(C.via){ // 韓國：韓幣 × 倍率（超過7000萬含：改乘奢侈稅 1.81，不再乘 1.543／1.61）→ ÷ 美金匯率折美金（取整數）→ × 台幣匯率 → ＋ 底價
       const mm=lux?LUX:m, wl=won, wk=Math.round(won*mm), us=Math.round(wk/krate); /* 折美金：四捨五入到整數（2026-11-18 使用者要先用四捨五入對照老闆算法） */ twd=Math.round(us*er); price=twd+b;
       rows(rowsKR(fmt(wl)+' 韓元',fmt(wk)+' 韓元',usd(us),fmt(twd)+' 台幣'));
-      steps=[['',C.amtL,fmt(won)+' 韓元'],lux?['奢侈稅','× 1.81',fmt(wk)+' 韓元','超過7000萬（含），不乘倍率']:['乘倍率',`× ${m}（${ccN}）`,fmt(wk)+' 韓元'],['換美金','÷ '+kf(krate),usd(us)],['換台幣','× '+er.toFixed(3),fmt(twd)+' 台幣']];
+      steps=[['',C.amtL,fmt(won)+' 韓元'],lux?['奢侈稅','× 1.81',fmt(wk)+' 韓元','超過7000萬（含）不乘倍率']:['乘倍率',`× ${m}（${ccN}）`,fmt(wk)+' 韓元'],['換美金','÷ '+kf(krate),usd(us)],['換台幣','× '+er.toFixed(3),fmt(twd)+' 台幣']];
       fx('kF',`${fmt(wk)} 韓元 ÷ ${kf(krate)} ＝ ${usd(us)}`); fx('rF',`${usd(us)} × ${er.toFixed(3)} ＝ ${fmt(twd)} 台幣`);
       ccF(lux?`${(won/10000).toLocaleString('zh-TW')}萬韓幣 × 1.81 奢侈稅 ＝ ${fmt(wk)} 韓元`:`${(won/10000).toLocaleString('zh-TW')}萬韓幣 × ${m} ＝ ${fmt(wk)} 韓元`);
     } else {
