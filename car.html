@@ -149,13 +149,13 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .fbase{min-width:0;width:100%;max-width:100%;display:grid;grid-template-columns:auto minmax(60px,104px) auto 1fr auto;align-items:center;gap:8px 6px;font-size:13px;color:var(--mut)}
 .fbase>span{white-space:nowrap}
 @media (max-width:350px){.fbase{grid-template-columns:auto minmax(40px,110px) auto 0 auto;column-gap:4px}}
-.fbase .btn.bdef{white-space:nowrap;grid-column:1/-1;grid-row:2;justify-self:start}
+.fbase .btn.bdef{white-space:nowrap;grid-column:4;grid-row:1;justify-self:end;padding:6px 9px}  /* 恢復預設接在「元」後面同一行 */
 .fbase .fcp{grid-column:5;grid-row:1;margin:0}
 .fbase.wr .fcp{grid-column:1/-1;grid-row:3;justify-self:end}  /* 真的放不下時（字比較大的手機）才換到下一行 */
 .fbase .fcp .btn{background:var(--gbg);border-color:var(--gbd)}
 .fbase .fcp .ic{stroke:var(--gic)}
 .fbase .fcp [data-cp]{flex:0 0 auto;padding:7px 10px}
-@media (max-width:440px){.fbase{grid-template-columns:auto minmax(60px,130px) auto 1fr}.fbase .fcp,.fbase.wr .fcp{grid-column:1/-1;grid-row:3;justify-self:stretch}.fbase .fcp [data-cp]{flex:1}.fbase .btn.bdef{grid-column:1/-1}}  /* 手機：複製、圖片按鈕自己一整行，不跟底價擠 */
+@media (max-width:440px){.fbase{grid-template-columns:auto minmax(60px,130px) auto 1fr}.fbase .fcp,.fbase.wr .fcp{grid-column:1/-1;grid-row:2;justify-self:stretch}.fbase .fcp [data-cp]{flex:1}}  /* 手機：複製、圖片按鈕自己一整行，不跟底價擠 */
 .fbase.chg input{border:2px solid var(--warn);background:color-mix(in srgb,var(--warn) 10%,var(--card))}
 .bwarn{grid-column:1/-1;margin-top:-2px;padding-left:60px;font-size:11.5px;font-weight:600;color:var(--warn)} /* 對齊輸入框 */
 .bwarn:empty{display:none}
