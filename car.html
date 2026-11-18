@@ -344,10 +344,10 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   $('manL').textContent=C.one+' ='; $('manIn').placeholder=C.manPh; $('noteC').textContent=C.cn; $('noteR').textContent='0.3%～0.5%';
   document.querySelector('.seg').hidden=!C.seg; const pic=document.querySelector('.pic'); if(pic)pic.hidden=!C.img;
   document.querySelectorAll('#cur button').forEach(b=>b.classList.toggle('on',b.dataset.c===ck));
-  $('cur').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.c===ck)return;try{localStorage.setItem('car_cur',b.dataset.c)}catch(err){}location.hash=b.dataset.c;location.reload()};
+  $('cur').onclick=e=>{const b=e.target.closest('button');if(!b||b.dataset.c===ck)return;try{localStorage.setItem('car_cur',b.dataset.c)}catch(err){}ss.set('sy_'+ck,scrollY);location.hash=b.dataset.c;location.reload()};
   if(location.hash!=='#'+ck)history.replaceState(null,'','#'+ck);
 
-  let unit=C.seg?10000:1;          // 韓元一律預設「萬韓元」（跟 Encar 一樣）；切到「韓元」只在這次有效
+  let unit=C.seg?(ss.get(K('unit'))===1?1:10000):1;   // 預設「萬韓元」（跟 Encar 一樣）；切到「韓元」只在這個分頁有效（切美金再切回來也保留）
   {const w=ss.get(K('won')); $('krw').value=fmt((w!=null?w:C.def)/unit);}
   let mul=store.get(K('mul'))||'1.543';
   const RK=C.via?'rate2':'rate', MK=C.via?'man3':'man2';  // 韓國版改成「韓元→美金→台幣」，用新的存檔名，舊的韓元→台幣匯率不再使用
@@ -373,7 +373,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   // ---------- 輸入 ----------
   const krw=$('krw');
   function setUnit(u){
-    const won=num(krw.value)*unit; unit=u; store.set(K('unit'),u);
+    const won=num(krw.value)*unit; unit=u; ss.set(K('unit'),u);
     $('u1').classList.toggle('on',u===1); $('u2').classList.toggle('on',u===10000);
     krw.value=won?fmt(won/u):''; quick(); calc();
   }
@@ -634,6 +634,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   if(C.via)$('fCar').innerHTML='<i>韓幣 × 倍率 ÷ 美金匯率</i> <i>× 台幣匯率 ＋ 18 萬</i>';
   rateInfo=store.get(K(RK)); if(manual||rateInfo)showRate();
   if(!manual||(C.via&&!kman))loadRate();
+  {const y=ss.get('sy_'+ck);if(y>0)requestAnimationFrame(()=>scrollTo(0,y))}  // 切幣別回來時回到原本捲到的位置
 })();
 </script>
 </body>
