@@ -146,7 +146,7 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .adj span{font-size:12.5px;color:var(--mut)}
 .qc .btn{margin-top:6px}
 /* 標準底價這一行用格線排：標題｜輸入框（會縮）｜元｜空白｜按鈕，按鈕永遠在卡片裡 */
-.fbase{min-width:0;width:100%;max-width:100%;display:grid;grid-template-columns:auto minmax(60px,110px) auto 1fr auto;align-items:center;gap:8px 6px;font-size:13px;color:var(--mut)}
+.fbase{min-width:0;width:100%;max-width:100%;display:grid;grid-template-columns:auto minmax(60px,104px) auto 1fr auto;align-items:center;gap:8px 6px;font-size:13px;color:var(--mut)}
 .fbase>span{white-space:nowrap}
 @media (max-width:350px){.fbase{grid-template-columns:auto minmax(40px,110px) auto 0 auto;column-gap:4px}}
 .fbase .btn.bdef{white-space:nowrap;grid-column:1/-1;grid-row:2;justify-self:start}
@@ -319,7 +319,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     <div id="stL" class="steps"></div>
     <div class="st"><span><i class="tg">加底價</i>＋ 標準底價</span><b id="sBase">180,000</b></div>
     <div class="st sum"><span>車價</span><b id="sPrice">—</b></div>
-    <div class="fbase" id="fbase"><span>標準底價</span><input id="base" size="6" inputmode="numeric" enterkeyhint="done" autocomplete="off" value="180,000"><span>元</span><button class="btn bdef" id="bDef" type="button">↻ 恢復預設 18 萬</button><div class="cpr fcp"><button class="btn" type="button" data-cp="base"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製報價</button><button class="btn ib" type="button" data-img="base" aria-label="下載報價圖片" title="下載報價圖片"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></svg></button></div><span class="bwarn" id="bWarn"></span></div>
+    <div class="fbase" id="fbase"><span>標準底價</span><input id="base" size="6" inputmode="numeric" enterkeyhint="done" autocomplete="off" value="180,000"><span>元</span><button class="btn bdef" id="bDef" type="button">↻ 恢復預設 18 萬</button><div class="cpr fcp"><button class="btn" type="button" data-cp="base" title="複製報價（未含手續費）" aria-label="複製報價（未含手續費）"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製</button><button class="btn ib" type="button" data-img="base" aria-label="下載報價圖片" title="下載報價圖片"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></svg></button></div><span class="bwarn" id="bWarn"></span></div>
   </section>
 
   <div class="q2">
