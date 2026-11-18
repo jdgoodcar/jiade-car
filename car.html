@@ -89,6 +89,17 @@ label.t{display:block;font-size:13px;color:var(--mut);margin-bottom:6px;letter-s
 .krow.first{border-top:0;margin-top:0;padding-top:0}
 .rlab{font-size:13px;color:var(--mut);margin:10px 0 6px;padding-top:10px;border-top:1px dashed var(--ln)}
 .st.st0 span{color:var(--fg)}
+.rhead.r2{align-items:center}
+.rst{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--mut)}
+.rb{border-top:1px dashed var(--ln);padding-top:10px;margin-top:10px}
+.rbh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.rbn{font-size:14px;font-weight:700;color:var(--fg)}
+.rbv{font:700 18px var(--num);margin-top:2px}
+.rtag{display:inline-block;margin-top:4px;font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok)}
+.rtag.m{background:color-mix(in srgb,var(--warn) 16%,transparent);color:var(--warn)}
+.rbf{margin:6px 0 0;font-size:12.5px;color:var(--mut);font-variant-numeric:tabular-nums}
+.rbf:empty{display:none}
+.tg{display:inline-block;font-style:normal;font-size:12px;font-weight:700;line-height:1.6;padding:0 6px;border-radius:6px;background:var(--goldbg);color:var(--fg);margin-right:6px;min-width:4.3em;text-align:center}
 .st small.lx{display:block;font-size:12.5px;color:#c0392b;font-weight:700}
 .man input{width:130px;font:600 16px var(--num);padding:6px 8px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--fg)}
 .steps{display:flex;flex-direction:column;gap:6px;font-variant-numeric:tabular-nums}
@@ -202,24 +213,24 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   </section>
 
   <section class="card">
-    <div class="rhead"><label class="t" id="rateL">匯率（韓元 → 台幣）</label><span id="rMode" class="rmode"></span></div>
-    <div class="rlab" id="rLab" hidden>② 美金 → 台幣</div>
-    <div class="rate">
-      <span class="dot" id="rDot"></span>
-      <span class="v" id="rVal">讀取中…</span>
-      <span class="s" id="rSrc"></span>
-      <button class="btn" id="rRe" type="button">↻ 更新</button>
-      <button class="btn" id="rMan" type="button">手動輸入</button>
+    <div class="rhead r2"><label class="t" id="rateL">匯率</label><button class="btn" id="rAll" type="button">↻ 匯率全部更新</button></div>
+    <div class="rst"><span class="dot" id="rDot"></span><span id="rStT">讀取中…</span></div>
+    <div class="rb" id="rbK" hidden>
+      <div class="rbh"><span class="rbn">① 韓元 → 美金</span><button class="btn" id="kMan" type="button">手動輸入</button></div>
+      <div class="rbv" id="kVal">—</div>
+      <span class="rtag" id="kTag"></span>
+      <div class="man" id="kBox"><span>1 美元 =</span><input id="kIn" inputmode="decimal" enterkeyhint="done" placeholder="例 1323.66"><span>韓元</span><button class="btn" id="kOk" type="button">套用</button></div>
+      <p class="rbf" id="kF"></p>
     </div>
-    <div class="adj" id="rAdj" hidden></div>
-    <div class="man" id="manBox">
-      <span id="manL">1 韓元 =</span><input id="manIn" inputmode="decimal" enterkeyhint="done" placeholder="例 0.0247"><span>台幣</span>
-      <button class="btn" id="manOk" type="button">套用</button>
+    <div class="rb" id="rbT">
+      <div class="rbh"><span class="rbn" id="tN">美金 → 台幣</span><button class="btn" id="rMan" type="button">手動輸入</button></div>
+      <div class="rbv" id="rVal">—</div>
+      <span class="rtag" id="rTag"></span>
+      <div class="man" id="manBox"><span id="manL">1 美元 =</span><input id="manIn" inputmode="decimal" enterkeyhint="done" placeholder="例 33"><span>台幣</span><button class="btn" id="manOk" type="button">套用</button></div>
+      <p class="rbf" id="rF"></p>
     </div>
-    <div class="krow" id="kRow" hidden><span>① 韓元 → 美金</span><b id="kVal">—</b><em id="kSrc"></em><button class="btn" id="kRe" type="button">↻ 更新</button><button class="btn" id="kMan" type="button">手動輸入</button></div>
-    <div class="man" id="kBox"><span>1 美元 =</span><input id="kIn" inputmode="decimal" enterkeyhint="done" placeholder="例 1323.66"><span>韓元</span><button class="btn" id="kOk" type="button">套用</button></div>
     <div class="buf">
-      <span>匯率加成</span>
+      <span id="bufL">匯率加成</span>
       <div class="bufq" id="bufQ"><button type="button" data-b="0">不加</button><button type="button" data-b="0.5">0.5%</button><button type="button" data-b="1">1%</button><button type="button" data-b="1.5">1.5%</button><button type="button" data-b="2">2%</button></div>
     </div>
     <p class="note">網頁抓的是國際「中間價」，銀行實際換<span id="noteC">韓元</span>會貴一點（約 <span id="noteR">1%～2%</span>），所以計算時把匯率多加 <b id="bufTxt">2%</b> 當緩衝，避免報價報低。<br>用「手動輸入」填銀行牌告匯率時，就不會再加。</p>
@@ -228,7 +239,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 
   <section class="card steps" aria-live="polite">
     <div id="stL" class="steps"></div>
-    <div class="st"><span>＋ 標準底價</span><b id="sBase">180,000</b></div>
+    <div class="st"><span><i class="tg">加底價</i>＋ 標準底價</span><b id="sBase">180,000</b></div>
     <div class="st sum"><span>車價</span><b id="sPrice">—</b></div>
     <div class="fbase"><span>標準底價</span><input id="base" inputmode="numeric" enterkeyhint="done" autocomplete="off" value="180,000"><span>元</span></div>
   </section>
@@ -302,8 +313,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     hint:w=>`＝ ${fmt(w)} 韓元（${(w/10000).toLocaleString('zh-TW')} 萬韓元）`,amt:w=>`${(w/10000).toLocaleString("zh-TW")} 萬韓元`,cpHead:'韓國車價報價',cpAmt:'韓幣'
   };
   const K=k=>C.p+k;
-  $('hT').innerHTML=C.head; $('hP').textContent=C.sub; $('amtL').textContent=C.amtL; $('rateL').textContent=C.rateL;
-  if(C.via){const rt=document.querySelector('.rate'),kr=$('kRow');kr.classList.add('first');rt.before(kr,$('kBox'),$('rLab'));$('rLab').hidden=false}
+  $('hT').innerHTML=C.head; $('hP').textContent=C.sub; $('amtL').textContent=C.amtL; $('rateL').textContent='匯率'; if(C.via){$('tN').textContent='② 美金 → 台幣';$('bufL').textContent='匯率加成（加在 ② 美金 → 台幣）'}
   $('manL').textContent=C.one+' ='; $('manIn').placeholder=C.manPh; $('noteC').textContent=C.cn; $('noteR').textContent='0.3%～0.5%';
   document.querySelector('.seg').hidden=!C.seg; const pic=document.querySelector('.pic'); if(pic)pic.hidden=!C.img;
   document.querySelectorAll('#cur button').forEach(b=>b.classList.toggle('on',b.dataset.c===ck));
@@ -320,7 +330,14 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   function showBuf(){
     document.querySelectorAll('#bufQ button').forEach(b=>{b.classList.toggle('on',!manual&&+b.dataset.b===buf);b.disabled=!!manual});
     $('bufTxt').textContent=buf?buf+'%':'0%（目前不加）';
-    const a=$('rAdj'); if(!manual&&rate&&buf){const r=rate*(1+buf/100);a.hidden=false;a.innerHTML=`加 ${buf}% 後（計算用這個）：<b>${C.one} = ${r.toFixed(C.dp)} 台幣</b><span>${C.sub2(r)}</span>`}else a.hidden=true;
+    showT();
+  }
+  const rtag=(id,t,m)=>{const e=$(id);e.textContent='目前使用：'+t;e.className='rtag'+(m?' m':'')};
+  function showT(){ // 美金 → 台幣
+    const er=rate&&(manual?rate:rate*(1+buf/100));
+    $('rVal').textContent=er?`${C.one} = ${er.toFixed(C.dp)} 台幣`:'讀不到';
+    rtag('rTag',manual?'手動輸入':(rate?(buf?`網頁匯率 ${rate.toFixed(C.dp)} ＋ ${buf}%`:'網頁匯率（不加成）'):'請按「手動輸入」'),!!manual||!rate);
+    $('rMan').textContent=manual?'↩ 改回網頁匯率':'手動輸入'; $('rMan').classList.toggle('back',!!manual);
   }
   $('bufQ').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;buf=+b.dataset.b;store.set(K(BK),buf);showBuf();calc()};
 
@@ -361,7 +378,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     {n:'Currency API',u:`https://latest.currency-api.pages.dev/v1/currencies/${C.lc}.json`,p:j=>j[C.lc]&&j[C.lc].twd,k:j=>j[C.lc].krw,t:j=>Date.parse(j.date)}
   ];
   async function loadRate(){
-    $('rVal').textContent='讀取中…'; $('rDot').className='dot'; $('rSrc').textContent='';
+    $('rStT').textContent='讀取中…'; $('rDot').className='dot';
     for(const s of SRC){
       try{
         const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),6000);
@@ -374,31 +391,24 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   }
   function d2(t){const d=new Date(t);return `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
   function showRate(failed){
-    const show=r=>{$('rVal').textContent=`${C.one} = ${r.toFixed(C.dp)} 台幣`;const s=C.sub2(r);return s?s+'・':''};
-    if(manual){rate=manual;$('rDot').className='dot warn';$('rSrc').textContent=show(rate)+'目前用手動輸入的匯率';}
-    else if(rateInfo){
-      rate=rateInfo.v;$('rDot').className='dot '+(failed?'warn':'ok');
-      $('rSrc').textContent=show(rate)+(failed?`連不上網路，用上次的匯率（${d2(rateInfo.got)} 取得）`:`即時匯率，更新於 ${d2(rateInfo.t)}`);
-    } else {rate=null;$('rDot').className='dot warn';$('rVal').textContent='讀不到匯率';$('rSrc').textContent='請按「手動輸入」填入匯率';$('manBox').classList.add('on')}
-    $('rMode').textContent=manual?'目前使用：手動匯率':(rate?'目前使用：網頁匯率':'');
-    $('rRe').textContent=manual?'↩ 改回網頁匯率':'↻ 更新'; $('rRe').classList.toggle('back',!!manual);
+    rate=manual||(rateInfo&&rateInfo.v)||null;
+    if(rateInfo){$('rDot').className='dot '+(failed?'warn':'ok');$('rStT').textContent=failed?`連不上網路，用上次的匯率（${d2(rateInfo.got)} 取得）`:`網頁即時匯率，更新於 ${d2(rateInfo.t)}`}
+    else{$('rDot').className='dot warn';$('rStT').textContent='讀不到網頁匯率，請用「手動輸入」';if(!manual)$('manBox').classList.add('on');if(C.via&&!kman)$('kBox').classList.add('on')}
     showK(); showBuf(); calc();
   }
-  // 韓國版：韓元 → 美金 的匯率（即時，或手動）
+  // 韓國版：韓元 → 美金 的匯率（即時，或手動；不加成）
   const kf=v=>(+v).toLocaleString('en-US',{maximumFractionDigits:2});
   function showK(){
-    if(!C.via)return; $('kRow').hidden=false;
+    if(!C.via)return; $('rbK').hidden=false;
     krate=kman||(rateInfo&&rateInfo.k)||null;
     $('kVal').textContent=krate?`1 美元 = ${kf(krate)} 韓元`:'讀不到';
-    $('kSrc').textContent=kman?'手動輸入（不加成）':(krate?`網頁即時匯率（不加成），更新於 ${d2(rateInfo.t)}`:'請按「手動輸入」');
-    $('kRe').hidden=!!kman;
+    rtag('kTag',kman?'手動輸入':(krate?'網頁匯率（不加成）':'請按「手動輸入」'),!!kman||!krate);
     $('kMan').textContent=kman?'↩ 改回網頁匯率':'手動輸入'; $('kMan').classList.toggle('back',!!kman);
   }
-  $('kRe').onclick=()=>{$('kVal').textContent='讀取中…';loadRate()};
+  $('rAll').onclick=async()=>{$('rAll').disabled=true;await loadRate();$('rAll').disabled=false;toast($('rDot').classList.contains('ok')?'匯率已全部更新 ✓':'連不上網路，暫時用上次的匯率')};
   $('kMan').onclick=()=>{if(kman){kman=null;store.set(K('mank'),null);$('kBox').classList.remove('on');showK();calc();toast('已改回網頁抓的匯率');return}$('kBox').classList.toggle('on');$('kIn').value=krate?kf(krate).replace(/,/g,''):'';$('kIn').focus()};
   $('kOk').onclick=()=>{const v=num($('kIn').value);if(!(v>100&&v<10000)){toast('請輸入 1 美元等於多少韓元（例 1323.66）');return}kman=v;store.set(K('mank'),v);$('kBox').classList.remove('on');showK();calc()};
-  $('rRe').onclick=()=>{if(manual){manual=null;store.set(K(MK),null);$('manBox').classList.remove('on');loadRate();toast('已改回網頁抓的匯率');return}loadRate()};
-  $('rMan').onclick=()=>{$('manBox').classList.toggle('on');$('manIn').value=manual||(rate?rate.toFixed(C.dp):'');$('manIn').focus()};
+  $('rMan').onclick=()=>{if(manual){manual=null;store.set(K(MK),null);$('manBox').classList.remove('on');if(rateInfo)showRate();else loadRate();toast('已改回網頁抓的匯率');return}$('manBox').classList.toggle('on');$('manIn').value=rate?rate.toFixed(C.dp):'';$('manIn').focus()};
   $('manOk').onclick=()=>{const v=num($('manIn').value);if(!C.manOk(v)){toast(C.manMsg);return}manual=v;store.set(K(MK),v);$('manBox').classList.remove('on');showRate()};
 
   // ---------- 計算 ----------
@@ -413,23 +423,27 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     else if(won&&!C.seg&&won>1e6)warn='金額好像太大（超過 100 萬美金），請再確認';
     $('krwHint').textContent=warn||(won?C.hint(won):''); $('krwHint').classList.toggle('bad',!!warn); ss.set(K('won'),won||null);
     const mL=`× ${m||'?'}（${mul==='1.543'?'2000cc 以下':mul==='1.61'?'2000cc 以上':'自訂'}）`;
-    const er=rate&&(manual?rate:rate*(1+buf/100)), bt=manual||!buf?'':`（匯率＋${buf}%）`;
+    const er=rate&&(manual?rate:rate*(1+buf/100)), bt=manual||!buf?'':`（＋${buf}%）`;
+    const T=(t,x)=>`<i class="tg">${t}</i>${x}`;
     const lux=!!C.seg&&won>=LUXW;
-    const LX='× 1.81 奢侈稅<small class="lx">7000 萬韓元以上</small>';
+    const LX=T('奢侈稅','× 1.81')+'<small class="lx">7000 萬韓元以上</small>';
     const rows=v=>$('stL').innerHTML=v.filter(Boolean).map(([l,x],i)=>`<div class="st${i?'':' st0'}"><span>${l}</span><b>${x}</b></div>`).join('');
     const st0=[C.amtL,won?(C.via?fmt(won)+' 韓元':'US$ '+won.toLocaleString('en-US')):'—'];
-    const rowsKR=(a,c,d,e)=>[st0,lux&&[LX,a],[mL,c],[`÷ ${krate?kf(krate):'?'} 換美金`,d],[`× ${er?er.toFixed(3):'?'} 換台幣${bt}`,e]];
+    const rowsKR=(a,c,d,e)=>[st0,lux&&[LX,a],[T('乘倍率','× '+(m||'?')),c],[T('換美金',`÷ ${krate?kf(krate):'?'}`),d],[T('換台幣',`× ${er?er.toFixed(3):'?'}${bt}`),e]];
+    const rowsUS=(a,c)=>[st0,[T('換台幣',`× ${er?er.toFixed(C.dp):'?'}${bt}`),a],[T('乘倍率','× '+(m||'?')),c]];
+    const fx=(k,t)=>{const e=$(k);if(e)e.textContent=t||''};
     const ccF=t=>$('ccF').textContent=t||'';
     $('sBase').textContent=fmt(b);
-    if(!won||!rate||!m||(C.via&&!krate)){R=null;ccF('');rows(C.via?rowsKR('—','—','—','—'):[st0,['換算台幣'+bt,'—'],[mL,'—']]);['sPrice','cTot','lTot','xTot','bC','bL'].forEach(i=>$(i).textContent='—');$('cFee').textContent=$('lFee').textContent=$('xFee').textContent='手續費 —';$('cWan').textContent=$('lWan').textContent=$('xWan').textContent='';return}
+    if(!won||!rate||!m||(C.via&&!krate)){R=null;ccF('');fx('kF');fx('rF');rows(C.via?rowsKR('—','—','—','—'):rowsUS('—','—'));['sPrice','cTot','lTot','xTot','bC','bL'].forEach(i=>$(i).textContent='—');$('cFee').textContent=$('lFee').textContent=$('xFee').textContent='手續費 —';$('cWan').textContent=$('lWan').textContent=$('xWan').textContent='';return}
     let price,twd;
     if(C.via){ // 韓國：韓幣（×奢侈稅）× 倍率 → ÷ 美金匯率折美金（取整數）→ × 台幣匯率 → ＋ 底價
       const wl=lux?won*LUX:won, wk=Math.round(wl*m), us=Math.round(wk/krate); twd=Math.round(us*er); price=twd+b;
       rows(rowsKR(fmt(wl)+' 韓元',fmt(wk)+' 韓元','US$ '+us.toLocaleString('en-US'),fmt(twd)));
+      fx('kF',`${fmt(wk)} 韓元 ÷ ${kf(krate)} ＝ US$ ${us.toLocaleString('en-US')}`); fx('rF',`US$ ${us.toLocaleString('en-US')} × ${er.toFixed(3)} ＝ ${fmt(twd)} 台幣`);
       ccF(`${(won/10000).toLocaleString('zh-TW')}萬韓幣${lux?' × 1.81':''} × ${m} ＝ ${fmt(wk)} 韓元`);
     } else {
       twd=won*er; const x=Math.round(twd*m); price=x+b;
-      rows([st0,['換算台幣'+bt,fmt(twd)],[mL,fmt(x)]]);
+      rows(rowsUS(fmt(twd),fmt(x))); fx('rF',`US$ ${won.toLocaleString('en-US')} × ${er.toFixed(C.dp)} ＝ ${fmt(twd)} 台幣`);
       ccF(`台幣 ${fmt(twd)} × ${m} ＝ ${fmt(x)}`);
     }
     const cf=Math.round(price*0.02), lf=Math.round(price*0.05);
