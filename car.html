@@ -807,7 +807,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 
   // ---------- 全部回復預設：車價、單位、排氣量、匯率（改回網頁匯率）、加成 0.5%、底價 18 萬、自訂手續費 ----------
   $('rstAll').onclick=()=>{
-    $('rsL').innerHTML=[['車價',C.seg?(C.def/10000).toLocaleString('zh-TW')+' 萬韓元':usd(C.def)],['排氣量','2000cc 以下（× 1.543）'],['匯率','網頁即時匯率（加 0.5%）'],['標準底價','18 萬'],['自訂手續費','3%']].map(([a,b])=>`<li><span>${a}</span><b>${b}</b></li>`).join('');
+    $('rsL').innerHTML=[['車價',C.seg?(C.def/10000).toLocaleString('zh-TW')+' 萬韓元':usd(C.def)],['排氣量','2000cc 以下（× 1.543）'],['匯率','網頁即時匯率（加 0.5%）'],['標準底價','18 萬'],['現金手續費','2%（用這個計算）'],['自訂手續費','預設 3%']].map(([a,b])=>`<li><span>${a}</span><b>${b}</b></li>`).join('');
     $('rsBox').hidden=false; document.body.classList.add('lock');
   };
   const rsClose=()=>{$('rsBox').hidden=true;document.body.classList.remove('lock')};
