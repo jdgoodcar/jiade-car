@@ -211,7 +211,7 @@ body.lock{overflow:hidden}
 .rcpt .st.sum::after{right:-25px}
 /* 現金價／貸款／自訂手續費 也放進同一張票：裡面的小卡片改成淡框 */
 .rq2{padding:18px 10px 24px}
-.rq2 .q2{gap:8px}
+.rq2 .q2{gap:8px;row-gap:18px}
 /* 現金價＋貸款＋複製兩種報價：同一個外框，中間細線分隔，按鈕是框的最下排 */
 .duo{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;border:1px solid color-mix(in srgb,var(--gold) 35%,var(--ln));border-radius:16px;overflow:hidden;background:var(--card)}
 .duo .qc{border:0;border-radius:0}
@@ -275,6 +275,7 @@ body.lock{overflow:hidden}
 .foot b{color:var(--fg);font-weight:700;white-space:nowrap}
 .qx{grid-column:1/-1}
 .qx .fx{display:flex;align-items:baseline;gap:2px}
+.qx .fx .fxl{font:400 13px var(--f);color:var(--mut);letter-spacing:0;margin-right:4px}
 #feeX{width:60px;font:800 26px/1 var(--num);color:var(--red);text-align:right;border:0;border-bottom:2px solid var(--gold);background:transparent;padding:0 2px}
 .xb{display:flex;justify-content:space-between;align-items:flex-end;gap:10px 16px;flex-wrap:wrap}
 .xl{display:flex;flex-direction:column;gap:4px;min-width:0}
@@ -378,7 +379,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   <div class="q2">
     <div class="duo">
     <div class="qc">
-      <h3>現金價 <span class="fl"><small>手續費</small><em>2%</em></span></h3>
+      <h3>現金 <span class="fl"><small>手續費</small><em>2%</em></span></h3>
       <div class="fee" id="cFee">手續費 —</div>
       <div class="tot" id="cTot">—</div>
       <div class="wan" id="cWan"></div>
@@ -394,7 +395,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     <button class="btn bothb" type="button" data-cp="both"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製兩種報價</button>
     </div>
     <div class="qc qx">
-      <h3>自訂手續費 <span class="fx"><input id="feeX" inputmode="decimal" enterkeyhint="done" value="2" aria-label="自訂手續費百分比"><em>%</em></span></h3>
+      <h3>自訂 <span class="fx"><small class="fxl">手續費</small><input id="feeX" inputmode="decimal" enterkeyhint="done" value="2" aria-label="自訂手續費百分比"><em>%</em></span></h3>
       <div class="xb"><div class="xl"><div class="fee" id="xFee">手續費 —</div><div class="tot" id="xTot">—</div><div class="wan" id="xWan"></div></div><div class="feeq" id="feeQ"><span>快速選</span><button type="button" data-f="1">1%</button><button type="button" data-f="2">2%</button><button type="button" data-f="3">3%</button><button type="button" data-f="4">4%</button><button type="button" data-f="6">6%</button></div></div>
       <div class="cpr"><button class="btn" type="button" data-cp="cust"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>複製報價</button><button class="btn ib" type="button" data-img="cust" aria-label="下載報價圖片" title="下載報價圖片"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></svg></button></div>
     </div>
