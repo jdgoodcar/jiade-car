@@ -676,7 +676,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 （${wan(R.cash)}，含手續費 2%）`, l=`貸款價：${fmt(R.loan)} 元
 （${wan(R.loan)}，含手續費 5%）`;
     const x=`報價：${fmt(R.cust)} 元
-（${wan(R.cust)}，含手續費 ${R.xp}%）`;
+（${wan(R.cust)}，${R.xp?'含手續費 '+R.xp+'%':'未含手續費'}）`;  // 自訂手續費空白＝沒有手續費
     if(k==='base')return `${C.cpHead}\n${C.cpAmt}：${C.amt(R.won)}\n車價：${fmt(R.price)} 元${R.lux?'（含奢侈稅）':''}\n（${wan(R.price)}，未含手續費）`;
     return h+'\n'+(k==='cash'?c:k==='loan'?l:k==='cust'?x:c+'\n'+l);
   }
