@@ -632,7 +632,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     const er=ER(), bt=manual||!buf?'':`（＋${buf}%）`;
     const T=(t,x)=>`<i class="tg">${t}</i>${x}`;
     const lux=!!C.seg&&won>=LUXW;
-    const LX=T('奢侈稅','× 1.81')+'<small class="lx">超過7000萬(含)不乘倍率</small>';
+    const LX=T('奢侈稅','× 1.81')+'<small class="lx">超過7000萬(含) 不乘倍率</small>';
     const rows=v=>$('stL').innerHTML=v.filter(Boolean).map(([l,x],i)=>`<div class="st${i?'':' st0'}"><span>${l}</span><b>${x}</b></div>`).join('');
     const st0=[C.amtL,won?(C.via?fmt(won)+' 韓元':usd(won)):'—'];
     const rowsKR=(a,c,d,e)=>[st0,lux?[LX,c]:[T('乘倍率','× '+(m||'?')),c],[T('換美金',`÷ ${krate?kf(krate):'?'}`),d],[T('換台幣',`× ${er?er.toFixed(3):'?'}`),e]];
@@ -642,13 +642,13 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
     $('sBase').textContent=fmt(b)+' 台幣';
     // 超過7000萬：排氣量倍率不適用 → 按鈕變淡，綠色按鈕改寫奢侈稅（放在提早結束之前：清空金額時按鈕要馬上恢復）
     {const ccN0=mul==='1.61'?'2000cc 以上':'2000cc 以下';$('cc').classList.toggle('lxoff',lux); $('qcc').classList.toggle('lxoff',lux); document.querySelectorAll('#cc button,#qcc button').forEach(b=>{b.disabled=lux}); const j=$('jmpC');if(j)j.textContent=lux?'（奢侈稅 ×1.81）':'（'+ccN0+'）';
-     if(lux&&!warn)$('krwHint').innerHTML=`＝ ${fmt(won)} 韓元，<b class="lxh">超過7000萬(含)奢侈稅 ×1.81</b>`}  // 一行放得下，不會把下面推下去
+     if(lux&&!warn)$('krwHint').innerHTML=`＝ ${fmt(won)} 韓元，<b class="lxh">超過7000萬(含) 奢侈稅 ×1.81</b>`}  // 一行放得下，不會把下面推下去
     if(!won||!rate||!m||(C.via&&!krate)){R=null;ccF('');fx('kF');fx('rF');rows(C.via?rowsKR('—','—','—','—'):rowsUS('—','—'));['sPrice','cTot','lTot','xTot','bC','bL'].forEach(i=>$(i).textContent='—');$('cFee').textContent=$('lFee').textContent=$('xFee').textContent='手續費 —';$('cWan').textContent=$('lWan').textContent=$('xWan').textContent='';return}
     let price,twd,steps; const ccN=mul==='1.543'?'2000cc 以下':mul==='1.61'?'2000cc 以上':'自訂';
     if(C.via){ // 韓國：韓幣 × 倍率（超過7000萬含：改乘奢侈稅 1.81，不再乘 1.543／1.61）→ ÷ 美金匯率折美金（取整數）→ × 台幣匯率 → ＋ 底價
       const mm=lux?LUX:m, wl=won, wk=Math.round(won*mm), us=Math.round(wk/krate); /* 折美金：四捨五入到整數（2026-11-18 使用者要先用四捨五入對照老闆算法） */ twd=Math.round(us*er); price=twd+b;
       rows(rowsKR(fmt(wl)+' 韓元',fmt(wk)+' 韓元',usd(us),fmt(twd)+' 台幣'));
-      steps=[['',C.amtL,fmt(won)+' 韓元'],lux?['奢侈稅','× 1.81',fmt(wk)+' 韓元','超過7000萬(含)不乘倍率']:['乘倍率',`× ${m}（${ccN}）`,fmt(wk)+' 韓元'],['換美金','÷ '+kf(krate),usd(us)],['換台幣','× '+er.toFixed(3),fmt(twd)+' 台幣']];
+      steps=[['',C.amtL,fmt(won)+' 韓元'],lux?['奢侈稅','× 1.81',fmt(wk)+' 韓元','超過7000萬(含) 不乘倍率']:['乘倍率',`× ${m}（${ccN}）`,fmt(wk)+' 韓元'],['換美金','÷ '+kf(krate),usd(us)],['換台幣','× '+er.toFixed(3),fmt(twd)+' 台幣']];
       fx('kF',`${fmt(wk)} 韓元 ÷ ${kf(krate)} ＝ ${usd(us)}`); fx('rF',`${usd(us)} × ${er.toFixed(3)} ＝ ${fmt(twd)} 台幣`);
       ccF(lux?`${(won/10000).toLocaleString('zh-TW')}萬韓幣 × 1.81 奢侈稅 ＝ ${fmt(wk)} 韓元`:`${(won/10000).toLocaleString('zh-TW')}萬韓幣 × ${m} ＝ ${fmt(wk)} 韓元`);
     } else {
@@ -842,7 +842,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 
   // ---------- 啟動 ----------
   setUnit(unit); setMul(mul==='1.61'?'1.61':'1.543');
-  if(C.via){$('fCar').innerHTML='<i>韓幣 × 倍率 ÷ 美金匯率</i> <i>× 台幣匯率 ＋ 18 萬</i>';$('fCar').insertAdjacentHTML('afterend','<b>奢侈稅</b><span><i class="gp">超過7000萬(含)倍率改用 1.81</i> <i><b class="tri"></b>不再乘 1.543／1.61</i></span>')}
+  if(C.via){$('fCar').innerHTML='<i>韓幣 × 倍率 ÷ 美金匯率</i> <i>× 台幣匯率 ＋ 18 萬</i>';$('fCar').insertAdjacentHTML('afterend','<b>奢侈稅</b><span><i class="gp">超過7000萬(含) 倍率改用 1.81</i> <i><b class="tri"></b>不再乘 1.543／1.61</i></span>')}
   rateInfo=store.get(K(RK)); if(manual||rateInfo)showRate();
   if((!manual||(C.via&&!kman))&&!(rateInfo&&rateInfo.live&&Date.now()-rateInfo.got<18e4))loadRate();  // 3 分鐘內剛抓過的即時匯率就直接用（切換韓元／美金、重新整理不重抓，省免費額度）
   {const y=ss.get('sy_'+ck);if(y>0)requestAnimationFrame(()=>scrollTo(0,y))}  // 切幣別回來時回到原本捲到的位置
