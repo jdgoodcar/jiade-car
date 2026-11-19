@@ -48,6 +48,13 @@ header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;bo
 .crow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;flex-wrap:wrap}
 .rst0{display:inline-flex;align-items:center;gap:5px;color:#fff;font:600 12.5px var(--f);padding:6px 11px;border-radius:20px;border:1px solid #ffffff55;background:#ffffff14;cursor:pointer;white-space:nowrap}
 .rst0:active{background:#ffffff33}
+/* 分兩區：左邊符號＝直接回復預設；右邊文字＝先看內容再確認 */
+.rsp{padding:0;gap:0;overflow:hidden}.rsp:active{background:#ffffff14}
+.rsp button{all:unset;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font:600 12.5px var(--f);padding:8px 12px 8px 10px;-webkit-tap-highlight-color:transparent}
+.rsp #rstNow{padding:8px 11px 8px 13px;border-right:1px solid #ffffff40}
+.rsp button:active{background:#ffffff33}
+.rsp button:focus-visible{outline:2px solid #f3cf7a;outline-offset:-2px}
+.rsp #rstNow svg{width:16px;height:16px}
 
 .rst0 svg{width:14px;height:14px;fill:none;stroke:#f3cf7a;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .cur{display:inline-flex;background:#ffffff1f;border:1px solid #ffffff40;border-radius:12px;padding:3px;gap:3px}
@@ -337,7 +344,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   <header>
     <div class="hrow"><h1 id="hT"><b>韓國</b>車價計算</h1>
       <div class="hlk"><a id="lkE" href="https://car.encar.com/" target="_blank" rel="noopener">Encar ↗</a><a href="https://jdgoodcar.github.io/jiade-car/" target="_blank" rel="noopener"><span class="lg">佳德</span>官網 ↗</a></div></div>
-      <div class="crow"><div class="cur" id="cur" role="group" aria-label="幣別"><button type="button" data-c="kr">₩ 韓元</button><button type="button" data-c="us">$ 美金</button></div><button type="button" class="rst0" id="rstAll"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v4.5h4.5"/></svg>全部回復預設</button></div>
+      <div class="crow"><div class="cur" id="cur" role="group" aria-label="幣別"><button type="button" data-c="kr">₩ 韓元</button><button type="button" data-c="us">$ 美金</button></div><div class="rst0 rsp"><button type="button" id="rstNow" aria-label="直接全部回復預設（不再確認）" title="直接回復預設"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v4.5h4.5"/></svg></button><button type="button" id="rstAll">全部回復預設</button></div></div>
     <p id="hP">輸入韓元 → 即時匯率換台幣 → 套公式報價</p>
   </header>
   <div class="cols"><div class="colA">
@@ -835,6 +842,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   const rsClose=()=>{$('rsBox').hidden=true;document.body.classList.remove('lock')};
   $('rsNo').onclick=rsClose; $('rsBox').onclick=e=>{if(e.target===$('rsBox'))rsClose()};
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('rsBox').hidden)rsClose()});
+  $('rstNow').onclick=()=>$('rsYes').click();  // 按符號：不跳確認，直接回復預設
   $('rsYes').onclick=()=>{
     ['won','base','unit',BK].forEach(k=>ss.set(K(k),null)); ss.set('sy_'+ck,null); ss.set('imT',null);
     [MK,'mank',BK,'mul','feex'].forEach(k=>{ss.set(K(k),null);try{localStorage.removeItem(K(k))}catch(e){}});
