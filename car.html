@@ -302,6 +302,7 @@ body.lock{overflow:hidden}
 .qx .feeq button{padding:4px 9px}  /* 快速選放在 % 輸入框（標題列）正下方 */
 .qx .feeq span{font-size:12.5px}
 /* 寬螢幕：結果放左邊、快速選放右邊同一排，不會整塊縮在左邊 */
+@media (max-width:599px){.qx .xb{justify-content:center}.qx .xl{align-items:center;text-align:center}}  /* 手機：自訂卡片整張寬，結果放中間 */
 @media (min-width:600px){.qx{display:grid;grid-template-columns:1fr auto;column-gap:16px;align-items:center}.qx>h3,.qx>.cpr{grid-column:1/-1}.qx>.xb{grid-row:2;grid-column:1}.qx>.feeq{grid-row:2;grid-column:2;margin:0}}
 .feeq{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;color:var(--mut)}
 .feeq button{border:1px solid var(--ln);background:var(--card);color:var(--fg);border-radius:20px;padding:4px 12px;font:600 13px var(--num);cursor:pointer}
