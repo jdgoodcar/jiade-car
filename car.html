@@ -48,16 +48,7 @@ header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;bo
 .crow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;flex-wrap:wrap}
 .rst0{display:inline-flex;align-items:center;gap:5px;color:#fff;font:600 12.5px var(--f);padding:6px 11px;border-radius:20px;border:1px solid #ffffff55;background:#ffffff14;cursor:pointer;white-space:nowrap}
 .rst0:active{background:#ffffff33}
-.crr{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-/* 重新整理：只有從主畫面圖示打開（沒有網址列）時才出現 */
-.rl{display:none}
-@media (display-mode:standalone){.rl{display:inline-flex}}
-.sa .rl{display:inline-flex}
 
-@media (display-mode:standalone){.crr{flex-direction:column;align-items:stretch}}
-.sa .crr{flex-direction:column;align-items:stretch}
-.crr .rst0{justify-content:center}
-.rl.spin svg{animation:rlspin .8s linear infinite}@keyframes rlspin{to{transform:rotate(360deg)}}
 .rst0 svg{width:14px;height:14px;fill:none;stroke:#f3cf7a;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .cur{display:inline-flex;background:#ffffff1f;border:1px solid #ffffff40;border-radius:12px;padding:3px;gap:3px}
 .cur button{border:0;background:transparent;color:#fff;font:700 15px var(--f);padding:7px 14px;border-radius:9px;cursor:pointer;opacity:.75}
@@ -345,7 +336,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   <header>
     <div class="hrow"><h1 id="hT"><b>韓國</b>車價計算</h1>
       <div class="hlk"><a id="lkE" href="https://car.encar.com/" target="_blank" rel="noopener">Encar ↗</a><a href="https://jdgoodcar.github.io/jiade-car/" target="_blank" rel="noopener"><span class="lg">佳德</span>官網 ↗</a></div></div>
-      <div class="crow"><div class="cur" id="cur" role="group" aria-label="幣別"><button type="button" data-c="kr">₩ 韓元</button><button type="button" data-c="us">$ 美金</button></div><div class="crr"><button type="button" class="rst0" id="rstAll"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v4.5h4.5"/></svg>全部回復預設</button><button type="button" class="rst0 rl" id="rlBtn" aria-label="重新整理網頁" title="重新整理網頁（拿到最新版）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9"/><path d="M20 4v4.5h-4.5"/></svg>重新整理</button></div></div>
+      <div class="crow"><div class="cur" id="cur" role="group" aria-label="幣別"><button type="button" data-c="kr">₩ 韓元</button><button type="button" data-c="us">$ 美金</button></div><button type="button" class="rst0" id="rstAll"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.5-5.8"/><path d="M4 4v4.5h4.5"/></svg>全部回復預設</button></div>
     <p id="hP">輸入韓元 → 即時匯率換台幣 → 套公式報價</p>
   </header>
   <div class="cols"><div class="colA">
@@ -836,9 +827,6 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
      if(!show&&document.activeElement===qAmt)return; qbar.classList.toggle('on',show); $('toTop').classList.toggle('on',show)}).observe(sec);}
 
   // ---------- 全部回復預設：車價、單位、排氣量、匯率（改回網頁匯率）、加成 0.5%、底價 18 萬、自訂手續費 ----------
-  // 重新整理：網址加時間，避開暫存，拿到最新版（設定只記在這個分頁，重新整理不會不見）
-  if(navigator.standalone)document.documentElement.classList.add('sa');
-  $('rlBtn').onclick=()=>{ss.set('sy_'+ck,scrollY);$('rlBtn').classList.add('spin');location.replace(location.pathname+'?r='+Date.now()+'#'+ck)};
   $('rstAll').onclick=()=>{
     $('rsL').innerHTML=[['車價',C.seg?(C.def/10000).toLocaleString('zh-TW')+' 萬韓元':usd(C.def)],['排氣量','2000cc 以下（× 1.543）'],['匯率','網頁即時匯率（加 0.5%）'],['標準底價','18 萬'],['自訂手續費','預設 3%']].map(([a,b])=>`<li><span>${a}</span><b>${b}</b></li>`).join('');
     $('rsBox').hidden=false; document.body.classList.add('lock');
@@ -849,7 +837,7 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
   $('rsYes').onclick=()=>{
     ['won','base','unit',BK].forEach(k=>ss.set(K(k),null)); ss.set('sy_'+ck,null); ss.set('imT',null);
     [MK,'mank',BK,'mul','feex'].forEach(k=>{ss.set(K(k),null);try{localStorage.removeItem(K(k))}catch(e){}});
-    ss.set('rstd',1); scrollTo(0,0); location.reload();
+    ss.set('rstd',1); scrollTo(0,0); location.replace(location.pathname+'?r='+Date.now()+'#'+ck);  // 網址加時間：順便拿網站最新版（避開暫存）
   };
   if(ss.get('rstd')){ss.set('rstd',null);setTimeout(()=>toast('已全部回復預設 ✓'),300)}
 
