@@ -3,7 +3,9 @@ import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js';
 import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js';
 import { getRate } from './lib/rate.js';
 import { calcPrice, guessCc, manForTwd } from './lib/pricing.js';
-import { $, fmt, wan, esc, km, carTitle, toast } from './lib/ui.js';
+import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js';
+
+if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 
 const PAGE = 20;
 const EX_ALL = ['diesel', 'ev', 'acc']; // 預設排除：柴油、電動、事故車

@@ -2,7 +2,10 @@
 
 import { tMaker, tName } from './i18n.js';
 
-export const LINE_URL = 'https://line.me/ti/p/Pnn6ZRFaYI';
+// /R/ 格式的 LINE 連結在手機上會直接開啟 LINE App
+export const LINE_URL = 'https://line.me/R/ti/p/Pnn6ZRFaYI';
+// 手機（觸控螢幕）在同一頁開啟 LINE 連結，App 比較能直接跳出；電腦開新分頁
+export const isTouch = matchMedia('(pointer: coarse)').matches;
 export const PHONE = '08-765-6777';
 
 export const $ = (s, el = document) => el.querySelector(s);
@@ -44,8 +47,8 @@ export async function copyText(t) {
 // 先在點擊當下打開 LINE（延遲開啟會被 iPhone 等瀏覽器當成彈出視窗擋掉），同時複製車輛資訊
 export function askLine(text) {
   const copying = copyText(text);
-  const w = window.open(LINE_URL, '_blank', 'noopener');
-  if (!w) location.href = LINE_URL;
+  if (isTouch) location.href = LINE_URL;
+  else if (!window.open(LINE_URL, '_blank', 'noopener')) location.href = LINE_URL;
   copying.then(ok => toast(ok ? '已複製車輛資訊，請在 LINE 對話框貼上' : '請直接在 LINE 告訴我們車輛網址'));
 }
 
