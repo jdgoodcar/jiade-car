@@ -41,10 +41,12 @@ export async function copyText(t) {
 }
 
 /** LINE 詢問：複製車輛資訊 → 打開 LINE */
-export async function askLine(text) {
-  const ok = await copyText(text);
-  toast(ok ? '已複製車輛資訊，請在 LINE 對話框貼上' : '請直接在 LINE 告訴我們車輛網址');
-  setTimeout(() => window.open(LINE_URL, '_blank', 'noopener'), ok ? 700 : 0);
+// 先在點擊當下打開 LINE（延遲開啟會被 iPhone 等瀏覽器當成彈出視窗擋掉），同時複製車輛資訊
+export function askLine(text) {
+  const copying = copyText(text);
+  const w = window.open(LINE_URL, '_blank', 'noopener');
+  if (!w) location.href = LINE_URL;
+  copying.then(ok => toast(ok ? '已複製車輛資訊，請在 LINE 對話框貼上' : '請直接在 LINE 告訴我們車輛網址'));
 }
 
 export function lineText({ title, sub, year, mileage, price, url }) {
