@@ -157,7 +157,7 @@ async function loadHierarchy() {
     const hot = pinned.concat(makers.filter(x => x.count > 0 && !PIN.includes(x.value)).sort((a, b) => b.count - a.count)).slice(0, 8);
     const az = makers.slice().sort((a, b) => tMaker(a.value).en.localeCompare(tMaker(b.value).en));
     mk.innerHTML = '<option value="">全部廠牌</option>' +
-      (makers.length > 12 ? `<optgroup label="✦ 熱門廠牌">${hot.map(opt).join('')}</optgroup><optgroup label="全部廠牌（A–Z）">${az.map(opt).join('')}</optgroup>` : az.map(opt).join(''));
+      (makers.length > 12 ? `<optgroup label="✦ 熱門廠牌 ✦" class="hot">${hot.map(opt).join('')}</optgroup><optgroup label="全部廠牌（A–Z）">${az.map(opt).join('')}</optgroup>` : az.map(opt).join(''));
     mk.value = f.mk || '';
     if (f.mk && mk.value !== f.mk) { delete f.mk; delete f.mg; delete f.md; }
     mg.disabled = !f.mk; md.disabled = !f.mg;
