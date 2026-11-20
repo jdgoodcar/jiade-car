@@ -5,6 +5,13 @@ export const API = 'https://api.encar.com';
 export const PHOTO = 'https://ci.encar.com';
 export const carUrl = id => `https://fem.encar.com/cars/detail/${id}`;
 
+/** 原廠選配（套件）清單：回傳這個車型所有可選的選配，含名稱、新車加價（萬韓元） */
+export async function getChoices(vehicleId) {
+  const r = await fetch(`${API}/v1/readside/vehicles/car/${vehicleId}/options/choice`);
+  if (!r.ok) throw new Error('Encar 回應錯誤 ' + r.status);
+  return r.json();
+}
+
 // Encar 查詢語法：值裡的「)」「.」要加底線跳脫
 const esc = v => String(v).replace(/\)/g, '_)').replace(/\./g, '_.');
 const enc = q => encodeURIComponent(q).replace(/%2E/g, '.');

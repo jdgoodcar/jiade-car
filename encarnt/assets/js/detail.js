@@ -1,9 +1,9 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
 import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups } from './lib/i18n.js';
-import { getDetail, getRecord, photoUrl, carUrl, notAccepted } from './lib/encar.js';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted } from './lib/encar.js';
 import { getRate } from './lib/rate.js';
 import { calcPrice, RULES } from './lib/pricing.js';
-import { $, fmt, wan, esc, ym, km, askLine, lineText } from './lib/ui.js';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast } from './lib/ui.js';
 
 const id = new URLSearchParams(location.search).get('id');
 
@@ -90,14 +90,29 @@ function recordCard(rec, rate) {
   <p class="fine">資料來源：韓國保險開發院（經 Encar 公開），僅含有申請保險理賠的紀錄。</p></div>`;
 }
 
+// 配備：依類別分組。另外讀「原廠選配」（新車時加價選購的套件，名稱只有韓文）
+const GROUP_EN = { '01': 'Exterior / Interior', '02': 'Safety', '03': 'Convenience / Multimedia', '04': 'Seats' };
+let optData = { groups: [], choice: [] }; // 給「複製配備」按鈕用
 function optionsCard(opt) {
   const groups = optionGroups(), by = {};
-  for (const code of (opt && opt.standard) || []) { const o = tOption(code); if (o) (by[o[0]] = by[o[0]] || []).push(o[1]); }
-  const extra = ((opt && opt.choice) || []).length;
+  for (const code of (opt && opt.standard) || []) { const o = tOption(code); if (o) (by[o[0]] = by[o[0]] || []).push(o); }
   const keys = Object.keys(groups).filter(k => by[k]);
-  if (!keys.length && !extra) return '';
-  return `<div class="card opts"><h2>車輛配備</h2>${keys.map(k => `<h3>${esc(groups[k])}</h3><ul>${by[k].map(x => `<li>${esc(x)}</li>`).join('')}</ul>`).join('')}
-    ${extra ? `<p class="fine">另有 ${extra} 項原廠選配，詳細內容請參考 Encar 原始頁面。</p>` : ''}</div>`;
+  optData = { groups: keys.map(k => ({ zh: groups[k], en: GROUP_EN[k] || '', items: by[k] })), choice: [] };
+  if (!keys.length && !((opt && opt.choice) || []).length) return '';
+  return `<div class="card opts"><div class="opth"><h2>車輛配備</h2><div class="cp"><button type="button" class="btn-s" data-lang="zh">複製中文</button><button type="button" class="btn-s" data-lang="en">複製英文</button></div></div>
+    ${keys.map(k => `<h3>${esc(groups[k])}</h3><ul>${by[k].map(x => `<li>${esc(x[1])}</li>`).join('')}</ul>`).join('')}
+    <div id="choiceBox"></div></div>`;
+}
+function choiceHtml(list) {
+  if (!list.length) return '';
+  return `<h3>原廠選配（新車時加價選購）</h3><ul class="choice">${list.map(x => `<li><b>${esc(x.optionName)}</b>${x.price ? `<span>新車加價 ${fmt(x.price)} 萬韓元</span>` : ''}</li>`).join('')}</ul>
+    <p class="fine">選配名稱為 Encar 提供的韓文原名。</p>`;
+}
+function optionsText(lang, title) {
+  const zh = lang === 'zh', L = [zh ? `【${title}】車輛配備` : `[${title}] Options`];
+  for (const g of optData.groups) L.push((zh ? g.zh + '：' : g.en + ': ') + g.items.map(x => (zh ? x[1] : x[2] || x[1])).join(zh ? '、' : ', '));
+  if (optData.choice.length) L.push((zh ? '原廠選配（韓文原名）：' : 'Factory Options (Korean names): ') + optData.choice.map(x => x.optionName).join(zh ? '、' : ', '));
+  return L.join('\n');
 }
 
 (async () => {
@@ -148,6 +163,19 @@ function optionsCard(opt) {
     </div></div>`;
   bindGallery();
 
+  const ob = document.querySelector('.opts .cp');
+  if (ob) ob.onclick = async e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const m = (c.modelName || '').replace(/(\d+)세대/, 'Gen $1'); // 例：XC90 2세대 → XC90 Gen 2
+    const enModel = /[가-힣]/.test(m) ? (c.modelGroupEnglishName || '') : m;
+    const enTitle = [c.manufacturerEnglishName || mk.en, enModel, c.gradeEnglishName, c.gradeDetailEnglishName].filter(Boolean).join(' ');
+    const ok = await copyText(optionsText(b.dataset.lang, b.dataset.lang === 'zh' ? `${title} ${sub}`.trim() : enTitle));
+    toast(ok ? (b.dataset.lang === 'zh' ? '已複製中文配備' : '已複製英文配備') : '無法複製，請手動選取');
+  };
+  const chosen = (d.options && d.options.choice) || [];
+  if (chosen.length && d.vehicleId) getChoices(d.vehicleId)
+    .then(all => { optData.choice = all.filter(x => chosen.includes(x.optionCd)); const box = $('#choiceBox'); if (box) box.innerHTML = choiceHtml(optData.choice); })
+    .catch(() => { const box = $('#choiceBox'); if (box) box.innerHTML = `<p class="fine">另有 ${chosen.length} 項原廠選配，請參考 Encar 原始頁面。</p>`; });
   $('#encLink').href = url;
   $('#askLine').onclick = () => askLine(lineText({ title, sub, year: `${c.formYear || ''} 年式`, mileage: km(s.mileage), price: p && !no ? fmt(p.price) : '', url }));
   $('#bar').hidden = false;

@@ -2,7 +2,7 @@
 // 對照表放在 assets/data/i18n/*.json，要修正翻譯只改 JSON，不用動程式。
 
 const DATA = new URL('../../data/i18n/', import.meta.url);
-const VERSION = '1'; // 對照表有更新時改這個數字，手機上的暫存就會重抓
+const VERSION = '2'; // 對照表有更新時改這個數字，手機上的暫存就會重抓
 const CACHE_KEY = 'encarnt_i18n_v' + VERSION;
 
 let T = null;      // { makers, models, specs, options, terms }

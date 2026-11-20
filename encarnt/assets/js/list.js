@@ -197,8 +197,6 @@ function buildSheet() {
       if (i < 0) { a.push(v); if (k === 'fuel') draft.ex = draft.ex.filter(x => !(x === 'diesel' && isDiesel(v)) && !(x === 'ev' && isEv(v))); } else a.splice(i, 1);
       syncSheet(); };
   }
-  $('#exC').innerHTML = EX_ALL.map(v => `<button type="button" class="chip" data-v="${v}">不含${EX_LABEL[v]}</button>`).join('');
-  $('#exC').onclick = e => { const b = e.target.closest('.chip'); if (!b) return; const a = draft.ex; const i = a.indexOf(b.dataset.v); i < 0 ? a.push(b.dataset.v) : a.splice(i, 1); syncSheet(); };
   $('#kmC').innerHTML = KM_OPTS.map(v => `<button type="button" class="chip" data-v="${v}">${v / 10000} 萬公里以下</button>`).join('');
   $('#kmC').onclick = e => { const b = e.target.closest('.chip'); if (!b) return; draft.km = draft.km === +b.dataset.v ? undefined : +b.dataset.v; syncSheet(); };
   const years = []; for (let y = thisYear + 1; y >= 2000; y--) years.push(y);
@@ -214,7 +212,6 @@ function syncSheet() {
     for (const b of box.children) b.classList.toggle('on', a.includes(b.dataset.v));
   }
   for (const b of $('#kmC').children) b.classList.toggle('on', +b.dataset.v === draft.km);
-  for (const b of $('#exC').children) b.classList.toggle('on', draft.ex.includes(b.dataset.v));
   for (const k of ['y1', 'y2', 't1', 't2']) $('#' + k).value = draft[k] || '';
 }
 function openSheet() { draft = JSON.parse(JSON.stringify(f)); syncSheet(); $('#sheet').hidden = false; document.body.classList.add('lock'); }
@@ -223,7 +220,7 @@ $('#openF').onclick = openSheet;
 $('#closeF').onclick = closeSheet;
 $('#sheet').onclick = e => { if (e.target.id === 'sheet') closeSheet(); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#sheet').hidden) closeSheet(); });
-$('#resetF').onclick = () => { for (const k of [...MULTI, ...NUMS]) delete draft[k]; draft.ex = EX_ALL.slice(); syncSheet(); };
+$('#resetF').onclick = () => { for (const k of [...MULTI, ...NUMS]) delete draft[k]; syncSheet(); };
 $('#applyF').onclick = () => {
   if (draft.y1 && draft.y2 && draft.y1 > draft.y2) [draft.y1, draft.y2] = [draft.y2, draft.y1];
   if (draft.t1 && draft.t2 && draft.t1 > draft.t2) [draft.t1, draft.t2] = [draft.t2, draft.t1];
@@ -239,7 +236,8 @@ function renderTags() {
   if (f.km) tags.push(['km', '', `${f.km / 10000} 萬公里以下`]);
   if (f.t1 || f.t2) tags.push(['t', '', !f.t1 ? `車價 ${f.t2} 萬以下` : !f.t2 ? `車價 ${f.t1} 萬以上` : `車價 ${f.t1}～${f.t2} 萬`]);
   const n = tags.length; $('#fN').hidden = !n; $('#fN').textContent = n;
-  $('#exT').innerHTML = EX_ALL.map(v => `<button type="button" class="tog${(f.ex || []).includes(v) ? ' on' : ''}" data-v="${v}" aria-pressed="${(f.ex || []).includes(v)}">不含${EX_LABEL[v]}</button>`).join('');
+  // 打勾＝結果中也顯示這類車；預設都不打勾（不顯示）
+  $('#exT').innerHTML = '<span class="exl">勾選後一併顯示：</span>' + EX_ALL.map(v => { const show = !(f.ex || []).includes(v); return `<button type="button" class="tog${show ? ' on' : ''}" data-v="${v}" role="checkbox" aria-checked="${show}"><i></i>${EX_LABEL[v]}</button>`; }).join('');
   $('#tags').innerHTML = tags.map(([k, v, l]) => `<button type="button" class="tag" data-k="${k}" data-v="${esc(v)}">${esc(l)}</button>`).join('') +
     (n > 1 ? '<button type="button" class="tag clr" data-k="all">全部清除</button>' : '');
 }
