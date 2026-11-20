@@ -239,8 +239,8 @@ function renderTags() {
   if (f.t1 || f.t2) tags.push(['t', '', !f.t1 ? `車價 ${f.t2} 萬以下` : !f.t2 ? `車價 ${f.t1} 萬以上` : `車價 ${f.t1}～${f.t2} 萬`]);
   const n = tags.length; $('#fN').hidden = !n; $('#fN').textContent = n;
   // 打勾＝結果中也顯示這類車；預設都不打勾（不顯示）
-  // 亮＝排除這類車（預設）；暗＝不排除
-  $('#exT').innerHTML = EX_ALL.map(v => { const on = (f.ex || []).includes(v); return `<button type="button" class="tog${on ? ' on' : ''}" data-v="${v}" aria-pressed="${on}">不含${EX_LABEL[v]}</button>`; }).join('');
+  // 亮＝排除這類車（預設，顯示「不含X」）；暗＝不排除（顯示「搜尋包含X」）
+  $('#exT').innerHTML = EX_ALL.map(v => { const on = (f.ex || []).includes(v); return `<button type="button" class="tog${on ? ' on' : ''}" data-v="${v}" aria-pressed="${on}">${on ? '不含' : '搜尋包含'}${EX_LABEL[v]}</button>`; }).join('');
   $('#tags').innerHTML = tags.map(([k, v, l]) => `<button type="button" class="tag" data-k="${k}" data-v="${esc(v)}">${esc(l)}</button>`).join('') +
     (n > 1 ? '<button type="button" class="tag clr" data-k="all">全部清除</button>' : '');
 }
