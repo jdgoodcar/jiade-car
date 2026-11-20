@@ -11,8 +11,8 @@
 <link rel="apple-touch-icon" href="../favicon.png">
 <link rel="preconnect" href="https://api.encar.com" crossorigin>
 <link rel="preconnect" href="https://ci.encar.com">
-<link rel="stylesheet" href="assets/css/encarnt.css?v=21">
-<script type="module" src="assets/js/list.js?v=21"></script>
+<link rel="stylesheet" href="assets/css/encarnt.css?v=22">
+<script type="module" src="assets/js/list.js?v=22"></script>
 </head>
 <body>
 <header class="hd">
@@ -37,6 +37,11 @@
       <button data-v="A" role="tab">全部<small id="cA">&nbsp;</small></button>
       <button data-v="Y" role="tab">韓國車<small id="cY">&nbsp;</small></button>
       <button data-v="N" role="tab">進口車<small id="cN">&nbsp;</small></button>
+    </div>
+    <div class="srch" id="srch">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="q" type="search" inputmode="search" autocomplete="off" enterkeyhint="search" placeholder="輸入車款，例如 GV80、賓士 E-Class、Carnival" aria-label="搜尋車款">
+      <ul class="sugg" id="sugg" role="listbox" hidden></ul>
     </div>
     <div class="sel3">
       <label class="fld"><select id="mk" aria-label="廠牌"><option value="">全部廠牌</option></select></label>

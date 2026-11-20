@@ -242,3 +242,15 @@ body.lock { overflow: hidden; }
 /* 熱門廠牌標題紅字（iPhone 的系統選單可能不支援顏色） */
 optgroup.hot { color: var(--red); }
 optgroup.hot option { color: var(--fg); }
+/* 搜尋框 */
+.srch { position: relative; margin-top: 10px; }
+.srch > svg { position: absolute; left: 12px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); color: var(--mut); pointer-events: none; }
+.srch input { width: 100%; border: 1.5px solid var(--bd); border-radius: 10px; padding: 11px 12px 11px 38px; font-size: 16px; background: var(--card); color: var(--fg); -webkit-appearance: none; appearance: none; }
+.srch input:focus { outline: 2px solid var(--gold); outline-offset: 1px; border-color: var(--gold); }
+.srch input::placeholder { color: #9aa2b3; font-size: 14px; }
+.sugg { position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 20; list-style: none; margin: 0; padding: 4px; background: var(--card); border: 1px solid var(--bd); border-radius: 12px; box-shadow: 0 8px 24px rgba(20,28,46,.16); max-height: 60vh; overflow-y: auto; }
+.sugg li { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; }
+.sugg li b { font-size: 15px; color: var(--navy); }
+.sugg li small { font-size: 12px; color: var(--mut); white-space: nowrap; }
+.sugg li:hover, .sugg li.on { background: var(--bg); }
+.sugg li.none { color: var(--mut); cursor: default; font-size: 14px; }

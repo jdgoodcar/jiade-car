@@ -288,6 +288,68 @@ function showRate() {
     : '匯率讀取失敗，暫時無法換算台幣';
 }
 
+// ---------- 搜尋框：輸入廠牌或車系（中／英／韓文都可），選了就套用 ----------
+let SX = null;
+const norm = s => String(s || '').toLowerCase().replace(/[\s\-_.·()（）]/g, '');
+async function loadSearch() {
+  if (!SX) SX = fetch('assets/data/search.json?v=1').then(r => r.json()).then(j => {
+    j.m.forEach(m => { m.key = norm(m.slice(0, 4).join(' ')); });
+    j.g.forEach(g => { g.key = norm(g[1] + ' ' + g[2]); });
+    return j;
+  });
+  return SX;
+}
+function searchHits(j, q) {
+  const words = q.trim().toLowerCase().split(/\s+/).map(norm).filter(Boolean);
+  if (!words.length) return [];
+  const out = [];
+  // 只輸入廠牌（例如「賓士」）：先列出廠牌
+  j.m.forEach((m, i) => { if (words.every(w => m.key.includes(w))) out.push({ score: 1000 + m[5] / 1e6, mi: i }); });
+  // 廠牌＋車系（例如「賓士 E」「GV80」「carnival」）
+  for (const g of j.g) {
+    const m = j.m[g[0]], all = m.key + ' ' + g.key;
+    if (!words.every(w => all.includes(w))) continue;
+    // 車系名稱開頭符合的排最前（例如「賓士 e」→ E-Class），只符合廠牌的依台數列在廠牌後面
+    const pre = words.some(w => g.key.startsWith(w) || norm(g[2]).startsWith(w));
+    out.push({ score: (pre ? 2000 : 0) + g[3] / 1e6, mi: g[0], g });
+  }
+  return out.sort((a, b) => b.score - a.score).slice(0, 8);
+}
+function hitLabel(j, h) {
+  const m = j.m[h.mi], mk = m[1].includes(m[2]) ? m[1] : `${m[1]} ${m[2]}`;
+  return h.g ? `<b>${esc(h.g[2])}</b><small>${esc(mk)}</small>` : `<b>${esc(mk)}</b><small>全部車系</small>`;
+}
+let hits = [], hitSel = -1;
+async function showSugg() {
+  const q = $('#q').value, j = await loadSearch();
+  hits = searchHits(j, q); hitSel = -1;
+  const ul = $('#sugg');
+  if (!q.trim()) { ul.hidden = true; return; }
+  ul.innerHTML = hits.length ? hits.map((h, i) => `<li role="option" data-i="${i}">${hitLabel(j, h)}</li>`).join('')
+    : '<li class="none">找不到符合的車款，試試英文或其他寫法</li>';
+  ul.hidden = false;
+}
+async function pickHit(h) {
+  const j = await loadSearch(), m = j.m[h.mi];
+  if ((f.ct === 'Y' && !m[4]) || (f.ct === 'N' && m[4])) f.ct = 'A'; // 換到包含這個廠牌的分頁
+  f.mk = m[0]; if (h.g) f.mg = h.g[1]; else delete f.mg; delete f.md;
+  $('#q').value = ''; $('#sugg').hidden = true; $('#q').blur();
+  apply(true);
+}
+$('#q').addEventListener('focus', loadSearch);
+$('#q').addEventListener('input', showSugg);
+$('#q').addEventListener('keydown', e => {
+  const items = [...$('#sugg').querySelectorAll('li[data-i]')];
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault(); if (!items.length) return;
+    hitSel = (hitSel + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+    items.forEach((li, i) => li.classList.toggle('on', i === hitSel));
+  } else if (e.key === 'Enter') { e.preventDefault(); const h = hits[hitSel >= 0 ? hitSel : 0]; if (h) pickHit(h); }
+  else if (e.key === 'Escape') $('#sugg').hidden = true;
+});
+$('#sugg').addEventListener('click', e => { const li = e.target.closest('li[data-i]'); if (li) pickHit(hits[+li.dataset.i]); });
+document.addEventListener('click', e => { if (!e.target.closest('#srch')) $('#sugg').hidden = true; });
+
 // ---------- 往下滑時：上方快速列（廠牌／車系／篩選）＋回到最上面 ----------
 function syncQuick() {
   for (const [q, m] of [['#qmk', '#mk'], ['#qmg', '#mg']]) {

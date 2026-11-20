@@ -21,9 +21,14 @@
 | `assets/data/i18n/terms.json` | 車型／等級詞彙 |
 | `assets/data/i18n/specs.json` | 燃料、變速箱、車身、顏色、地區 |
 | `assets/data/i18n/options.json` | 配備 |
+| `assets/data/i18n/inspection.json` | 車況報告（性能檢查）用詞 |
+| `assets/data/search.json` | 搜尋框索引（由 tools/build-search.mjs 產生） |
 
 ## 修改翻譯
 直接改 `assets/data/i18n/` 裡的 JSON，再把 `assets/js/lib/i18n.js` 裡的 `VERSION` 加 1（讓手機重新讀取）。
+
+## 定期檢查翻譯（約每 1–3 個月）
+在專案資料夾執行：`node tools/fetch-encar-names.mjs`、`node tools/collect-names.mjs`（約 15 分鐘）、`node tools/check-i18n.mjs`，把列出的新詞補進 terms.json；再執行 `node tools/build-models.mjs`、`node tools/build-search.mjs` 更新車系翻譯與搜尋框，最後把 i18n.js 的 VERSION 加 1。
 
 ## 預覽期間
 兩個頁面都有 `<meta name="robots" content="noindex">`，正式上線時移除，並在首頁加入口連結。
