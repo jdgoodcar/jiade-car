@@ -3,6 +3,7 @@ import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, autoTranslate } 
 import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted } from './lib/encar.js';
 import { getRate } from './lib/rate.js';
 import { calcPrice, RULES } from './lib/pricing.js';
+import { getInspection, inspectionCard } from './lib/inspect.js';
 import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast } from './lib/ui.js';
 
 const id = new URLSearchParams(location.search).get('id');
@@ -166,6 +167,7 @@ function optionsText(lang, title) {
     </div>
     <div style="display:grid;gap:16px">
       <div class="card"><h2>車輛規格</h2><div class="kv">${kv.map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div></div>
+      <div id="inspBox"><div class="card"><h2>車況報告</h2><p class="fine" style="margin:0">讀取中…</p></div></div>
       <div id="recBox"><div class="card"><h2>保險／事故紀錄</h2><p class="fine" style="margin:0">讀取中…</p></div></div>
       ${optionsCard(d.options)}
       <div class="card src"><h2>原始車源</h2><p style="margin:0 0 6px">在 Encar 查看原始刊登頁面（韓文）：</p><a href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a>
@@ -196,6 +198,13 @@ function optionsText(lang, title) {
   $('#askLine').onclick = () => askLine(lineText({ title, sub, year: `${c.formYear || ''} 年式`, mileage: km(s.mileage), price: p && !no ? wan(p.price) : '', url }));
   $('#bar').hidden = false;
 
+  // 車況報告（性能檢查紀錄），與保險紀錄同時讀取
+  (async () => {
+    const insp = d.vehicleId ? await getInspection(d.vehicleId) : null;
+    const ko = insp && insp.master && insp.master.detail && insp.master.detail.comments;
+    const zh = ko ? await autoTranslate([ko.replace(/\s*\n\s*/g, ' ')], 'zh-TW') : null;
+    $('#inspBox').innerHTML = await inspectionCard(insp, zh && zh[0]);
+  })().catch(() => { $('#inspBox').innerHTML = '<div class="card"><h2>車況報告</h2><p class="fine" style="margin:0">暫時無法讀取，請稍後重新整理。</p></div>'; });
   const rec = d.vehicleId && d.vehicleNo ? await getRecord(d.vehicleId, d.vehicleNo) : null;
   $('#recBox').innerHTML = recordCard(rec, rate);
 })();
