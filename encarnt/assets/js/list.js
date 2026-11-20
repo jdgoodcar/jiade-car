@@ -350,6 +350,14 @@ $('#q').addEventListener('keydown', e => {
 $('#sugg').addEventListener('click', e => { const li = e.target.closest('li[data-i]'); if (li) pickHit(hits[+li.dataset.i]); });
 document.addEventListener('click', e => { if (!e.target.closest('#srch')) $('#sugg').hidden = true; });
 
+// ---------- 重設：全部條件回到預設（全部車、預設排除三項、最新上架） ----------
+$('#resetAll').onclick = () => {
+  const exChanged = (f.ex || []).join() !== EX_ALL.join();
+  f = { ct: 'A', ex: EX_ALL.slice() }; sort = 'new'; $('#q').value = ''; $('#sugg').hidden = true;
+  apply(true); if (exChanged) loadCounts();
+  toast('已重設所有搜尋條件');
+};
+
 // ---------- 往下滑時：上方快速列（廠牌／車系／篩選）＋回到最上面 ----------
 function syncQuick() {
   for (const [q, m] of [['#qmk', '#mk'], ['#qmg', '#mg']]) {
