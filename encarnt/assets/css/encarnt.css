@@ -50,6 +50,7 @@ img { display: block; max-width: 100%; }
 .tags:empty { display: none; }
 .tag { display: inline-flex; align-items: center; gap: 4px; background: var(--gold-bg); border: 1px solid #ecd9b0; color: #7a5410; border-radius: 999px; padding: 3px 6px 3px 10px; font-size: 13px; cursor: pointer; }
 .tag::after { content: "×"; font-size: 15px; line-height: 1; padding: 0 3px; }
+.tag[data-k="ex"] { background: #eef1f7; border-color: #d5dbe8; color: var(--navy); }
 .tag.clr { background: none; border-color: var(--bd); color: var(--mut); }
 .tag.clr::after { content: none; }
 
@@ -75,6 +76,8 @@ img { display: block; max-width: 100%; }
 .car .pr .v { font-family: var(--num); font-weight: 800; font-size: 21px; color: var(--navy); line-height: 1.1; }
 .car .pr .v small { font-size: 13px; font-family: var(--font); font-weight: 700; }
 .car .pr .k { text-align: right; font-size: 12px; color: var(--mut); white-space: nowrap; }
+.car .pr .v.no { font-family: var(--font); font-size: 14px; color: var(--red); }
+.price .big.no { font-family: var(--font); font-size: 20px; color: var(--red); }
 .approx { font-size: 11px; color: var(--gold); font-weight: 700; }
 .lux { display: inline-block; font-size: 11px; color: var(--red); font-weight: 700; }
 

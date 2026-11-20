@@ -11,9 +11,14 @@ const enc = q => encodeURIComponent(q).replace(/%2E/g, '.');
 
 /**
  * 把篩選條件轉成 Encar 查詢字串
- * f = { ct:'A'|'Y'|'N', mk, mg, md, fuel:[], tm:[], cat:[], color:[], rg:[], y1, y2, km, p1, p2 }
+ * f = { ct:'A'|'Y'|'N', ex:[], mk, mg, md, fuel:[], tm:[], cat:[], color:[], rg:[], y1, y2, km, p1, p2 }
  * skip：產生「選單用」查詢時要略過的層級（例如列出廠牌時略過 mk/mg/md）
  */
+// Encar 燃料分類（全部）
+export const FUELS = ['가솔린', '디젤', 'LPG(일반인 구입)', '가솔린+전기', '디젤+전기', 'LPG+전기', '가솔린+LPG', '가솔린+CNG', '전기', '수소', 'CNG', '기타'];
+export const isDiesel = v => /^디젤/.test(v || '');
+export const isEv = v => /^(전기|수소)$/.test(v || ''); // 純電、氫能（沒有排氣量）
+
 export function buildQuery(f, skip = {}) {
   const chain = ['CarType.' + (f.ct || 'A') + '.'];
   if (!skip.mk && f.mk) {
@@ -29,7 +34,14 @@ export function buildQuery(f, skip = {}) {
     if (!arr || !arr.length) return;
     parts.push(arr.length === 1 ? `${name}.${esc(arr[0])}.` : '(Or.' + arr.map(v => `${name}.${esc(v)}.`).join('_.') + ')');
   };
-  multi('FuelType', f.fuel); multi('Transmission', f.tm); multi('Category', f.cat);
+  // 預設排除（f.ex）：diesel 柴油、ev 純電／氫能、acc 事故車。自己勾選燃料時以勾選為準
+  const ex = f.ex || [];
+  let fuel = f.fuel;
+  if ((!fuel || !fuel.length) && (ex.includes('diesel') || ex.includes('ev'))) {
+    fuel = FUELS.filter(v => !(ex.includes('diesel') && isDiesel(v)) && !(ex.includes('ev') && isEv(v)));
+  }
+  if (ex.includes('acc')) parts.push('(Or.Accident.N._.Accident.F.)'); // Encar 判定：N 無事故、F 無資料、Y 有事故
+  multi('FuelType', fuel); multi('Transmission', f.tm); multi('Category', f.cat);
   multi('Color', f.color); multi('OfficeCityState', f.rg);
   if (f.y1 || f.y2) parts.push(`Year.range(${f.y1 ? f.y1 + '00' : ''}..${f.y2 ? f.y2 + '12' : ''}).`);
   if (f.km) parts.push(`Mileage.range(..${f.km}).`);

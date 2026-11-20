@@ -1,11 +1,13 @@
 // 選車列表頁
 import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js';
-import { searchCars, hierarchy, getDetail, photoUrl } from './lib/encar.js';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel } from './lib/encar.js';
 import { getRate } from './lib/rate.js';
 import { calcPrice, guessCc, manForTwd } from './lib/pricing.js';
 import { $, fmt, wan, esc, km, carTitle, toast } from './lib/ui.js';
 
 const PAGE = 20;
+const EX_ALL = ['diesel', 'ev', 'acc']; // 預設排除：柴油、電動、事故車
+const EX_LABEL = { diesel: '柴油車', ev: '電動車', acc: '事故車' };
 const MULTI = ['fuel', 'tm', 'cat', 'color', 'rg'];
 const NUMS = ['y1', 'y2', 'km', 't1', 't2'];
 const KM_OPTS = [10000, 30000, 50000, 80000, 100000, 150000];
@@ -22,6 +24,7 @@ function readUrl() {
   for (const k of ['mk', 'mg', 'md', 'sort']) if (p.get(k)) o[k] = p.get(k);
   for (const k of MULTI) if (p.get(k)) o[k] = p.get(k).split(',');
   for (const k of NUMS) if (+p.get(k)) o[k] = +p.get(k);
+  o.ex = p.has('ex') ? p.get('ex').split(',').filter(x => EX_ALL.includes(x)) : EX_ALL.slice();
   return o;
 }
 function writeUrl() {
@@ -30,6 +33,7 @@ function writeUrl() {
   for (const k of ['mk', 'mg', 'md']) if (f[k]) p.set(k, f[k]);
   for (const k of MULTI) if (f[k] && f[k].length) p.set(k, f[k].join(','));
   for (const k of NUMS) if (f[k]) p.set(k, f[k]);
+  if ((f.ex || []).slice().sort().join() !== EX_ALL.slice().sort().join()) p.set('ex', (f.ex || []).join(',') || 'none');
   if (sort !== 'new') p.set('sort', sort);
   const s = p.toString();
   history.replaceState(null, '', s ? '?' + s : location.pathname);
@@ -74,6 +78,7 @@ function pumpCc() {
 
 // ---------- 卡片 ----------
 function priceHtml(c) {
+  if (isEv(c.FuelType)) return `<div class="pr"><div><div class="l">預估車價</div><div class="v no">電動車暫不接受代購</div></div><div class="k">韓國售價<br>${fmt(c.Price)} 萬韓元</div></div>`;
   const p = calcPrice(c.Price, ccOf(c), rate);
   const krw = `韓國售價<br>${fmt(c.Price)} 萬韓元`;
   if (!p) return `<div class="pr"><div><div class="l">預估車價</div><div class="v">—</div></div><div class="k">${krw}</div></div>`;
@@ -108,7 +113,7 @@ async function load(reset, size = PAGE) {
     const frag = document.createElement('div'); frag.innerHTML = cars.map(cardHtml).join('');
     for (const el of [...frag.children]) {
       const c = cars.find(x => String(x.Id) === el.dataset.id);
-      if (c && ccOf(c) == null && c.Price * 10000 < 7e7) { el._car = c; ccSeen.observe(el); }
+      if (c && !isEv(c.FuelType) && ccOf(c) == null && c.Price * 10000 < 7e7) { el._car = c; ccSeen.observe(el); }
       grid.appendChild(el);
     }
     offset += cars.length;
@@ -161,10 +166,11 @@ $('#sort').onchange = e => { sort = e.target.value; apply(false); };
 
 // 產地分頁（顯示台數）
 async function loadCounts() {
+  const ex = (f.ex || []).join();
   let c = null; try { c = JSON.parse(sessionStorage.getItem('encarnt_counts')); } catch (e) { /* 無 */ }
-  if (!c || Date.now() - c.t > 10 * 60 * 1000) {
-    c = { t: Date.now() };
-    await Promise.all(['A', 'Y', 'N'].map(ct => searchCars({ ct }, 'new', 0, 1).then(r => { c[ct] = r.total; }).catch(() => {})));
+  if (!c || c.ex !== ex || Date.now() - c.t > 10 * 60 * 1000) {
+    c = { t: Date.now(), ex };
+    await Promise.all(['A', 'Y', 'N'].map(ct => searchCars({ ct, ex: f.ex }, 'new', 0, 1).then(r => { c[ct] = r.total; }).catch(() => {})));
     if (c.A) try { sessionStorage.setItem('encarnt_counts', JSON.stringify(c)); } catch (e) { /* 略過 */ }
   }
   for (const ct of ['A', 'Y', 'N']) if (c[ct]) $('#c' + ct).textContent = fmt(c[ct]) + ' 台';
@@ -186,8 +192,12 @@ function buildSheet() {
     const k = box.dataset.k;
     const vals = Object.keys(specTable(SPEC_KIND[k])).filter(v => !(k === 'fuel' && v === 'LPG') && v !== '무광');
     box.innerHTML = vals.map(v => `<button type="button" class="chip" data-v="${esc(v)}">${esc(LABEL[k](v))}</button>`).join('');
-    box.onclick = e => { const b = e.target.closest('.chip'); if (!b) return; const a = draft[k] || (draft[k] = []); const i = a.indexOf(b.dataset.v); i < 0 ? a.push(b.dataset.v) : a.splice(i, 1); syncSheet(); };
+    box.onclick = e => { const b = e.target.closest('.chip'); if (!b) return; const a = draft[k] || (draft[k] = []); const v = b.dataset.v, i = a.indexOf(v);
+      if (i < 0) { a.push(v); if (k === 'fuel') draft.ex = draft.ex.filter(x => !(x === 'diesel' && isDiesel(v)) && !(x === 'ev' && isEv(v))); } else a.splice(i, 1);
+      syncSheet(); };
   }
+  $('#exC').innerHTML = EX_ALL.map(v => `<button type="button" class="chip" data-v="${v}">不含${EX_LABEL[v]}</button>`).join('');
+  $('#exC').onclick = e => { const b = e.target.closest('.chip'); if (!b) return; const a = draft.ex; const i = a.indexOf(b.dataset.v); i < 0 ? a.push(b.dataset.v) : a.splice(i, 1); syncSheet(); };
   $('#kmC').innerHTML = KM_OPTS.map(v => `<button type="button" class="chip" data-v="${v}">${v / 10000} 萬公里以下</button>`).join('');
   $('#kmC').onclick = e => { const b = e.target.closest('.chip'); if (!b) return; draft.km = draft.km === +b.dataset.v ? undefined : +b.dataset.v; syncSheet(); };
   const years = []; for (let y = thisYear + 1; y >= 2000; y--) years.push(y);
@@ -203,6 +213,7 @@ function syncSheet() {
     for (const b of box.children) b.classList.toggle('on', a.includes(b.dataset.v));
   }
   for (const b of $('#kmC').children) b.classList.toggle('on', +b.dataset.v === draft.km);
+  for (const b of $('#exC').children) b.classList.toggle('on', draft.ex.includes(b.dataset.v));
   for (const k of ['y1', 'y2', 't1', 't2']) $('#' + k).value = draft[k] || '';
 }
 function openSheet() { draft = JSON.parse(JSON.stringify(f)); syncSheet(); $('#sheet').hidden = false; document.body.classList.add('lock'); }
@@ -211,28 +222,31 @@ $('#openF').onclick = openSheet;
 $('#closeF').onclick = closeSheet;
 $('#sheet').onclick = e => { if (e.target.id === 'sheet') closeSheet(); };
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#sheet').hidden) closeSheet(); });
-$('#resetF').onclick = () => { for (const k of [...MULTI, ...NUMS]) delete draft[k]; syncSheet(); };
+$('#resetF').onclick = () => { for (const k of [...MULTI, ...NUMS]) delete draft[k]; draft.ex = EX_ALL.slice(); syncSheet(); };
 $('#applyF').onclick = () => {
   if (draft.y1 && draft.y2 && draft.y1 > draft.y2) [draft.y1, draft.y2] = [draft.y2, draft.y1];
   if (draft.t1 && draft.t2 && draft.t1 > draft.t2) [draft.t1, draft.t2] = [draft.t2, draft.t1];
-  f = draft; closeSheet(); apply(true);
+  const exChanged = draft.ex.join() !== (f.ex || []).join();
+  f = draft; closeSheet(); apply(true); if (exChanged) loadCounts();
 };
 
 // 已選條件標籤（點一下移除）
 function renderTags() {
   const tags = [];
+  for (const v of f.ex || []) if (v === 'acc' || !(f.fuel && f.fuel.length)) tags.push(['ex', v, `不含${EX_LABEL[v]}`]);
   for (const k of MULTI) for (const v of f[k] || []) tags.push([k, v, LABEL[k](v)]);
   if (f.y1 || f.y2) tags.push(['y', '', !f.y1 ? `${f.y2} 年以前` : !f.y2 ? `${f.y1} 年以後` : `${f.y1}～${f.y2} 年`]);
   if (f.km) tags.push(['km', '', `${f.km / 10000} 萬公里以下`]);
   if (f.t1 || f.t2) tags.push(['t', '', !f.t1 ? `車價 ${f.t2} 萬以下` : !f.t2 ? `車價 ${f.t1} 萬以上` : `車價 ${f.t1}～${f.t2} 萬`]);
+  const n = tags.filter(t => t[0] !== 'ex').length; $('#fN').hidden = !n; $('#fN').textContent = n;
   $('#tags').innerHTML = tags.map(([k, v, l]) => `<button type="button" class="tag" data-k="${k}" data-v="${esc(v)}">${esc(l)}</button>`).join('') +
-    (tags.length > 1 ? '<button type="button" class="tag clr" data-k="all">全部清除</button>' : '');
-  const n = tags.length; $('#fN').hidden = !n; $('#fN').textContent = n;
+    (n > 1 ? '<button type="button" class="tag clr" data-k="all">全部清除</button>' : '');
 }
 $('#tags').onclick = e => {
   const b = e.target.closest('.tag'); if (!b) return;
   const k = b.dataset.k, v = b.dataset.v;
-  if (k === 'all') for (const x of [...MULTI, ...NUMS]) delete f[x];
+  if (k === 'all') { for (const x of [...MULTI, ...NUMS]) delete f[x]; f.ex = EX_ALL.slice(); }
+  else if (k === 'ex') { f.ex = f.ex.filter(x => x !== v); apply(true); loadCounts(); return; }
   else if (k === 'y') { delete f.y1; delete f.y2; } else if (k === 't') { delete f.t1; delete f.t2; } else if (k === 'km') delete f.km;
   else f[k] = (f[k] || []).filter(x => x !== v);
   apply(true);

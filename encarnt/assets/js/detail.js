@@ -116,7 +116,8 @@ function optionsCard(opt) {
   document.title = `${title} | 佳德汽車 Encar 線上選車`;
 
   const fuel = s.fuelName || '';
-  const cc = /전기|수소/.test(fuel) && !/\+|하이브리드/.test(fuel) ? 0 : (s.displacement || 0);
+  const ev = /전기|수소/.test(fuel) && !/\+|하이브리드/.test(fuel); // 純電、氫能：暫不接受代購
+  const cc = ev ? 0 : (s.displacement || 0);
   const priceMan = ad.price;
   const p = calcPrice(priceMan, cc, rate);
   const sold = ad.status && ad.status !== 'ADVERTISE';
@@ -136,7 +137,7 @@ function optionsCard(opt) {
     <div>${gallery(d.photos, title)}</div>
     <div class="side" style="display:grid;gap:16px">
       <div class="card ttl"><div class="mk">${esc(mk.zh)}${sold ? '　<span class="lux">此車已售出或暫停刊登</span>' : ''}</div><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div>
-      ${priceCard(p, priceMan, rate, cc)}
+      ${ev ? `<div class="card price"><h2>預估車價</h2><div class="big no">電動車暫不接受代購</div><div class="krw">韓國售價 ${fmt(priceMan)} 萬韓元</div></div>` : priceCard(p, priceMan, rate, cc)}
     </div>
     <div style="display:grid;gap:16px">
       <div class="card"><h2>車輛規格</h2><div class="kv">${kv.map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div></div>
@@ -148,7 +149,7 @@ function optionsCard(opt) {
   bindGallery();
 
   $('#encLink').href = url;
-  $('#askLine').onclick = () => askLine(lineText({ title, sub, year: `${c.formYear || ''} 年式`, mileage: km(s.mileage), price: p ? fmt(p.price) : '', url }));
+  $('#askLine').onclick = () => askLine(lineText({ title, sub, year: `${c.formYear || ''} 年式`, mileage: km(s.mileage), price: p && !ev ? fmt(p.price) : '', url }));
   $('#bar').hidden = false;
 
   const rec = d.vehicleId && d.vehicleNo ? await getRecord(d.vehicleId, d.vehicleNo) : null;
