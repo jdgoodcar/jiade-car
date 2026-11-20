@@ -56,14 +56,14 @@ function priceCard(p, priceMan, rate, cc) {
     <div class="big"><small>約 </small>${wan(p.price)}<small> 萬元</small></div>
     <div class="wan">NT$ ${fmt(p.price)}（未含手續費）</div>
     <div class="krw">韓國售價 ${fmt(priceMan)} 萬韓元</div>
-    <div class="steps">
+    <details class="calc"><summary>查看計算方式</summary><div class="steps">
       <div><span>韓幣車價</span><b>${fmt(p.won)} 韓元</b></div>
       <div><span>${p.lux ? '奢侈稅' : '乘倍率'} × ${p.mul}<br><small>${ccTxt}</small></span><b>${fmt(p.wk)} 韓元</b></div>
       <div><span>換美金 ÷ ${p.krate.toLocaleString('en-US')}</span><b>${fmt(p.us)} 美金</b></div>
       <div><span>換台幣 × ${p.er.toFixed(3)}</span><b>${fmt(p.twd)} 台幣</b></div>
       <div><span>＋ 標準底價</span><b>${fmt(RULES.base)} 台幣</b></div>
       <div class="tot"><span>預估車價</span><b>${fmt(p.price)} 元</b></div>
-    </div>
+    </div></details>
     <p class="fine">匯率：${esc(rate.src)}，${t.getMonth() + 1}/${t.getDate()} ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 更新${rate.stale ? '（網路異常，使用上次匯率）' : ''}；台幣匯率已加 ${RULES.buffer}% 緩衝。<br>實際金額依購買當日匯率與報價單為準。</p></div>`;
 }
 
