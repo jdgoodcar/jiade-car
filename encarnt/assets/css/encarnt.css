@@ -268,3 +268,6 @@ optgroup.hot option { color: var(--fg); }
 .qbar .wrap + .wrap { position: relative; }
 .qsugg { top: 6px; }
 .intro h1 .spk { color: var(--gold-l); font-size: .8em; margin: 0 2px; vertical-align: 1px; }
+.qbar .qs { background: var(--gold-l); color: var(--navy); border-color: var(--gold-l); }
+.qbar .qs svg { stroke-width: 2.6; }
+.qbar .qs svg circle, .qbar .qs svg path { stroke-width: 2.6; }
