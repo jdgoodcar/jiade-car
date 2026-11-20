@@ -206,3 +206,4 @@ body.lock { overflow: hidden; }
 
 .price details.calc { margin-top: 12px; }
 .price details.calc summary { cursor: pointer; color: var(--navy); font-weight: 700; font-size: 14px; padding: 6px 0; }
+#choiceBox h3:first-child { margin-top: 14px; }

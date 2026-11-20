@@ -173,7 +173,7 @@ function optionsText(lang, title) {
       <div id="recBox"><div class="card"><h2>保險／事故紀錄</h2><p class="fine" style="margin:0">讀取中…</p></div></div>
       ${optionsCard(d.options)}
       <div class="card src"><h2>原始車源</h2><p style="margin:0 0 6px">在 Encar 查看原始刊登頁面（韓文）：</p><a href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a>
-        <p class="fine">車輛編號 ${esc(id)}。車輛資料即時取自 Encar，車輛隨時可能售出。</p></div>
+        <p class="fine">車輛編號 ${esc(id)}。車輛資料取自 Encar，車輛隨時可能售出。</p></div>
     </div></div>`;
   bindGallery();
 
