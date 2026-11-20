@@ -121,7 +121,7 @@ function choiceHtml(list, rate) {
 function optionsText(lang, title) {
   const zh = lang === 'zh', L = [zh ? `【${title}】車輛配備` : `[${title}] Options`];
   for (const g of optData.groups) L.push((zh ? g.zh + '：' : g.en + ': ') + g.items.map(x => (zh ? x[1] : x[2] || x[1])).join(zh ? '、' : ', '));
-  if (optData.choice.length) L.push((zh ? '原廠選配：' : 'Factory Options: ') + optData.choice.map(x => (zh ? x.zh : x.en) || x.optionName).join(zh ? '、' : ', '));
+  if (optData.choice.length) L.push((zh ? '原廠選配：' : 'Factory Options: ') + optData.choice.map(x => { const t = zh ? x.zh : x.en; return t ? (zh ? `${t}（${x.optionName}）` : `${t} (${x.optionName})`) : x.optionName; }).join(zh ? '、' : ', '));
   return L.join('\n\n');
 }
 
@@ -193,7 +193,7 @@ function optionsText(lang, title) {
     })
     .catch(() => { const box = $('#choiceBox'); if (box) box.innerHTML = `<p class="fine">另有 ${chosen.length} 項原廠選配，請參考 Encar 原始頁面。</p>`; });
   $('#encLink').href = url;
-  $('#askLine').onclick = () => askLine(lineText({ title, sub, year: `${c.formYear || ''} 年式`, mileage: km(s.mileage), price: p && !no ? fmt(p.price) : '', url }));
+  $('#askLine').onclick = () => askLine(lineText({ title, sub, year: `${c.formYear || ''} 年式`, mileage: km(s.mileage), price: p && !no ? wan(p.price) : '', url }));
   $('#bar').hidden = false;
 
   const rec = d.vehicleId && d.vehicleNo ? await getRecord(d.vehicleId, d.vehicleNo) : null;

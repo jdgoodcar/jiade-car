@@ -51,13 +51,9 @@ img { display: block; max-width: 100%; }
 .tag { display: inline-flex; align-items: center; gap: 4px; background: var(--gold-bg); border: 1px solid #ecd9b0; color: #7a5410; border-radius: 999px; padding: 3px 6px 3px 10px; font-size: 13px; cursor: pointer; }
 .tag::after { content: "×"; font-size: 15px; line-height: 1; padding: 0 3px; }
 .extog { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.extog { align-items: center; }
-.extog .exl { font-size: 13px; color: var(--mut); margin-right: 2px; }
-.tog { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--bd); background: #fff; color: #333; border-radius: 8px; padding: 5px 10px; font-size: 13px; cursor: pointer; }
-.tog i { width: 16px; height: 16px; border: 1.5px solid #b5bccb; border-radius: 4px; display: inline-grid; place-items: center; font-style: normal; font-size: 12px; line-height: 1; color: #fff; }
-.tog.on { border-color: var(--navy); background: #eef1f7; color: var(--navy); font-weight: 700; }
-.tog.on i { background: var(--navy); border-color: var(--navy); }
-.tog.on i::after { content: "✓"; }
+.tog { border: 1px solid var(--bd); background: #fff; color: #9aa2b3; border-radius: 999px; padding: 5px 12px; font-size: 13px; cursor: pointer; text-decoration: line-through; }
+.tog.on { background: var(--navy); border-color: var(--navy); color: #fff; text-decoration: none; }
+.tog.on::before { content: "✓ "; }
 .tag.clr { background: none; border-color: var(--bd); color: var(--mut); }
 .tag.clr::after { content: none; }
 

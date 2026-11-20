@@ -49,6 +49,6 @@ export async function askLine(text) {
 
 export function lineText({ title, sub, year, mileage, price, url }) {
   return `您好，我想詢問這台韓國 Encar 車輛：\n${title}${sub ? '\n' + sub : ''}\n年份：${year}　里程：${mileage}\n` +
-    (price ? `預估車價：NT$ ${price}（未含手續費）\n` : '') +
+    (price ? `預估車價：約 ${price} 萬元（未含手續費）\n` : '') +
     `車輛網址：${url}\n\n佳德汽車 · 一條龍完整服務 ${PHONE}`;
 }
