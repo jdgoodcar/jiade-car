@@ -279,6 +279,28 @@ function showRate() {
     : '匯率讀取失敗，暫時無法換算台幣';
 }
 
+// ---------- 往下滑時：上方快速列（廠牌／車系／篩選）＋回到最上面 ----------
+function syncQuick() {
+  for (const [q, m] of [['#qmk', '#mk'], ['#qmg', '#mg']]) {
+    const qs = $(q), ms = $(m);
+    qs.innerHTML = ms.innerHTML; qs.value = ms.value; qs.disabled = ms.disabled;
+  }
+  const n = $('#fN'); $('#qN').hidden = n.hidden; $('#qN').textContent = n.textContent;
+}
+for (const [q, m] of [['#qmk', '#mk'], ['#qmg', '#mg']]) {
+  $(q).onchange = e => { $(m).value = e.target.value; $(m).onchange({ target: $(m) }); };
+}
+$('#qF').onclick = openSheet;
+new MutationObserver(syncQuick).observe($('#mk'), { childList: true });
+new MutationObserver(syncQuick).observe($('#mg'), { childList: true });
+new IntersectionObserver(([e]) => {
+  const show = !e.isIntersecting && e.boundingClientRect.top < 0;
+  $('#qbar').classList.toggle('on', show); $('#qbar').setAttribute('aria-hidden', !show);
+  $('#toTop').classList.toggle('on', show);
+  if (show) syncQuick();
+}).observe($('.panel'));
+$('#toTop').onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
+
 // ---------- 啟動 ----------
 (async () => {
   syncControls();

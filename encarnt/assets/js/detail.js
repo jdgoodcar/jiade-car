@@ -6,6 +6,10 @@ import { calcPrice, RULES } from './lib/pricing.js';
 import { getInspection, inspectionCard } from './lib/inspect.js';
 import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast } from './lib/ui.js';
 
+// 回到最上面（往下滑一段後出現）
+addEventListener('scroll', () => $('#toTop').classList.toggle('on', scrollY > 600), { passive: true });
+$('#toTop').onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
+
 const id = new URLSearchParams(location.search).get('id');
 
 $('#back').onclick = () => {
@@ -166,7 +170,7 @@ function optionsText(lang, title) {
   $('#app').innerHTML = `<div class="dt">
     <div>${gallery(d.photos, title, ad.underBodyPhotos)}</div>
     <div class="side" style="display:grid;gap:16px">
-      <div class="card ttl"><div class="mk">${esc(mk.zh)}${sold ? '　<span class="lux">此車已售出或暫停刊登</span>' : ''}</div><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div>
+      <div class="card ttl"><div class="mk">${esc(mk.zh)}${sold ? '　<span class="lux">此車已售出或暫停刊登</span>' : ''}</div><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}<button type="button" class="share" id="share"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>分享這台車</button></div>
       ${no ? `<div class="card price"><h2>預估車價</h2><div class="big no">${no}暫不接受代購</div><div class="krw">韓國售價 ${fmt(priceMan)} 萬韓元</div></div>` : priceCard(p, priceMan, rate, cc)}
     </div>
     <div style="display:grid;gap:16px">
@@ -198,6 +202,12 @@ function optionsText(lang, title) {
       optData.choice = list; const box = $('#choiceBox'); if (box) box.innerHTML = choiceHtml(list, rate);
     })
     .catch(() => { const box = $('#choiceBox'); if (box) box.innerHTML = `<p class="fine">另有 ${chosen.length} 項原廠選配，請參考 Encar 原始頁面。</p>`; });
+  // 分享：手機用系統分享選單（可直接選 LINE），電腦複製本頁連結
+  $('#share').onclick = async () => {
+    const link = location.href, name = `${title}${sub ? ' ' + sub : ''}`;
+    if (navigator.share) { try { await navigator.share({ title: name, text: `${name}｜佳德汽車 Encar 線上選車`, url: link }); return; } catch (e) { if (e.name === 'AbortError') return; } }
+    toast((await copyText(link)) ? '已複製這台車的連結' : '無法複製，請手動複製網址');
+  };
   $('#encLink').href = url;
   $('#askLine').onclick = () => askLine(lineText({ title, sub, year: `${c.formYear || ''} 年式`, mileage: km(s.mileage), price: p && !no ? wan(p.price) : '', url }));
   $('#bar').hidden = false;

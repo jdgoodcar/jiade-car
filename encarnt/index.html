@@ -11,8 +11,8 @@
 <link rel="apple-touch-icon" href="../favicon.png">
 <link rel="preconnect" href="https://api.encar.com" crossorigin>
 <link rel="preconnect" href="https://ci.encar.com">
-<link rel="stylesheet" href="assets/css/encarnt.css?v=16">
-<script type="module" src="assets/js/list.js?v=16"></script>
+<link rel="stylesheet" href="assets/css/encarnt.css?v=17">
+<script type="module" src="assets/js/list.js?v=17"></script>
 </head>
 <body>
 <header class="hd">
@@ -72,6 +72,13 @@
 </footer>
 
 <!-- 更多篩選 -->
+<!-- 往下滑時出現：快速更換廠牌／車系、開啟篩選 -->
+<div class="qbar" id="qbar" aria-hidden="true"><div class="wrap">
+  <select id="qmk" aria-label="廠牌"></select><select id="qmg" aria-label="車系"></select>
+  <button type="button" class="qf" id="qF">篩選<span id="qN" hidden></span></button>
+</div></div>
+<button type="button" class="totop" id="toTop" aria-label="回到最上面" title="回到最上面"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5 20 17.5H4z" stroke="#f3cf7a" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+
 <div class="sheet" id="sheet" hidden>
   <div class="box" role="dialog" aria-modal="true" aria-labelledby="shT">
     <div class="top"><h2 id="shT">更多篩選</h2><button class="x" id="closeF" type="button" aria-label="關閉">×</button></div>

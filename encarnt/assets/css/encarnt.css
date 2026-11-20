@@ -133,6 +133,26 @@ body.lock { overflow: hidden; }
 .card { background: var(--card); border-radius: var(--r); box-shadow: var(--sh); padding: 16px; }
 .card h2 { margin: 0 0 12px; font-size: 16px; color: var(--navy); display: flex; align-items: center; gap: 8px; }
 .card h2::before { content: ""; width: 4px; height: 16px; background: var(--gold); border-radius: 2px; }
+/* 分享按鈕 */
+.ttl { position: relative; }
+.ttl .share { margin-top: 12px; display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--navy); background: #fff; color: var(--navy); border-radius: 999px; padding: 6px 14px; font-size: 14px; font-weight: 700; cursor: pointer; }
+.ttl .share svg { width: 16px; height: 16px; }
+/* LINE 詢問這台：下方小字說明 */
+.bar .btn-line .lt { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.25; }
+.bar .btn-line .lt small { font-size: 11px; font-weight: 500; opacity: .9; }
+/* 往下滑時的快速列（在頂部標題列下方） */
+.qbar { position: fixed; left: 0; right: 0; top: 56px; z-index: 25; background: var(--navy); border-top: 1px solid rgba(255,255,255,.12); border-bottom: 2px solid var(--gold-l); box-shadow: 0 4px 14px rgba(22,36,74,.2); padding: 8px 0; transform: translateY(-140%); visibility: hidden; transition: transform .22s ease, visibility .22s; }
+.qbar.on { transform: none; visibility: visible; }
+.qbar .wrap { display: flex; gap: 8px; align-items: center; }
+.qbar select { flex: 1; min-width: 0; height: 38px; border-radius: 10px; border: 0; padding: 0 8px; font-size: 14px; background: #fff; color: var(--fg); }
+.qbar select:disabled { opacity: .6; }
+.qbar .qf { flex-shrink: 0; height: 38px; border-radius: 10px; border: 1.5px solid var(--gold-l); background: transparent; color: var(--gold-l); font-weight: 700; font-size: 14px; padding: 0 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
+.qbar .qf span { background: var(--gold-l); color: var(--navy); border-radius: 999px; font-size: 11px; min-width: 18px; height: 18px; display: inline-grid; place-items: center; padding: 0 4px; }
+/* 回到最上面（與車價計算機相同樣式） */
+.totop { position: fixed; right: max(14px, env(safe-area-inset-right)); bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 35; width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid var(--gold-l); background: var(--navy); box-shadow: 0 4px 12px rgba(22,36,74,.25); display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transform: translateY(12px); pointer-events: none; transition: opacity .2s, transform .2s; }
+.totop.on { opacity: .92; transform: none; pointer-events: auto; }
+.totop svg { width: 16px; height: 16px; fill: var(--gold-l); }
+.bar ~ .totop, .totop:has(+ .bar) { bottom: calc(96px + env(safe-area-inset-bottom)); }
 .ttl h1 { margin: 0; font-size: 21px; line-height: 1.35; }
 .ttl .sub { color: var(--mut); margin-top: 2px; }
 .ttl .mk { font-size: 13px; color: var(--gold); font-weight: 700; }
@@ -212,3 +232,5 @@ body.lock { overflow: hidden; }
 .hd .btn-line::after { content: ""; position: absolute; inset: -8px -8px -8px -12px; }
 .exhd { margin: 10px 0 0; font-size: 13px; color: var(--mut); }
 .exhd + .extog { margin-top: 6px; }
+.bar .wrap { display: grid; grid-template-columns: 1fr 1.5fr; }
+.bar .enc { white-space: nowrap; font-size: 14px; padding: 12px 8px; }
