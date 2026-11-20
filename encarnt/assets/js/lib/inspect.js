@@ -18,6 +18,8 @@ export async function getInspection(vehicleId) {
   } catch (e) { return null; }
 }
 
+// Encar 原始性能檢查紀錄頁（韓文）
+const origLink = j => (j.vehicleId ? `<a class="orig" href="${esc(`https://www.encar.com/md/sl/mdsl_regcar.do?method=inspectionViewNew&carid=${j.vehicleId}`)}" target="_blank" rel="noopener">查看 Encar 原始檢查紀錄（韓文）↗</a>` : '');
 const ymd = s => (s && s.length >= 8 ? `${s.slice(0, 4)}/${s.slice(4, 6)}/${s.slice(6, 8)}` : '');
 
 function partName(T, ko) {
@@ -56,7 +58,7 @@ export async function inspectionCard(j, comment) {
       <div class="rec"><div class="${m.accdient ? 'warn' : 'ok'}"><span>事故車判定</span><b>${m.accdient ? '事故車' : '非事故車'}</b></div>
       <div class="${m.simpleRepair ? 'warn' : 'ok'}"><span>單純修理（外板）</span><b>${m.simpleRepair ? '有' : '無'}</b></div></div>
       ${imgs.length ? `<h3>原始檢查紀錄（韓文掃描檔）</h3><div class="scans">${imgs.map((x, i) => `<a href="${esc(PHOTO + x.path)}" target="_blank" rel="noopener"><img src="${esc(PHOTO + x.path)}" alt="檢查紀錄第 ${i + 1} 頁" loading="lazy"><span>第 ${i + 1} 頁</span></a>`).join('')}</div>` : ''}
-      <p class="fine">這台車的檢查紀錄是掃描圖檔，無法自動翻譯細項，點圖片可放大查看；需要中文說明可透過 LINE 詢問我們。</p></div>`;
+      <p class="fine">這台車的檢查紀錄是掃描圖檔，無法自動翻譯細項，點圖片可放大查看；需要中文說明可透過 LINE 詢問我們。</p>${origLink(j)}</div>`;
   }
 
   // ① 重點判定
@@ -115,5 +117,5 @@ export async function inspectionCard(j, comment) {
     <h3>機械檢查</h3>${mechHtml}
     ${fix.length ? `<h3>檢查時建議修理</h3><p class="warnline">${esc(fix.join('、'))}</p>` : ''}
     ${comment ? `<h3>檢查員備註（自動翻譯）</h3><p class="cmt">${esc(comment)}</p>` : ''}
-    <p class="fine">資料來源：韓國中古車性能・狀態檢查紀錄（經 Encar 提供），由佳德汽車翻譯整理，實際以原始紀錄為準。</p></div>`;
+    <p class="fine">資料來源：韓國中古車性能・狀態檢查紀錄（經 Encar 提供），實際以原始紀錄為準。</p>${origLink(j)}</div>`;
 }

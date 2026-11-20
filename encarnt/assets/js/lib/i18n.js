@@ -116,6 +116,7 @@ export async function autoTranslate(texts, tl) {
 
 /** 配備代碼 → [分組, 中文名稱, 英文名稱] */
 export function tOption(code) { return (T && T.options[code]) || null; }
+export function optionCodes() { return T ? Object.keys(T.options) : []; }
 export function optionGroups() { return (T && T.specs.optionGroups) || {}; }
 export function specTable(kind) { return (T && T.specs[kind]) || {}; }
 export function makersTable() { return (T && T.makers) || {}; }

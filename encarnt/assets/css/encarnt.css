@@ -175,6 +175,7 @@ body.lock { overflow: hidden; }
 .insp .scans a { display: block; text-align: center; font-size: 12px; color: var(--navy); text-decoration: none; }
 .insp .scans img { width: 100%; aspect-ratio: 3/4; object-fit: cover; object-position: top; border: 1px solid var(--bd); border-radius: 8px; background: #fff; display: block; margin-bottom: 4px; }
 .insp details { margin-top: 8px; }
+.insp .orig { display: inline-block; margin-top: 10px; font-size: 13px; font-weight: 700; color: var(--navy); }
 .insp summary { cursor: pointer; color: var(--navy); font-weight: 700; font-size: 13px; padding: 6px 0; }
 .insp .cmt { margin: 0; font-size: 13px; line-height: 1.6; background: var(--bg); border-radius: 10px; padding: 10px 12px; }
 .opth { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }

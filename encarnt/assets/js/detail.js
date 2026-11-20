@@ -1,5 +1,5 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, autoTranslate } from './lib/i18n.js';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js';
 import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted } from './lib/encar.js';
 import { getRate } from './lib/rate.js';
 import { calcPrice, RULES } from './lib/pricing.js';
@@ -53,8 +53,8 @@ function priceCard(p, priceMan, rate, cc) {
   const ccTxt = p.lux ? '韓幣 7,000 萬以上・奢侈稅' : (cc > RULES.ccLimit ? `${fmt(cc)}cc・2000cc 以上` : cc ? `${fmt(cc)}cc・2000cc 以下` : '電動車');
   const t = new Date(rate.time);
   return `<div class="card price"><h2>預估車價</h2>
-    <div class="big"><small>NT$ </small>${fmt(p.price)}</div>
-    <div class="wan">約 ${wan(p.price)} 萬元（未含手續費）</div>
+    <div class="big"><small>約 </small>${wan(p.price)}<small> 萬元</small></div>
+    <div class="wan">NT$ ${fmt(p.price)}（未含手續費）</div>
     <div class="krw">韓國售價 ${fmt(priceMan)} 萬韓元</div>
     <div class="steps">
       <div><span>韓幣車價</span><b>${fmt(p.won)} 韓元</b></div>
@@ -75,12 +75,12 @@ function recordCard(rec, rate) {
   const biz = (rec.business || 0) + (rec.government || 0);
   const gap = [1, 2, 3, 4, 5].map(i => rec['notJoinDate' + i]).filter(Boolean)
     .map(s => s.replace(/(\d{4})(\d{2})/g, '$1/$2'));
-  const item = (label, val, ok) => `<div class="${ok ? 'ok' : 'warn'}"><span>${label}</span><b>${val}</b></div>`;
+  const item = (label, val, ok) => `<div class="${ok === null ? '' : ok ? 'ok' : 'warn'}"><span>${label}</span><b>${val}</b></div>`;
   return `<div class="card"><h2>保險／事故紀錄</h2><div class="rec">
     ${item('本車保險理賠', `${rec.myAccidentCnt || 0} 次`, !rec.myAccidentCnt)}
-    ${item('理賠金額（本車）', money(rec.myAccidentCost), !rec.myAccidentCost)}
+    ${item('理賠金額（本車）', money(rec.myAccidentCost), null)}
     ${item('他車造成損害', `${rec.otherAccidentCnt || 0} 次`, !rec.otherAccidentCnt)}
-    ${item('理賠金額（他車）', money(rec.otherAccidentCost), !rec.otherAccidentCost)}
+    ${item('理賠金額（他車）', money(rec.otherAccidentCost), null)}
     ${item('車主變更', `${rec.ownerChangeCnt || 0} 次`, true)}
     ${item('車牌變更', `${rec.carNoChangeCnt || 0} 次`, true)}
     ${item('全損紀錄', rec.totalLossCnt ? `${rec.totalLossCnt} 次` : '無', !rec.totalLossCnt)}
@@ -98,7 +98,9 @@ const GROUP_EN = { '01': 'Exterior / Interior', '02': 'Safety', '03': 'Convenien
 let optData = { groups: [], choice: [] }; // 給「複製配備」按鈕用
 function optionsCard(opt) {
   const groups = optionGroups(), by = {};
-  for (const code of (opt && opt.standard) || []) { const o = tOption(code); if (o) (by[o[0]] = by[o[0]] || []).push(o); }
+  // 依 Encar 原網站的配備順序排列（options.json 已照 Encar 順序）
+  const have = new Set((opt && opt.standard) || []);
+  for (const code of optionCodes()) if (have.has(code)) { const o = tOption(code); (by[o[0]] = by[o[0]] || []).push(o); }
   const keys = Object.keys(groups).filter(k => by[k]);
   optData = { groups: keys.map(k => ({ zh: groups[k], en: GROUP_EN[k] || '', items: by[k] })), choice: [] };
   if (!keys.length && !((opt && opt.choice) || []).length) return '';
