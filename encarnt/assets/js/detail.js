@@ -17,8 +17,10 @@ function fail(title, msg) {
 }
 
 // 照片：依 Encar 的編號排序（001 正面…）。THUMBNAIL 是 Encar 給列表用的重複縮圖，略過；同一張檔案只放一次
-function gallery(photos, alt) {
-  const list = [...new Set((photos || []).filter(p => p.type !== 'THUMBNAIL').sort((a, b) => a.code.localeCompare(b.code)).map(p => photoUrl(p.path)))];
+// 車底照片（Encar 診斷中心拍攝，放在最後；原檔很大，用 Encar 的縮小版）
+function gallery(photos, alt, under) {
+  const list = [...new Set((photos || []).filter(p => p.type !== 'THUMBNAIL').sort((a, b) => a.code.localeCompare(b.code)).map(p => photoUrl(p.path))
+    .concat((under || []).filter(p => p.photoPath).map(p => 'https://imgcar.encar.com' + p.photoPath + '?d=1080x608')))];
   if (!list.length) return '<div class="gal"><div style="aspect-ratio:4/3;display:grid;place-items:center;color:#9aa2b3">沒有照片</div></div>';
   return `<div class="gal"><div class="track" id="track">${list.map((u, i) =>
     `<img src="${esc(u)}" alt="${esc(alt)} 照片 ${i + 1}" ${i ? 'loading="lazy"' : 'fetchpriority="high"'} decoding="async" width="640" height="480">`).join('')}</div>
@@ -149,7 +151,7 @@ function optionsText(lang, title) {
   ];
 
   $('#app').innerHTML = `<div class="dt">
-    <div>${gallery(d.photos, title)}</div>
+    <div>${gallery(d.photos, title, ad.underBodyPhotos)}</div>
     <div class="side" style="display:grid;gap:16px">
       <div class="card ttl"><div class="mk">${esc(mk.zh)}${sold ? '　<span class="lux">此車已售出或暫停刊登</span>' : ''}</div><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div>
       ${no ? `<div class="card price"><h2>預估車價</h2><div class="big no">${no}暫不接受代購</div><div class="krw">韓國售價 ${fmt(priceMan)} 萬韓元</div></div>` : priceCard(p, priceMan, rate, cc)}
