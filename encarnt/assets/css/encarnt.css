@@ -271,3 +271,4 @@ optgroup.hot option { color: var(--fg); }
 .qbar .qs { background: var(--gold-l); color: var(--navy); border-color: var(--gold-l); }
 .qbar .qs svg { stroke-width: 2.6; }
 .qbar .qs svg circle, .qbar .qs svg path { stroke-width: 2.6; }
+@media (max-width: 699px) { .intro { text-align: center; } }
