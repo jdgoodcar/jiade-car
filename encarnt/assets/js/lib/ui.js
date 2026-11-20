@@ -1,0 +1,54 @@
+// 共用的小工具：數字格式、LINE 詢問、提示訊息、車輛標題
+
+import { tMaker, tName } from './i18n.js';
+
+export const LINE_URL = 'https://line.me/ti/p/Pnn6ZRFaYI';
+export const PHONE = '08-765-6777';
+
+export const $ = (s, el = document) => el.querySelector(s);
+export const fmt = n => Math.round(n).toLocaleString('zh-TW');
+export const wan = n => (n / 10000).toLocaleString('zh-TW', { maximumFractionDigits: 1 });
+export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/** 2021 年 3 月 → 「2021/03」 */
+export const ym = v => { const s = String(Math.round(v || 0)); return s.length >= 6 ? `${s.slice(0, 4)}/${s.slice(4, 6)}` : s; };
+export const km = v => (v >= 10000 ? wan(v) + ' 萬公里' : fmt(v || 0) + ' 公里');
+
+/** 車輛標題：{ title: 'Hyundai The New Grandeur (GN7)', sub: '汽油 2.5 Premium' } */
+export function carTitle(maker, model, badge, detail) {
+  const mk = tMaker(maker);
+  const md = tName(model);
+  const title = (md.toLowerCase().startsWith(mk.en.toLowerCase()) ? md : `${mk.en} ${md}`).trim();
+  const sub = [tName(badge), tName(detail)].filter(Boolean).join(' ').trim();
+  return { title, sub, makerZh: mk.zh };
+}
+
+let toastTimer;
+export function toast(msg) {
+  let el = $('#toast');
+  if (!el) { el = document.createElement('div'); el.id = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
+  el.textContent = msg; el.classList.add('on');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('on'), 2200);
+}
+
+export async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; } catch (e) {
+    const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e2) { /* 無法複製 */ }
+    ta.remove(); return ok;
+  }
+}
+
+/** LINE 詢問：複製車輛資訊 → 打開 LINE */
+export async function askLine(text) {
+  const ok = await copyText(text);
+  toast(ok ? '已複製車輛資訊，請在 LINE 對話框貼上' : '請直接在 LINE 告訴我們車輛網址');
+  setTimeout(() => window.open(LINE_URL, '_blank', 'noopener'), ok ? 700 : 0);
+}
+
+export function lineText({ title, sub, year, mileage, price, url }) {
+  return `您好，我想詢問這台韓國 Encar 車輛：\n${title}${sub ? '\n' + sub : ''}\n年份：${year}　里程：${mileage}\n` +
+    (price ? `預估車價：NT$ ${price}（未含手續費）\n` : '') +
+    `車輛網址：${url}\n\n佳德汽車 · 一條龍完整服務 ${PHONE}`;
+}

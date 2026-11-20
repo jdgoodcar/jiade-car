@@ -1,0 +1,156 @@
+// 車輛詳細頁：detail.html?id=Encar 車輛編號
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups } from './lib/i18n.js';
+import { getDetail, getRecord, photoUrl, carUrl } from './lib/encar.js';
+import { getRate } from './lib/rate.js';
+import { calcPrice, RULES } from './lib/pricing.js';
+import { $, fmt, wan, esc, ym, km, askLine, lineText } from './lib/ui.js';
+
+const id = new URLSearchParams(location.search).get('id');
+
+$('#back').onclick = () => {
+  if (document.referrer && new URL(document.referrer).pathname.replace(/index\.html$/, '') === location.pathname.replace(/detail\.html$/, '')) history.back();
+  else location.href = './';
+};
+
+function fail(title, msg) {
+  $('#app').innerHTML = `<div class="err"><b>${esc(title)}</b>${esc(msg)}<br><br><a class="btn-m" href="./" style="text-decoration:none;display:inline-block">回到車輛列表</a></div>`;
+}
+
+// 照片：依 Encar 的編號排序（001 正面…）
+function gallery(photos, alt) {
+  const list = (photos || []).slice().sort((a, b) => a.code.localeCompare(b.code)).map(p => photoUrl(p.path));
+  if (!list.length) return '<div class="gal"><div style="aspect-ratio:4/3;display:grid;place-items:center;color:#9aa2b3">沒有照片</div></div>';
+  return `<div class="gal"><div class="track" id="track">${list.map((u, i) =>
+    `<img src="${esc(u)}" alt="${esc(alt)} 照片 ${i + 1}" ${i ? 'loading="lazy"' : 'fetchpriority="high"'} decoding="async" width="640" height="480">`).join('')}</div>
+    <button class="nav prev" type="button" aria-label="上一張">‹</button><button class="nav next" type="button" aria-label="下一張">›</button>
+    <span class="cnt" id="cnt">1 / ${list.length}</span></div>
+    <div class="thumbs" id="thumbs">${list.map((u, i) => `<img src="${esc(u)}" alt="" loading="lazy" decoding="async" data-i="${i}" class="${i ? '' : 'on'}">`).join('')}</div>`;
+}
+function bindGallery() {
+  const tr = $('#track'); if (!tr) return;
+  const n = tr.children.length, th = $('#thumbs');
+  const go = i => tr.scrollTo({ left: Math.max(0, Math.min(n - 1, i)) * tr.clientWidth, behavior: 'smooth' });
+  const cur = () => Math.round(tr.scrollLeft / tr.clientWidth);
+  let raf;
+  tr.addEventListener('scroll', () => {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      const i = cur(); $('#cnt').textContent = `${i + 1} / ${n}`;
+      th.querySelectorAll('img').forEach((im, k) => im.classList.toggle('on', k === i));
+      const t = th.children[i]; if (t) th.scrollTo({ left: t.offsetLeft - th.clientWidth / 2 + t.clientWidth / 2, behavior: 'smooth' });
+    });
+  }, { passive: true });
+  $('.gal .prev').onclick = () => go(cur() - 1);
+  $('.gal .next').onclick = () => go(cur() + 1);
+  th.onclick = e => { const im = e.target.closest('img'); if (im) go(+im.dataset.i); };
+}
+
+function priceCard(p, priceMan, rate, cc) {
+  if (!p) return `<div class="card price"><h2>預估車價</h2><div class="krw">韓國售價 ${fmt(priceMan)} 萬韓元</div><p class="fine">匯率讀取失敗，暫時無法換算台幣，請稍後重新整理。</p></div>`;
+  const ccTxt = p.lux ? '韓幣 7,000 萬以上・奢侈稅' : (cc > RULES.ccLimit ? `${fmt(cc)}cc・2000cc 以上` : cc ? `${fmt(cc)}cc・2000cc 以下` : '電動車');
+  const t = new Date(rate.time);
+  return `<div class="card price"><h2>預估車價</h2>
+    <div class="big"><small>NT$ </small>${fmt(p.price)}</div>
+    <div class="wan">約 ${wan(p.price)} 萬元（未含手續費）</div>
+    <div class="krw">韓國售價 ${fmt(priceMan)} 萬韓元</div>
+    <div class="steps">
+      <div><span>韓幣車價</span><b>${fmt(p.won)} 韓元</b></div>
+      <div><span>${p.lux ? '奢侈稅' : '乘倍率'} × ${p.mul}<br><small>${ccTxt}</small></span><b>${fmt(p.wk)} 韓元</b></div>
+      <div><span>換美金 ÷ ${p.krate.toLocaleString('en-US')}</span><b>${fmt(p.us)} 美金</b></div>
+      <div><span>換台幣 × ${p.er.toFixed(3)}</span><b>${fmt(p.twd)} 台幣</b></div>
+      <div><span>＋ 標準底價</span><b>${fmt(RULES.base)} 台幣</b></div>
+      <div class="tot"><span>預估車價</span><b>${fmt(p.price)} 元</b></div>
+    </div>
+    <p class="fine">匯率：${esc(rate.src)}，${t.getMonth() + 1}/${t.getDate()} ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 更新${rate.stale ? '（網路異常，使用上次匯率）' : ''}；台幣匯率已加 ${RULES.buffer}% 緩衝。<br>實際金額依購買當日匯率與報價單為準。</p></div>`;
+}
+
+function recordCard(rec, rate) {
+  if (!rec || !rec.openData) return `<div class="card"><h2>保險／事故紀錄</h2><p class="fine" style="margin:0">賣家未公開此車的保險紀錄，可透過 LINE 請我們協助查詢。</p></div>`;
+  const krwTwd = rate ? rate.usdTwd / rate.usdKrw : 0;
+  const money = w => (w ? `₩${fmt(w)}${krwTwd ? `<br><small>約 NT$ ${fmt(w * krwTwd)}</small>` : ''}` : '無');
+  const flood = (rec.floodTotalLossCnt || 0) + (rec.floodPartLossCnt || 0);
+  const biz = (rec.business || 0) + (rec.government || 0);
+  const gap = [1, 2, 3, 4, 5].map(i => rec['notJoinDate' + i]).filter(Boolean)
+    .map(s => s.replace(/(\d{4})(\d{2})/g, '$1/$2'));
+  const item = (label, val, ok) => `<div class="${ok ? 'ok' : 'warn'}"><span>${label}</span><b>${val}</b></div>`;
+  return `<div class="card"><h2>保險／事故紀錄</h2><div class="rec">
+    ${item('本車保險理賠', `${rec.myAccidentCnt || 0} 次`, !rec.myAccidentCnt)}
+    ${item('理賠金額（本車）', money(rec.myAccidentCost), !rec.myAccidentCost)}
+    ${item('他車造成損害', `${rec.otherAccidentCnt || 0} 次`, !rec.otherAccidentCnt)}
+    ${item('理賠金額（他車）', money(rec.otherAccidentCost), !rec.otherAccidentCost)}
+    ${item('車主變更', `${rec.ownerChangeCnt || 0} 次`, true)}
+    ${item('車牌變更', `${rec.carNoChangeCnt || 0} 次`, true)}
+    ${item('全損紀錄', rec.totalLossCnt ? `${rec.totalLossCnt} 次` : '無', !rec.totalLossCnt)}
+    ${item('泡水紀錄', flood ? `${flood} 次` : '無', !flood)}
+    ${item('失竊紀錄', rec.robberCnt ? `${rec.robberCnt} 次` : '無', !rec.robberCnt)}
+    ${item('租賃車（出租）紀錄', rec.loan ? '有' : '無', !rec.loan)}
+    ${item('營業用／公務用紀錄', biz ? '有' : '無', !biz)}
+  </div>
+  ${gap.length ? `<p class="fine"><b>保險未投保期間：</b>${gap.map(esc).join('、')}（此期間若有事故不會出現在紀錄中）</p>` : ''}
+  <p class="fine">資料來源：韓國保險開發院（經 Encar 公開），僅含有申請保險理賠的紀錄。</p></div>`;
+}
+
+function optionsCard(opt) {
+  const groups = optionGroups(), by = {};
+  for (const code of (opt && opt.standard) || []) { const o = tOption(code); if (o) (by[o[0]] = by[o[0]] || []).push(o[1]); }
+  const extra = ((opt && opt.choice) || []).length;
+  const keys = Object.keys(groups).filter(k => by[k]);
+  if (!keys.length && !extra) return '';
+  return `<div class="card opts"><h2>車輛配備</h2>${keys.map(k => `<h3>${esc(groups[k])}</h3><ul>${by[k].map(x => `<li>${esc(x)}</li>`).join('')}</ul>`).join('')}
+    ${extra ? `<p class="fine">另有 ${extra} 項原廠選配，詳細內容請參考 Encar 原始頁面。</p>` : ''}</div>`;
+}
+
+(async () => {
+  if (!id) return fail('找不到車輛', '網址缺少車輛編號');
+  let d, rate;
+  try { [, rate, d] = await Promise.all([loadI18n(), getRate(), getDetail(id)]); }
+  catch (e) { return fail('這台車可能已售出或下架', 'Encar 上已找不到這台車，或網路暫時無法連線。'); }
+
+  const c = d.category || {}, s = d.spec || {}, ad = d.advertisement || {};
+  const mk = tMaker(c.manufacturerName);
+  const model = tName(c.modelName);
+  const title = `${c.manufacturerEnglishName || mk.en} ${model}`.trim();
+  // 等級名稱：優先用自己的翻譯（與列表一致），翻不完整（還有韓文）才用 Encar 的英文
+  const pick = (ko, en) => { const t = tName(ko); return /[가-힣]/.test(t) && en ? en : t; };
+  const sub = [pick(c.gradeName, c.gradeEnglishName), pick(c.gradeDetailName, c.gradeDetailEnglishName)].filter(Boolean).join(' ');
+  document.title = `${title} | 佳德汽車 Encar 線上選車`;
+
+  const fuel = s.fuelName || '';
+  const cc = /전기|수소/.test(fuel) && !/\+|하이브리드/.test(fuel) ? 0 : (s.displacement || 0);
+  const priceMan = ad.price;
+  const p = calcPrice(priceMan, cc, rate);
+  const sold = ad.status && ad.status !== 'ADVERTISE';
+  const region = (d.contact && d.contact.address || '').split(' ')[0];
+  const color = [tSpec('color', s.customColor), tSpec('color', s.colorName)].filter(Boolean).join(' ');
+  const url = carUrl(id);
+
+  const kv = [
+    ['年式', `${c.formYear || ''} 年式`], ['首次登錄', ym(c.yearMonth)], ['里程', km(s.mileage)],
+    ['燃料', tSpec('fuel', fuel)], ['變速箱', tSpec('transmission', s.transmissionName)],
+    ['排氣量', s.displacement ? `${fmt(s.displacement)} cc` : '—'], ['顏色', color || '—'],
+    ['座位', s.seatCount ? `${s.seatCount} 人座` : '—'], ['車身類型', tSpec('category', s.bodyName) || '—'],
+    ['所在地（韓國）', tSpec('region', region) || '—'],
+  ];
+
+  $('#app').innerHTML = `<div class="dt">
+    <div>${gallery(d.photos, title)}</div>
+    <div class="side" style="display:grid;gap:16px">
+      <div class="card ttl"><div class="mk">${esc(mk.zh)}${sold ? '　<span class="lux">此車已售出或暫停刊登</span>' : ''}</div><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div>
+      ${priceCard(p, priceMan, rate, cc)}
+    </div>
+    <div style="display:grid;gap:16px">
+      <div class="card"><h2>車輛規格</h2><div class="kv">${kv.map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div></div>
+      <div id="recBox"><div class="card"><h2>保險／事故紀錄</h2><p class="fine" style="margin:0">讀取中…</p></div></div>
+      ${optionsCard(d.options)}
+      <div class="card src"><h2>原始車源</h2><p style="margin:0 0 6px">在 Encar 查看原始刊登頁面（韓文）：</p><a href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a>
+        <p class="fine">車輛編號 ${esc(id)}。車輛資料即時取自 Encar，車輛隨時可能售出。</p></div>
+    </div></div>`;
+  bindGallery();
+
+  $('#encLink').href = url;
+  $('#askLine').onclick = () => askLine(lineText({ title, sub, year: `${c.formYear || ''} 年式`, mileage: km(s.mileage), price: p ? fmt(p.price) : '', url }));
+  $('#bar').hidden = false;
+
+  const rec = d.vehicleId && d.vehicleNo ? await getRecord(d.vehicleId, d.vehicleNo) : null;
+  $('#recBox').innerHTML = recordCard(rec, rate);
+})();
