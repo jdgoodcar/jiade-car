@@ -148,7 +148,13 @@ async function loadHierarchy() {
   const mk = $('#mk'), mg = $('#mg'), md = $('#md');
   try {
     const makers = await hierarchy(f, 'mk');
-    fillSelect(mk, makers, x => { const m = tMaker(x.value); return m.zh.includes(m.en) ? m.zh : `${m.zh} ${m.en}`; }, '全部廠牌');
+    // 廠牌選單：最上面放「熱門廠牌」（台數最多的 8 個），下面依英文字母排列全部廠牌
+    const mkLabel = x => { const m = tMaker(x.value); return m.zh.includes(m.en) ? m.zh : `${m.zh} ${m.en}`; };
+    const opt = x => `<option value="${esc(x.value)}">${esc(mkLabel(x))}（${fmt(x.count)}）</option>`;
+    const hot = makers.filter(x => x.count > 0).sort((a, b) => b.count - a.count).slice(0, 8);
+    const az = makers.slice().sort((a, b) => tMaker(a.value).en.localeCompare(tMaker(b.value).en));
+    mk.innerHTML = '<option value="">全部廠牌</option>' +
+      (makers.length > 12 ? `<optgroup label="熱門廠牌">${hot.map(opt).join('')}</optgroup><optgroup label="全部廠牌（A–Z）">${az.map(opt).join('')}</optgroup>` : az.map(opt).join(''));
     mk.value = f.mk || '';
     if (f.mk && mk.value !== f.mk) { delete f.mk; delete f.mg; delete f.md; }
     mg.disabled = !f.mk; md.disabled = !f.mg;
