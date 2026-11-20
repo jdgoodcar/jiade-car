@@ -2,7 +2,7 @@
 // 對照表放在 assets/data/i18n/*.json，要修正翻譯只改 JSON，不用動程式。
 
 const DATA = new URL('../../data/i18n/', import.meta.url);
-const VERSION = '2'; // 對照表有更新時改這個數字，手機上的暫存就會重抓
+const VERSION = '3'; // 對照表有更新時改這個數字，手機上的暫存就會重抓
 const CACHE_KEY = 'encarnt_i18n_v' + VERSION;
 
 let T = null;      // { makers, models, specs, options, terms }
@@ -55,6 +55,8 @@ function numberRules(s) {
 function translateWord(w) {
   if (!HANGUL.test(w)) return w;
   if (exact.has(w)) return exact.get(w);
+  // 「뉴모닝」這類 뉴＋車名黏在一起：拆成 New＋車名
+  if (w.length > 2 && w[0] === '뉴' && /^[가-힣]+$/.test(w) && !exact.has(w)) { const r = translateWord(w.slice(1)); if (!HANGUL.test(r)) return 'New ' + r; }
   let out = [], i = 0, rest = '';
   while (i < w.length) {
     let hit = null;
@@ -66,13 +68,20 @@ function translateWord(w) {
   return out.filter(Boolean).join(' ');
 }
 
+// 英數字和韓文黏在一起（例如「DCT팩」「2人座밴」）：分開翻譯，英文前補空格
+function translateMixed(w) {
+  if (!HANGUL.test(w) || exact.has(w) || !/[^가-힣]/.test(w)) return translateWord(w);
+  const parts = w.split(/(?<=[^가-힣])(?=[가-힣])|(?<=[가-힣])(?=[^가-힣])/).map(translateWord);
+  return parts.reduce((s, p) => s + (/[A-Za-z0-9一-鿿]$/.test(s) && /^[A-Za-z]/.test(p) ? ' ' : '') + p, '');
+}
+
 /** 車型、等級名稱（韓文 → 台灣慣用英文／中文） */
 export function tName(s) {
   if (!s) return '';
   let t = numberRules(String(s).trim());
   // 多字片語（例如「더 뉴」「세부등급 없음」）先整段處理
   for (const [ko, v] of dict) if (ko.includes(' ') && t.includes(ko)) t = t.split(ko).join(v);
-  return t.split(/(\s+|[()\/,+])/).map(translateWord).join('')
+  return t.split(/(\s+|[()\/,+])/).map(translateMixed).join('')
     .replace(/\(\s*\)/g, '').replace(/\s{2,}/g, ' ').replace(/\(\s+/g, '(').replace(/\s+\)/g, ')').trim();
 }
 

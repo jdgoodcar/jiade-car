@@ -137,7 +137,9 @@ function optionsText(lang, title) {
   const c = d.category || {}, s = d.spec || {}, ad = d.advertisement || {};
   const mk = tMaker(c.manufacturerName);
   const model = tName(c.modelName);
-  const title = `${c.manufacturerEnglishName || mk.en} ${model}`.trim();
+  // 廠牌英文用我們的對照表（與列表一致，例如 Renault Korea），沒有對照才用 Encar 的英文
+  const mkEn = mk.en && mk.en !== c.manufacturerName && mk.en !== 'Others' ? mk.en : (c.manufacturerEnglishName || mk.en);
+  const title = (model.toLowerCase().startsWith(mkEn.toLowerCase()) ? model : `${mkEn} ${model}`).trim();
   // 等級名稱：優先用自己的翻譯（與列表一致），翻不完整（還有韓文）才用 Encar 的英文
   const pick = (ko, en) => { const t = tName(ko); return /[가-힣]/.test(t) && en ? en : t; };
   const sub = [pick(c.gradeName, c.gradeEnglishName), pick(c.gradeDetailName, c.gradeDetailEnglishName)].filter(Boolean).join(' ');
@@ -182,7 +184,7 @@ function optionsText(lang, title) {
     const b = e.target.closest('button'); if (!b) return;
     const m = (c.modelName || '').replace(/(\d+)세대/, 'Gen $1'); // 例：XC90 2세대 → XC90 Gen 2
     const enModel = /[가-힣]/.test(m) ? (c.modelGroupEnglishName || '') : m;
-    const enTitle = [c.manufacturerEnglishName || mk.en, enModel, c.gradeEnglishName, c.gradeDetailEnglishName].filter(Boolean).join(' ');
+    const enTitle = [mkEn, enModel, c.gradeEnglishName, c.gradeDetailEnglishName].filter(Boolean).join(' ');
     const ok = await copyText(optionsText(b.dataset.lang, b.dataset.lang === 'zh' ? `${title} ${sub}`.trim() : enTitle));
     toast(ok ? (b.dataset.lang === 'zh' ? '已複製中文配備' : '已複製英文配備') : '無法複製，請手動選取');
   };
