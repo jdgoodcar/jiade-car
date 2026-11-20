@@ -91,7 +91,30 @@ export function tSpec(kind, ko) {
   return ko;
 }
 
-/** 配備代碼 → [分組, 中文名稱] */
+/**
+ * 自動翻譯（Google 翻譯）：用在名稱不固定、無法事先建對照表的文字（例如原廠選配套件名稱）
+ * texts：韓文陣列；tl：'zh-TW' 或 'en'。翻過的記在手機裡，失敗時回傳 null
+ */
+const MT_KEY = 'encarnt_mt';
+const MT_FIX = [[/套餐/g, '套件'], [/車輪/g, '輪圈'], [/選型/g, '精選']]; // 修正常見的機器翻譯用詞
+export async function autoTranslate(texts, tl) {
+  let cache = {}; try { cache = JSON.parse(localStorage.getItem(MT_KEY)) || {}; } catch (e) { cache = {}; }
+  const need = [...new Set(texts.filter(t => !((tl + '|' + t) in cache)))];
+  if (need.length) {
+    try {
+      const r = await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=ko&tl=' + tl + '&dt=t&q=' + encodeURIComponent(need.join('\n')));
+      if (!r.ok) return null;
+      const out = (await r.json())[0].map(x => x[0]).join('').split('\n');
+      if (out.length !== need.length) return null;
+      need.forEach((t, i) => { let v = out[i].trim(); if (tl === 'zh-TW') for (const [a, b] of MT_FIX) v = v.replace(a, b); cache[tl + '|' + t] = v; });
+      const keys = Object.keys(cache); if (keys.length > 2000) for (const k of keys.slice(0, keys.length - 2000)) delete cache[k];
+      try { localStorage.setItem(MT_KEY, JSON.stringify(cache)); } catch (e) { /* 略過 */ }
+    } catch (e) { return null; }
+  }
+  return texts.map(t => cache[tl + '|' + t]);
+}
+
+/** 配備代碼 → [分組, 中文名稱, 英文名稱] */
 export function tOption(code) { return (T && T.options[code]) || null; }
 export function optionGroups() { return (T && T.specs.optionGroups) || {}; }
 export function specTable(kind) { return (T && T.specs[kind]) || {}; }

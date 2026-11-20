@@ -1,5 +1,5 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups } from './lib/i18n.js';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, autoTranslate } from './lib/i18n.js';
 import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted } from './lib/encar.js';
 import { getRate } from './lib/rate.js';
 import { calcPrice, RULES } from './lib/pricing.js';
@@ -105,16 +105,24 @@ function optionsCard(opt) {
     ${keys.map(k => `<h3>${esc(groups[k])}</h3><ul>${by[k].map(x => `<li>${esc(x[1])}</li>`).join('')}</ul>`).join('')}
     <div id="choiceBox"></div></div>`;
 }
-function choiceHtml(list) {
+// 新車加價（萬韓元）約合台幣，取到百位
+const choiceTwd = (man, rate) => (rate ? Math.round(man * 10000 / rate.usdKrw * rate.usdTwd / 100) * 100 : 0);
+function choicePrice(x, rate) {
+  if (!x.price) return '';
+  const t = choiceTwd(x.price, rate);
+  return `新車加價 ${fmt(x.price)} 萬韓元${t ? `（約 NT$ ${fmt(t)}）` : ''}`;
+}
+function choiceHtml(list, rate) {
   if (!list.length) return '';
-  return `<h3>原廠選配（新車時加價選購）</h3><ul class="choice">${list.map(x => `<li><b>${esc(x.optionName)}</b>${x.price ? `<span>新車加價 ${fmt(x.price)} 萬韓元</span>` : ''}</li>`).join('')}</ul>
-    <p class="fine">選配名稱為 Encar 提供的韓文原名。</p>`;
+  const mt = list.some(x => x.zh);
+  return `<h3>原廠選配（新車時加價選購）</h3><ul class="choice">${list.map(x => `<li><b>${esc(x.zh || x.optionName)}</b>${x.zh ? `<em>${esc(x.optionName)}</em>` : ''}${x.price ? `<span>${choicePrice(x, rate)}</span>` : ''}</li>`).join('')}</ul>
+    <p class="fine">${mt ? '選配名稱為自動翻譯，下方小字為 Encar 韓文原名。' : '選配名稱為 Encar 提供的韓文原名。'}</p>`;
 }
 function optionsText(lang, title) {
   const zh = lang === 'zh', L = [zh ? `【${title}】車輛配備` : `[${title}] Options`];
   for (const g of optData.groups) L.push((zh ? g.zh + '：' : g.en + ': ') + g.items.map(x => (zh ? x[1] : x[2] || x[1])).join(zh ? '、' : ', '));
-  if (optData.choice.length) L.push((zh ? '原廠選配（韓文原名）：' : 'Factory Options (Korean names): ') + optData.choice.map(x => x.optionName).join(zh ? '、' : ', '));
-  return L.join('\n');
+  if (optData.choice.length) L.push((zh ? '原廠選配：' : 'Factory Options: ') + optData.choice.map(x => (zh ? x.zh : x.en) || x.optionName).join(zh ? '、' : ', '));
+  return L.join('\n\n');
 }
 
 (async () => {
@@ -176,7 +184,13 @@ function optionsText(lang, title) {
   };
   const chosen = (d.options && d.options.choice) || [];
   if (chosen.length && d.vehicleId) getChoices(d.vehicleId)
-    .then(all => { optData.choice = all.filter(x => chosen.includes(x.optionCd)); const box = $('#choiceBox'); if (box) box.innerHTML = choiceHtml(optData.choice); })
+    .then(async all => {
+      const list = all.filter(x => chosen.includes(x.optionCd));
+      const names = list.map(x => x.optionName);
+      const [zhN, enN] = await Promise.all([autoTranslate(names, 'zh-TW'), autoTranslate(names, 'en')]);
+      list.forEach((x, i) => { x.zh = zhN && zhN[i]; x.en = enN && enN[i]; });
+      optData.choice = list; const box = $('#choiceBox'); if (box) box.innerHTML = choiceHtml(list, rate);
+    })
     .catch(() => { const box = $('#choiceBox'); if (box) box.innerHTML = `<p class="fine">另有 ${chosen.length} 項原廠選配，請參考 Encar 原始頁面。</p>`; });
   $('#encLink').href = url;
   $('#askLine').onclick = () => askLine(lineText({ title, sub, year: `${c.formYear || ''} 年式`, mileage: km(s.mileage), price: p && !no ? fmt(p.price) : '', url }));
