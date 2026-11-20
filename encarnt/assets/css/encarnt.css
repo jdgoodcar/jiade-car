@@ -267,3 +267,4 @@ optgroup.hot option { color: var(--fg); }
 .qbar.searching .qx { display: block; flex-shrink: 0; height: 38px; border: 0; background: transparent; color: var(--gold-l); font-weight: 700; font-size: 15px; padding: 0 4px; cursor: pointer; }
 .qbar .wrap + .wrap { position: relative; }
 .qsugg { top: 6px; }
+.intro h1 .spk { color: var(--gold-l); font-size: .8em; margin: 0 2px; vertical-align: 1px; }
