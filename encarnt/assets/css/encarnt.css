@@ -256,3 +256,5 @@ optgroup.hot option { color: var(--fg); }
 .sugg li.none { color: var(--mut); cursor: default; font-size: 14px; }
 .btn-r { display: inline-flex; align-items: center; justify-content: center; gap: 4px; border: 1.5px solid var(--bd); background: var(--card); color: var(--mut); border-radius: 10px; padding: 0 12px; font-weight: 700; cursor: pointer; white-space: nowrap; font-size: 14px; }
 .btn-r svg { width: 15px; height: 15px; }
+.intro .ask { color: var(--gold-l); text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 420px) { .intro h1 { font-size: clamp(17px, 5.4vw, 22px); letter-spacing: 0; } .intro p { font-size: 12px; } }
