@@ -151,10 +151,13 @@ async function loadHierarchy() {
     // 廠牌選單：最上面放「熱門廠牌」（台數最多的 8 個），下面依英文字母排列全部廠牌
     const mkLabel = x => { const m = tMaker(x.value); return m.zh.includes(m.en) ? m.zh : `${m.zh} ${m.en}`; };
     const opt = x => `<option value="${esc(x.value)}">${esc(mkLabel(x))}（${fmt(x.count)}）</option>`;
-    const hot = makers.filter(x => x.count > 0).sort((a, b) => b.count - a.count).slice(0, 8);
+    // 賓士、BMW 固定在最前面，其餘依台數
+    const PIN = ['벤츠', 'BMW'];
+    const pinned = PIN.map(v => makers.find(x => x.value === v && x.count > 0)).filter(Boolean);
+    const hot = pinned.concat(makers.filter(x => x.count > 0 && !PIN.includes(x.value)).sort((a, b) => b.count - a.count)).slice(0, 8);
     const az = makers.slice().sort((a, b) => tMaker(a.value).en.localeCompare(tMaker(b.value).en));
     mk.innerHTML = '<option value="">全部廠牌</option>' +
-      (makers.length > 12 ? `<optgroup label="熱門廠牌">${hot.map(opt).join('')}</optgroup><optgroup label="全部廠牌（A–Z）">${az.map(opt).join('')}</optgroup>` : az.map(opt).join(''));
+      (makers.length > 12 ? `<optgroup label="🔥 熱門廠牌">${hot.map(opt).join('')}</optgroup><optgroup label="全部廠牌（A–Z）">${az.map(opt).join('')}</optgroup>` : az.map(opt).join(''));
     mk.value = f.mk || '';
     if (f.mk && mk.value !== f.mk) { delete f.mk; delete f.mg; delete f.md; }
     mg.disabled = !f.mk; md.disabled = !f.mg;
@@ -299,12 +302,20 @@ for (const [q, m] of [['#qmk', '#mk'], ['#qmg', '#mg']]) {
 $('#qF').onclick = openSheet;
 new MutationObserver(syncQuick).observe($('#mk'), { childList: true });
 new MutationObserver(syncQuick).observe($('#mg'), { childList: true });
+// 快速列：篩選區捲出畫面後，往上滑才出現、往下滑就收起；回到最上面的按鈕則一直顯示
+let pastPanel = false, lastY = scrollY;
+const showQuick = on => { $('#qbar').classList.toggle('on', on); $('#qbar').setAttribute('aria-hidden', !on); if (on) syncQuick(); };
 new IntersectionObserver(([e]) => {
-  const show = !e.isIntersecting && e.boundingClientRect.top < 0;
-  $('#qbar').classList.toggle('on', show); $('#qbar').setAttribute('aria-hidden', !show);
-  $('#toTop').classList.toggle('on', show);
-  if (show) syncQuick();
+  pastPanel = !e.isIntersecting && e.boundingClientRect.top < 0;
+  $('#toTop').classList.toggle('on', pastPanel);
+  if (!pastPanel) showQuick(false);
 }).observe($('.panel'));
+addEventListener('scroll', () => {
+  const y = scrollY, d = y - lastY;
+  if (Math.abs(d) < 6) return;
+  lastY = y;
+  if (pastPanel) showQuick(d < 0);
+}, { passive: true });
 $('#toTop').onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
 
 // ---------- 啟動 ----------
