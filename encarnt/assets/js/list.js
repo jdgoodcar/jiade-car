@@ -319,36 +319,50 @@ function hitLabel(j, h) {
   const m = j.m[h.mi], mk = m[1].includes(m[2]) ? m[1] : `${m[1]} ${m[2]}`;
   return h.g ? `<b>${esc(h.g[2])}</b><small>${esc(mk)}</small>` : `<b>${esc(mk)}</b><small>全部車系</small>`;
 }
-let hits = [], hitSel = -1;
-async function showSugg() {
-  const q = $('#q').value, j = await loadSearch();
-  hits = searchHits(j, q); hitSel = -1;
-  const ul = $('#sugg');
-  if (!q.trim()) { ul.hidden = true; return; }
-  ul.innerHTML = hits.length ? hits.map((h, i) => `<li role="option" data-i="${i}">${hitLabel(j, h)}</li>`).join('')
-    : '<li class="none">找不到符合的車款，試試英文或其他寫法</li>';
-  ul.hidden = false;
+// 同一套搜尋用在兩個地方：上方面板的搜尋框、往下滑時快速列的放大鏡
+function bindSearch(input, ul, area, done) {
+  let hits = [], sel = -1;
+  async function show() {
+    const q = input.value, j = await loadSearch();
+    hits = searchHits(j, q); sel = -1;
+    if (!q.trim()) { ul.hidden = true; return; }
+    ul.innerHTML = hits.length ? hits.map((h, i) => `<li role="option" data-i="${i}">${hitLabel(j, h)}</li>`).join('')
+      : '<li class="none">找不到符合的車款，試試英文或其他寫法</li>';
+    ul.hidden = false;
+  }
+  async function pick(h) {
+    const j = await loadSearch(), m = j.m[h.mi];
+    if ((f.ct === 'Y' && !m[4]) || (f.ct === 'N' && m[4])) f.ct = 'A'; // 換到包含這個廠牌的分頁
+    f.mk = m[0]; if (h.g) f.mg = h.g[1]; else delete f.mg; delete f.md;
+    input.value = ''; ul.hidden = true; input.blur();
+    if (done) done();
+    apply(true);
+  }
+  input.addEventListener('focus', loadSearch);
+  input.addEventListener('input', show);
+  input.addEventListener('keydown', e => {
+    const items = [...ul.querySelectorAll('li[data-i]')];
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault(); if (!items.length) return;
+      sel = (sel + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+      items.forEach((li, i) => li.classList.toggle('on', i === sel));
+    } else if (e.key === 'Enter') { e.preventDefault(); const h = hits[sel >= 0 ? sel : 0]; if (h) pick(h); }
+    else if (e.key === 'Escape') { ul.hidden = true; if (done) done(); }
+  });
+  ul.addEventListener('click', e => { const li = e.target.closest('li[data-i]'); if (li) pick(hits[+li.dataset.i]); });
+  document.addEventListener('click', e => { if (!e.target.closest(area)) ul.hidden = true; });
 }
-async function pickHit(h) {
-  const j = await loadSearch(), m = j.m[h.mi];
-  if ((f.ct === 'Y' && !m[4]) || (f.ct === 'N' && m[4])) f.ct = 'A'; // 換到包含這個廠牌的分頁
-  f.mk = m[0]; if (h.g) f.mg = h.g[1]; else delete f.mg; delete f.md;
-  $('#q').value = ''; $('#sugg').hidden = true; $('#q').blur();
-  apply(true);
-}
-$('#q').addEventListener('focus', loadSearch);
-$('#q').addEventListener('input', showSugg);
-$('#q').addEventListener('keydown', e => {
-  const items = [...$('#sugg').querySelectorAll('li[data-i]')];
-  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-    e.preventDefault(); if (!items.length) return;
-    hitSel = (hitSel + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
-    items.forEach((li, i) => li.classList.toggle('on', i === hitSel));
-  } else if (e.key === 'Enter') { e.preventDefault(); const h = hits[hitSel >= 0 ? hitSel : 0]; if (h) pickHit(h); }
-  else if (e.key === 'Escape') $('#sugg').hidden = true;
-});
-$('#sugg').addEventListener('click', e => { const li = e.target.closest('li[data-i]'); if (li) pickHit(hits[+li.dataset.i]); });
-document.addEventListener('click', e => { if (!e.target.closest('#srch')) $('#sugg').hidden = true; });
+bindSearch($('#q'), $('#sugg'), '#srch');
+
+// 快速列的放大鏡：點了切換成輸入框（廠牌／車系選單暫時收起）
+let qSearching = false;
+const quickSearch = on => {
+  qSearching = on; $('#qbar').classList.toggle('searching', on);
+  if (on) $('#qq').focus(); else { $('#qq').value = ''; $('#qsugg').hidden = true; }
+};
+bindSearch($('#qq'), $('#qsugg'), '#qbar', () => quickSearch(false));
+$('#qS').onclick = () => quickSearch(true);
+$('#qX').onclick = () => quickSearch(false);
 
 // ---------- 重設：全部條件回到預設（全部車、預設排除三項、最新上架） ----------
 $('#resetAll').onclick = () => {
@@ -378,13 +392,13 @@ const showQuick = on => { $('#qbar').classList.toggle('on', on); $('#qbar').setA
 new IntersectionObserver(([e]) => {
   pastPanel = !e.isIntersecting && e.boundingClientRect.top < 0;
   $('#toTop').classList.toggle('on', pastPanel);
-  if (!pastPanel) showQuick(false);
+  if (!pastPanel) { showQuick(false); quickSearch(false); }
 }).observe($('.panel'));
 addEventListener('scroll', () => {
   const y = scrollY, d = y - lastY;
   if (Math.abs(d) < 6) return;
   lastY = y;
-  if (pastPanel) showQuick(d < 0);
+  if (pastPanel && !qSearching) showQuick(d < 0); // 正在輸入搜尋時不要收起
 }, { passive: true });
 $('#toTop').onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
 
