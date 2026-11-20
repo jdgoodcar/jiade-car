@@ -50,7 +50,10 @@ img { display: block; max-width: 100%; }
 .tags:empty { display: none; }
 .tag { display: inline-flex; align-items: center; gap: 4px; background: var(--gold-bg); border: 1px solid #ecd9b0; color: #7a5410; border-radius: 999px; padding: 3px 6px 3px 10px; font-size: 13px; cursor: pointer; }
 .tag::after { content: "×"; font-size: 15px; line-height: 1; padding: 0 3px; }
-.tag[data-k="ex"] { background: #eef1f7; border-color: #d5dbe8; color: var(--navy); }
+.extog { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.tog { border: 1px solid var(--bd); background: #fff; color: #9aa2b3; border-radius: 999px; padding: 5px 12px; font-size: 13px; cursor: pointer; text-decoration: line-through; }
+.tog.on { background: var(--navy); border-color: var(--navy); color: #fff; text-decoration: none; }
+.tog.on::before { content: "✓ "; }
 .tag.clr { background: none; border-color: var(--bd); color: var(--mut); }
 .tag.clr::after { content: none; }
 

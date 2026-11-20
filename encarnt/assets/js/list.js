@@ -1,6 +1,6 @@
 // 選車列表頁
 import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js';
-import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel } from './lib/encar.js';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js';
 import { getRate } from './lib/rate.js';
 import { calcPrice, guessCc, manForTwd } from './lib/pricing.js';
 import { $, fmt, wan, esc, km, carTitle, toast } from './lib/ui.js';
@@ -78,7 +78,8 @@ function pumpCc() {
 
 // ---------- 卡片 ----------
 function priceHtml(c) {
-  if (isEv(c.FuelType)) return `<div class="pr"><div><div class="l">預估車價</div><div class="v no">電動車暫不接受代購</div></div><div class="k">韓國售價<br>${fmt(c.Price)} 萬韓元</div></div>`;
+  const no = notAccepted(c.FuelType);
+  if (no) return `<div class="pr"><div><div class="l">預估車價</div><div class="v no">${no}暫不接受代購</div></div><div class="k">韓國售價<br>${fmt(c.Price)} 萬韓元</div></div>`;
   const p = calcPrice(c.Price, ccOf(c), rate);
   const krw = `韓國售價<br>${fmt(c.Price)} 萬韓元`;
   if (!p) return `<div class="pr"><div><div class="l">預估車價</div><div class="v">—</div></div><div class="k">${krw}</div></div>`;
@@ -113,7 +114,7 @@ async function load(reset, size = PAGE) {
     const frag = document.createElement('div'); frag.innerHTML = cars.map(cardHtml).join('');
     for (const el of [...frag.children]) {
       const c = cars.find(x => String(x.Id) === el.dataset.id);
-      if (c && !isEv(c.FuelType) && ccOf(c) == null && c.Price * 10000 < 7e7) { el._car = c; ccSeen.observe(el); }
+      if (c && !notAccepted(c.FuelType) && ccOf(c) == null && c.Price * 10000 < 7e7) { el._car = c; ccSeen.observe(el); }
       grid.appendChild(el);
     }
     offset += cars.length;
@@ -233,20 +234,26 @@ $('#applyF').onclick = () => {
 // 已選條件標籤（點一下移除）
 function renderTags() {
   const tags = [];
-  for (const v of f.ex || []) if (v === 'acc' || !(f.fuel && f.fuel.length)) tags.push(['ex', v, `不含${EX_LABEL[v]}`]);
   for (const k of MULTI) for (const v of f[k] || []) tags.push([k, v, LABEL[k](v)]);
   if (f.y1 || f.y2) tags.push(['y', '', !f.y1 ? `${f.y2} 年以前` : !f.y2 ? `${f.y1} 年以後` : `${f.y1}～${f.y2} 年`]);
   if (f.km) tags.push(['km', '', `${f.km / 10000} 萬公里以下`]);
   if (f.t1 || f.t2) tags.push(['t', '', !f.t1 ? `車價 ${f.t2} 萬以下` : !f.t2 ? `車價 ${f.t1} 萬以上` : `車價 ${f.t1}～${f.t2} 萬`]);
-  const n = tags.filter(t => t[0] !== 'ex').length; $('#fN').hidden = !n; $('#fN').textContent = n;
+  const n = tags.length; $('#fN').hidden = !n; $('#fN').textContent = n;
+  $('#exT').innerHTML = EX_ALL.map(v => `<button type="button" class="tog${(f.ex || []).includes(v) ? ' on' : ''}" data-v="${v}" aria-pressed="${(f.ex || []).includes(v)}">不含${EX_LABEL[v]}</button>`).join('');
   $('#tags').innerHTML = tags.map(([k, v, l]) => `<button type="button" class="tag" data-k="${k}" data-v="${esc(v)}">${esc(l)}</button>`).join('') +
     (n > 1 ? '<button type="button" class="tag clr" data-k="all">全部清除</button>' : '');
 }
+$('#exT').onclick = e => {
+  const b = e.target.closest('.tog'); if (!b) return;
+  const v = b.dataset.v, i = f.ex.indexOf(v);
+  i < 0 ? f.ex.push(v) : f.ex.splice(i, 1);
+  if (i < 0 && v !== 'acc' && f.fuel) f.fuel = f.fuel.filter(x => !(v === 'diesel' && isDiesel(x)) && !(v === 'ev' && isEv(x)));
+  apply(true); loadCounts();
+};
 $('#tags').onclick = e => {
   const b = e.target.closest('.tag'); if (!b) return;
   const k = b.dataset.k, v = b.dataset.v;
   if (k === 'all') { for (const x of [...MULTI, ...NUMS]) delete f[x]; f.ex = EX_ALL.slice(); }
-  else if (k === 'ex') { f.ex = f.ex.filter(x => x !== v); apply(true); loadCounts(); return; }
   else if (k === 'y') { delete f.y1; delete f.y2; } else if (k === 't') { delete f.t1; delete f.t2; } else if (k === 'km') delete f.km;
   else f[k] = (f[k] || []).filter(x => x !== v);
   apply(true);

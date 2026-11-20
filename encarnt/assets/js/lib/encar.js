@@ -18,6 +18,8 @@ const enc = q => encodeURIComponent(q).replace(/%2E/g, '.');
 export const FUELS = ['가솔린', '디젤', 'LPG(일반인 구입)', '가솔린+전기', '디젤+전기', 'LPG+전기', '가솔린+LPG', '가솔린+CNG', '전기', '수소', 'CNG', '기타'];
 export const isDiesel = v => /^디젤/.test(v || '');
 export const isEv = v => /^(전기|수소)$/.test(v || ''); // 純電、氫能（沒有排氣量）
+// 暫不接受代購的燃料：回傳名稱（柴油車／電動車），可接受則回傳空字串
+export const notAccepted = v => (isDiesel(v) ? '柴油車' : isEv(v) ? '電動車' : '');
 
 export function buildQuery(f, skip = {}) {
   const chain = ['CarType.' + (f.ct || 'A') + '.'];
