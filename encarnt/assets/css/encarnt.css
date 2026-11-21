@@ -482,3 +482,6 @@ body:has(.cmpmain) .cft { padding-bottom: calc(150px + env(safe-area-inset-botto
 /* 頁首只放文字 */
 .hd .bc .tx b { font-size: 18px; letter-spacing: .08em; }
 @media (max-width: 420px) { .hd .bc .tx b { font-size: 17px; } }
+/* 「佳德汽車」：粗體明體 */
+.hd .bc .tx b { font-family: 'Noto Serif TC', 'Songti TC', 'PMingLiU', serif; font-weight: 900; font-size: 19px; letter-spacing: .1em; }
+@media (max-width: 420px) { .hd .bc .tx b { font-size: 18px; } }
