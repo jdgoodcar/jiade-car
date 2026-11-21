@@ -17,7 +17,8 @@ function openQr(link) {
   qrLoad = qrLoad || new Promise((ok, no) => { const s = document.createElement('script'); s.src = QR_LIB; s.onload = ok; s.onerror = no; document.head.appendChild(s); });
   qrLoad.then(() => { $('#qrImg').innerHTML = ''; new window.QRCode($('#qrImg'), { text: link, width: 220, height: 220, correctLevel: window.QRCode.CorrectLevel.M }); })
     .catch(() => { $('#qrImg').innerHTML = '<p class="fine">QR Code 載入失敗，請改用下方按鈕複製連結。</p>'; qrLoad = null; });
-  $('#qrCopy').onclick = async () => toast((await copyText(link)) ? '已複製這台車的連結' : '無法複製，請手動複製網址');
+  const u = $('#qrUrl'); u.value = link; u.onclick = () => u.select();
+  $('#qrCopy').onclick = async () => { u.select(); toast((await copyText(link)) ? '已複製這台車的網址' : '無法複製，請手動選取網址'); };
 }
 const closeQr = () => { $('#qrSheet').hidden = true; };
 $('#qrX').onclick = closeQr;

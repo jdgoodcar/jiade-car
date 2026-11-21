@@ -415,3 +415,14 @@ body:has(.cmpmain) .cft { padding-bottom: calc(150px + env(safe-area-inset-botto
 .cmpt tr.sec .btn-s { margin: 0; background: #fff; color: var(--navy); border: 0; }
 .cmpt tr.sub th { position: sticky; left: 0; z-index: 1; background: #eef1f6; color: var(--navy); font-size: 12px; text-align: left; box-shadow: none; }
 .cmpt tr.sub td { background: #eef1f6; }
+/* 頁尾紅色文字愛心 */
+.cft .hrt { color: #ef4444; font-style: normal; }
+/* 底條分享：圓形，與標題旁的愛心、分享同風格 */
+.bar .shr { width: 48px; height: 48px; padding: 0; border: 0 !important; border-radius: 50% !important; background: var(--bg) !important; color: var(--navy); align-self: center; justify-self: start; }
+.bar .shr svg { width: 21px; height: 21px; }
+.bar .shr:active svg { transform: scale(.85); }
+/* QR 視窗的網址欄 */
+.qrlink { display: flex; gap: 8px; margin-top: 8px; }
+.qrlink input { flex: 1; min-width: 0; border: 1.5px solid var(--bd); border-radius: 10px; padding: 10px 12px; font-size: 14px; color: var(--fg); background: #f7f8fb; }
+.qrlink input:focus { outline: 2px solid var(--gold); border-color: var(--gold); }
+.qrlink .btn-m { flex-shrink: 0; width: auto !important; margin: 0 !important; padding: 0 18px; }
