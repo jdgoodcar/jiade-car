@@ -472,3 +472,6 @@ body:has(.cmpmain) .cft { padding-bottom: calc(150px + env(safe-area-inset-botto
 /* 頁首副標：Cinzel 字型 */
 .hd .bc .tx span { font-family: 'Cinzel', 'Times New Roman', serif; font-weight: 600; font-size: 11px; letter-spacing: .16em; margin-top: 3px; }
 @media (max-width: 420px) { .hd .bc .tx span { font-size: 10px; letter-spacing: .13em; } }
+/* 頁首：小 logo 放在「佳德汽車」前面同一行 */
+.hd .bc .tx b { display: flex; align-items: center; gap: 7px; }
+.hd .bc .tx b .ic { width: 22px; height: 22px; padding: 1px; border-radius: 5px; background: #fff; flex-shrink: 0; }
