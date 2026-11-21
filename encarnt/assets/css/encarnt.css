@@ -344,3 +344,18 @@ body:has(.favhd) main { padding-bottom: 24px !important; }
 .back span { font-size: 22px; line-height: 1; margin-top: -2px; }
 .cft .cp { display: block; line-height: 1.6; }
 .cft { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+/* 頁尾：與官網相同（slate-900 底、slate-400 字、blue-400 圖示） */
+.cft { background: #0f172a; color: #94a3b8; border-top: 1px solid #1e293b; text-align: center; font-size: 14px; padding: 32px 0 calc(76px + env(safe-area-inset-bottom)); font-family: ui-sans-serif, system-ui, -apple-system, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif; }
+.cft .in { max-width: 1024px; margin: 0 auto; padding: 0 16px; }
+.cft p { display: block; margin: 0; }
+.cft .t { color: #fff; font-size: 18px; line-height: 28px; font-weight: 700; letter-spacing: .025em; margin: 0 0 12px; }
+.cft .info { font-size: 14px; line-height: 20px; color: #94a3b8; margin-bottom: 12px; }
+.cft .info p + p { margin-top: 4px; }
+.cft .info .addr { line-height: 1.625; }
+.cft svg { display: inline-block; width: 14px; height: 14px; fill: #60a5fa; vertical-align: -2px; margin-right: 4px; }
+.cft a { color: inherit; text-decoration: underline; text-underline-offset: auto; }
+.cft a:hover { color: #fff; }
+.cft .cp { padding-top: 12px; border-top: 1px solid #1e293b; margin-top: 0; font-size: inherit; color: inherit; }
+.cft .c1 { font-size: 12px; line-height: 16px; color: #64748b; }
+.cft .c2 { font-size: 11px; color: #475569; font-style: italic; margin-top: 8px; }
+@media (min-width: 640px) { .cft .t { font-size: 20px; } }
