@@ -1,11 +1,11 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=81';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=81';
-import { getRate } from './lib/rate.js?v=81';
-import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=81';
-import { getInspection, inspectionCard } from './lib/inspect.js?v=81';
-import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=81';
-import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=81';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=82';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=82';
+import { getRate } from './lib/rate.js?v=82';
+import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=82';
+import { getInspection, inspectionCard } from './lib/inspect.js?v=82';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=82';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=82';
 
 updateFavCount();
 
@@ -113,7 +113,7 @@ function priceCard(p, priceMan, rate, cc) {
       <div><span>＋ 標準底價</span><b>${fmt(RULES.base)} 台幣</b></div>
       <div class="tot"><span>預估車價</span><b>${fmt(p.price)} 元</b></div>
     </div></details>
-    <p class="fine">匯率：${esc(rate.src)}，${t.getMonth() + 1}/${t.getDate()} ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 更新${rate.stale ? '（網路異常，使用上次匯率）' : ''}；台幣匯率已加 ${RULES.buffer}% 緩衝。<br>實際金額依購買當日匯率與報價單為準。</p></div>`;
+    <div class="ratenote"><p>匯率：${esc(rate.src)}，${t.getMonth() + 1}/${t.getDate()} ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 更新${rate.stale ? '（網路異常，使用上次匯率）' : ''}；<br>台幣匯率已加 ${RULES.buffer}% 緩衝。</p><p class="ask">實際金額請與我們聯繫報價。</p></div></div>`;
 }
 
 // Encar 刊登資訊：刊登幾天、多少人看過、多少人收藏

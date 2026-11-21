@@ -607,3 +607,7 @@ body.editing .favtools, body.editing #rmSold, body.editing #selAll, body.editing
 .noimg { position: relative; }
 .noimg::after { content: "暫無照片"; position: absolute; inset: 0; display: grid; place-items: center; color: #9aa2b3; font-size: 14px; font-weight: 700; pointer-events: none; }
 .gal.noimg::after { color: #6b7590; }
+/* 預估車價卡片：匯率說明 */
+.price .ratenote { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--bd); }
+.price .ratenote p { margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--mut); }
+.price .ratenote .ask { margin-top: 4px; color: var(--navy); font-weight: 700; font-size: 13px; }
