@@ -442,3 +442,13 @@ body:has(.cmpmain) .cft { padding-bottom: calc(150px + env(safe-area-inset-botto
 .cmpt .rmc:active { transform: scale(.92); }
 /* 配備列的「只列出不同 N 項／顯示全部」：左右滑動時固定在左欄旁 */
 .cmpt tr.sec .optw { position: sticky; left: 92px; display: inline-flex; align-items: center; white-space: nowrap; }
+/* 比較頁：往下捲時固定在頁首下方的車名條 */
+.cmpmini { position: fixed; top: 56px; z-index: 25; display: flex; background: #fff; box-shadow: 0 4px 12px rgba(20,28,46,.15); border-radius: 0 0 12px 12px; overflow: hidden; opacity: 0; transform: translateY(-8px); pointer-events: none; transition: opacity .15s, transform .15s; }
+.cmpmini.on { opacity: 1; transform: none; }
+.cmpmini .mi-lab { flex-shrink: 0; background: #f7f8fb; box-shadow: 1px 0 0 #e3e7ef; font-size: 12px; font-weight: 700; color: var(--mut); display: flex; align-items: center; padding-left: 8px; position: relative; z-index: 1; }
+.cmpmini .mi-vp { flex: 1; overflow: hidden; }
+.cmpmini .mi-in { display: flex; will-change: transform; }
+.cmpmini .mi-c { flex-shrink: 0; display: flex; align-items: center; gap: 6px; padding: 6px 8px; box-sizing: border-box; border-left: 1px solid #eef1f6; }
+.cmpmini .mi-c img { width: 40px; height: 30px; object-fit: cover; border-radius: 5px; flex-shrink: 0; }
+.cmpmini .mi-t { font-size: 12px; font-weight: 700; color: var(--navy); line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cmpmini .mi-t.gone { color: var(--mut); }

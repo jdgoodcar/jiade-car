@@ -94,6 +94,7 @@ function render(cars, rate) {
   </table></div>
   <p class="fine">資料取自 Encar，車況與配備以各車詳細頁及原始紀錄為準。預估車價未含手續費。</p>`;
   $('#optAll').onclick = () => { showAll = !showAll; render(cars, rate); };
+  miniHead(cars);
 }
 const rm = id => (ids.length > 2 ? `<a class="rmc" href="compare.html?ids=${ids.filter(x => x !== id).map(encodeURIComponent).join(',')}" aria-label="移除這台" title="從比較中移除"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></a>` : '');
 
@@ -114,3 +115,36 @@ const rm = id => (ids.length > 2 ? `<a class="rmc" href="compare.html?ids=${ids.
     };
   }
 })();
+
+// 往下捲、看不到上方車名時：頁首下方固定一條「哪台是哪台」的小標題，跟表格一起左右滑
+let miniObs = null;
+function miniHead(cars) {
+  document.querySelector('.cmpmini')?.remove();
+  if (miniObs) miniObs.disconnect();
+  const wrap = $('.cmpwrap'), ths = [...document.querySelectorAll('.cmpt thead th.cc')];
+  const bar = document.createElement('div');
+  bar.className = 'cmpmini'; bar.setAttribute('aria-hidden', 'true');
+  bar.innerHTML = `<div class="mi-lab">比較</div><div class="mi-vp"><div class="mi-in">${cars.map(c => c.gone
+    ? '<div class="mi-c"><span class="mi-t gone">已售出</span></div>'
+    : `<div class="mi-c">${c.img ? `<img src="${esc(c.img)}" alt="">` : ''}<span class="mi-t">${esc(c.title)}</span></div>`).join('')}</div></div>`;
+  document.body.appendChild(bar);
+  const inner = bar.querySelector('.mi-in'), cells = [...inner.children];
+  const layout = () => {
+    const r = wrap.getBoundingClientRect(), lab = document.querySelector('.cmpt thead th.lab').getBoundingClientRect().width;
+    bar.style.left = r.left + 'px'; bar.style.width = r.width + 'px';
+    bar.querySelector('.mi-lab').style.width = lab + 'px';
+    ths.forEach((th, i) => { cells[i].style.width = th.getBoundingClientRect().width + 'px'; });
+    inner.style.transform = `translateX(${-wrap.scrollLeft}px)`;
+  };
+  wrap.addEventListener('scroll', () => { inner.style.transform = `translateX(${-wrap.scrollLeft}px)`; }, { passive: true });
+  addEventListener('resize', layout);
+  layout();
+  // 表頭（照片＋車名）捲出畫面、但表格還在畫面上時才顯示
+  const head = document.querySelector('.cmpt thead'), top = document.querySelector('.hd').offsetHeight;
+  const check = () => {
+    const h = head.getBoundingClientRect(), w = wrap.getBoundingClientRect();
+    bar.classList.toggle('on', h.bottom < top + 8 && w.bottom > top + 120);
+  };
+  addEventListener('scroll', check, { passive: true });
+  check();
+}
