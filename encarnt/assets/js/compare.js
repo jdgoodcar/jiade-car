@@ -1,11 +1,11 @@
 // 車輛比較：compare.html?ids=編號,編號（2～4 台），左右並排
-import { loadI18n, tMaker, tName, tSpec, tOption, optionCodes, optionGroups } from './lib/i18n.js?v=86';
-import { getDetail, getRecord, photoUrl, notAccepted, carUrl } from './lib/encar.js?v=86';
-import { getInspection } from './lib/inspect.js?v=86';
-import { getRate } from './lib/rate.js?v=86';
-import { calcPrice } from './lib/pricing.js?v=86';
-import { $, fmt, wan, esc, ym, km, askLine, isTouch, toast } from './lib/ui.js?v=86';
-import { updateFavCount, favList } from './lib/fav.js?v=86';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionCodes, optionGroups } from './lib/i18n.js?v=87';
+import { getDetail, getRecord, photoUrl, notAccepted, carUrl } from './lib/encar.js?v=87';
+import { getInspection } from './lib/inspect.js?v=87';
+import { getRate } from './lib/rate.js?v=87';
+import { calcPrice } from './lib/pricing.js?v=87';
+import { $, fmt, wan, esc, ym, km, askLine, isTouch, toast } from './lib/ui.js?v=87';
+import { updateFavCount, favList } from './lib/fav.js?v=87';
 
 updateFavCount();
 if (isTouch) $('#hdLine').removeAttribute('target');
@@ -79,7 +79,7 @@ function render(cars, rate) {
     <thead><tr><th class="lab"></th>${head}</tr></thead>
     <tbody>
       ${sec('價格')}
-      ${row('預估車價', c => (c.no ? `<span class="bad">${c.no}<br>暫不接受代購</span>` : c.twd ? `<b class="big">約 ${wan(c.twd)} 萬</b>` : '—'), c => (c.twd && c.twd === minTwd ? 'best' : ''))}
+      ${row('預估車價', c => (c.no ? `<span class="bad">${c.no.trim() ? `<span class="nr">${c.no.trim()}</span>` : ''}暫不接受代購</span>` : c.twd ? `<b class="big">約 ${wan(c.twd)} 萬</b>` : '—'), c => (c.twd && c.twd === minTwd ? 'best' : ''))}
       ${row('韓國售價', c => `${fmt(c.price)} 萬韓元`)}
       ${sec('基本資料')}
       ${row('年式', c => `${esc(c.year)} 年式`, c => (+c.year === maxYear ? 'best' : ''))}

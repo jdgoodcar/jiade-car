@@ -80,6 +80,7 @@ img { display: block; max-width: 100%; }
 .car .pr .k { text-align: right; font-size: 12px; color: var(--mut); white-space: nowrap; }
 .car .pr .v.no { font-family: var(--font); font-size: 14px; color: var(--red); }
 .price .big.no { font-family: var(--font); font-size: 20px; color: var(--red); }
+.no .nr, .bad .nr { display: block; font-size: 12px; font-weight: 700; color: var(--mut); line-height: 1.4; }
 .warnc { border: 2px solid var(--red); display: grid; gap: 4px; }
 .warnc b { color: var(--red); font-size: 17px; }
 .warnc span { color: var(--fg); font-size: 14px; }

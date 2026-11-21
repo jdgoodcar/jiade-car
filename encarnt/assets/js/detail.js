@@ -1,11 +1,11 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=86';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, blockReason, vinBlocked, searchCars } from './lib/encar.js?v=86';
-import { getRate } from './lib/rate.js?v=86';
-import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=86';
-import { getInspection, inspectionCard } from './lib/inspect.js?v=86';
-import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=86';
-import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=86';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=87';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, blockReason, vinBlocked, searchCars } from './lib/encar.js?v=87';
+import { getRate } from './lib/rate.js?v=87';
+import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=87';
+import { getInspection, inspectionCard } from './lib/inspect.js?v=87';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=87';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=87';
 
 updateFavCount();
 
@@ -255,7 +255,7 @@ async function similarCard(c, priceMan, rate, selfPhoto, selfKm) {
     const no = notAccepted(x.FuelType) || (blockReason(x.Manufacturer, x.Model, x.Badge, x.BadgeDetail) === 'origin' ? ' ' : ''), p = !no && calcPrice(x.Price, guessCc(x.Badge, x.BadgeDetail, x.Model) || 0, rate);
     return `<a class="sim" href="detail.html?id=${encodeURIComponent(x.Id)}"><div class="sp">${img ? `<img src="${esc(img)}" alt="" loading="lazy" decoding="async">` : ''}<span>${esc(x.FormYear || String(x.Year).slice(0, 4))}</span></div>
       <b>${esc(t.sub || t.title)}</b><small>${esc(km(x.Mileage))}</small>
-      <em>${no ? `<i class="no">${no.trim()}暫不接受代購</i>` : p ? `約 ${wan(p.price)} 萬` : `${fmt(x.Price)} 萬韓元`}</em></a>`;
+      <em>${no ? `<i class="no">${no.trim() ? `<span class="nr">${no.trim()}</span>` : ''}暫不接受代購</i>` : p ? `約 ${wan(p.price)} 萬` : `${fmt(x.Price)} 萬韓元`}</em></a>`;
   }).join('')}</div><p class="fine">同車型中價格最接近這台的車，預估車價依排氣量推估。</p></div>`;
 }
 
@@ -298,7 +298,7 @@ async function similarCard(c, priceMan, rate, selfPhoto, selfKm) {
     <div>${gallery(d.photos, title, ad.underBodyPhotos)}</div>
     <div class="side" style="display:grid;gap:16px">
       <div class="card ttl"><button type="button" class="fav" id="favB">${HEART}</button><button type="button" class="tshr" id="share2" aria-label="分享這台車" title="分享這台車"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="mk">${esc(mk.zh)}${sold ? '　<span class="lux">此車已售出或暫停刊登</span>' : ''}</div><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}${listingInfo(d.manage)}</div>
-      ${no ? `<div class="card price"><h2>預估車價</h2><div class="big no">${no.trim()}暫不接受代購</div><div class="krw">韓國售價 ${fmt(priceMan)} 萬韓元</div></div>` : priceCard(p, priceMan, rate, cc)}
+      ${no ? `<div class="card price"><h2>預估車價</h2><div class="big no">${no.trim() ? `<span class="nr">${no.trim()}</span>` : ''}暫不接受代購</div><div class="krw">韓國售價 ${fmt(priceMan)} 萬韓元</div></div>` : priceCard(p, priceMan, rate, cc)}
       ${no ? '' : '<div id="cmpBox"></div>'}
     </div>
     <div style="display:grid;gap:16px">
@@ -368,7 +368,7 @@ async function similarCard(c, priceMan, rate, selfPhoto, selfKm) {
     $('#inspBox').innerHTML = await inspectionCard(insp, zh && zh[0]);
     const dd = insp && insp.master && insp.master.detail || {};
     if (vinBlocked(dd.vin)) blockAll = true;
-    warn(dd.tuning && '改裝');
+    warn(dd.tuning && (dd.tuningStateTypes || []).some(x => /불법/.test(x.title || '')) && '不合法改裝'); // 合法改裝可接受（個案了解）
   })().catch(() => { $('#inspBox').innerHTML = '<div class="card"><h2>車況報告</h2><p class="fine" style="margin:0">暫時無法讀取，請稍後重新整理。</p></div>'; });
   const rec = d.vehicleId && d.vehicleNo ? await getRecord(d.vehicleId, d.vehicleNo) : null;
   $('#recBox').innerHTML = recordCard(rec, rate, d.condition && d.condition.seizing);
@@ -380,7 +380,7 @@ let blockAll = false;
 function warn(...items) {
   for (const x of items) if (x) warned.add(x);
   const box = document.getElementById('warnBox'); if (!box || (!warned.size && !blockAll)) return;
-  if (blockAll && !warned.size && document.querySelector('.price .big.no')) return; // 價格區已寫「暫不接受代購」就不重複
+  if (document.querySelector('.price .big.no')) return; // 價格區已寫「暫不接受代購」就不重複
   box.hidden = false;
   box.innerHTML = `<div class="card warnc"><b>這台車暫不接受代購</b>${!blockAll && warned.size ? `<span>原因：${[...warned].join('、')}</span>` : ''}</div>`;
 }

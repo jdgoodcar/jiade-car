@@ -1,10 +1,10 @@
 // 選車列表頁
-import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=86';
-import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted, blockReason, BLOCK_MAKERS, OLD_YEARS } from './lib/encar.js?v=86';
-import { getRate } from './lib/rate.js?v=86';
-import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=86';
-import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=86';
-import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=86';
+import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=87';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted, blockReason, BLOCK_MAKERS, OLD_YEARS } from './lib/encar.js?v=87';
+import { getRate } from './lib/rate.js?v=87';
+import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=87';
+import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=87';
+import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=87';
 
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 
@@ -82,7 +82,7 @@ function pumpCc() {
 // ---------- 卡片 ----------
 function priceHtml(c) {
   const no = notAccepted(c.FuelType);
-  if (no) return `<div class="pr"><div><div class="l">預估車價</div><div class="v no">${no}暫不接受代購</div></div><div class="k">韓國售價<br>${fmt(c.Price)} 萬韓元</div></div>`;
+  if (no) return `<div class="pr"><div><div class="l">預估車價</div><div class="v no">${no ? `<span class="nr">${no}</span>` : ''}暫不接受代購</div></div><div class="k">韓國售價<br>${fmt(c.Price)} 萬韓元</div></div>`;
   const p = calcPrice(c.Price, ccOf(c), rate);
   const krw = `韓國售價<br>${fmt(c.Price)} 萬韓元`;
   if (!p) return `<div class="pr"><div><div class="l">預估車價</div><div class="v">—</div></div><div class="k">${krw}</div></div>`;

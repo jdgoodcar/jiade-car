@@ -1,10 +1,10 @@
 // 我的收藏：列出收藏的車，向 Encar 確認是否還在刊登、價格有沒有變
-import { loadI18n, tSpec } from './lib/i18n.js?v=86';
-import { getDetail, notAccepted } from './lib/encar.js?v=86';
-import { getRate } from './lib/rate.js?v=86';
-import { calcPrice } from './lib/pricing.js?v=86';
-import { $, fmt, wan, esc, km, askLine, toast, isTouch } from './lib/ui.js?v=86';
-import { favList, removeFav, updateFav, HEART, updateFavCount, dedupeFav } from './lib/fav.js?v=86';
+import { loadI18n, tSpec } from './lib/i18n.js?v=87';
+import { getDetail, notAccepted } from './lib/encar.js?v=87';
+import { getRate } from './lib/rate.js?v=87';
+import { calcPrice } from './lib/pricing.js?v=87';
+import { $, fmt, wan, esc, km, askLine, toast, isTouch } from './lib/ui.js?v=87';
+import { favList, removeFav, updateFav, HEART, updateFavCount, dedupeFav } from './lib/fav.js?v=87';
 
 dedupeFav();
 updateFavCount();
@@ -43,7 +43,7 @@ $('#toTop').onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
 function priceHtml(x) {
   const no = notAccepted(x.fuel);
   const krw = `韓國售價<br>${fmt(x.price)} 萬韓元`;
-  if (no) return `<div class="pr"><div><div class="l">預估車價</div><div class="v no">${no}暫不接受代購</div></div><div class="k">${krw}</div></div>`;
+  if (no) return `<div class="pr"><div><div class="l">預估車價</div><div class="v no">${no ? `<span class="nr">${no}</span>` : ''}暫不接受代購</div></div><div class="k">${krw}</div></div>`;
   const p = rate && calcPrice(x.price, x.cc || 0, rate);
   const tag = p && p.lux ? '<span class="lux">含奢侈稅</span>' : (p && !p.ccKnown ? '<span class="approx">約</span>' : '');
   return `<div class="pr"><div><div class="l">預估車價 ${tag}</div><div class="v">${p ? wan(p.price) + '<small> 萬</small>' : '—'}</div></div><div class="k">${krw}</div></div>`;
