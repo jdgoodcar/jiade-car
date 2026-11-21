@@ -462,3 +462,5 @@ body:has(.cmpmain) .cft { padding-bottom: calc(150px + env(safe-area-inset-botto
 .hd .bc .tx b { color: #fff; font-size: 16px; letter-spacing: .06em; white-space: nowrap; overflow: visible; }
 .hd .bc .tx span { color: var(--gold-l); font-size: 10px; font-weight: 700; letter-spacing: .12em; margin-top: 3px; white-space: nowrap; }
 @media (max-width: 420px) { .hd .bc .tx b { font-size: 15px; } .hd .bc .tx span { font-size: 9.5px; letter-spacing: .1em; } }
+/* JD 圖示白邊改細 */
+.hd .bc .ic { padding: 1.5px; border-radius: 8px; width: 32px; height: 32px; }
