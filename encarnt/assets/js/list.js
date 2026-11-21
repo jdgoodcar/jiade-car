@@ -1,17 +1,17 @@
 // 選車列表頁
-import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=82';
-import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=82';
-import { getRate } from './lib/rate.js?v=82';
-import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=82';
-import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=82';
-import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=82';
+import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=83';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=83';
+import { getRate } from './lib/rate.js?v=83';
+import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=83';
+import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=83';
+import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=83';
 
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 
 const PAGE = 20;
 const EX_ALL = ['diesel', 'ev', 'acc']; // 預設排除：柴油、電動、事故車
 const EX_LABEL = { diesel: '柴油車', ev: '電動車', acc: '事故車' };
-const MULTI = ['fuel', 'tm', 'cat', 'color', 'rg'];
+const MULTI = ['fuel', 'tm', 'cat', 'color', 'seat', 'rg'];
 const NUMS = ['y1', 'y2', 'km', 't1', 't2'];
 const KM_OPTS = [10000, 30000, 50000, 80000, 100000, 150000];
 const TWD_OPTS = [30, 50, 80, 100, 120, 150, 200, 250, 300, 400, 500, 700, 1000]; // 萬
@@ -236,9 +236,9 @@ $('#ct').onclick = e => {
 // ---------- 更多篩選 ----------
 const LABEL = {
   fuel: v => tSpec('fuel', v), tm: v => tSpec('transmission', v), cat: v => tSpec('category', v),
-  color: v => tSpec('color', v), rg: v => tSpec('region', v),
+  color: v => tSpec('color', v), seat: v => tSpec('seat', v), rg: v => tSpec('region', v),
 };
-const SPEC_KIND = { fuel: 'fuel', tm: 'transmission', cat: 'category', color: 'color', rg: 'region' };
+const SPEC_KIND = { fuel: 'fuel', tm: 'transmission', cat: 'category', color: 'color', seat: 'seat', rg: 'region' };
 let draft = null;
 function buildSheet() {
   for (const box of document.querySelectorAll('.chips[data-k]')) {
@@ -283,7 +283,7 @@ $('#applyF').onclick = () => {
 // 已選條件標籤（點一下移除）
 function renderTags() {
   const tags = [];
-  for (const k of MULTI) for (const v of f[k] || []) tags.push([k, v, LABEL[k](v)]);
+  for (const k of MULTI) for (const v of f[k] || []) tags.push([k, v, (k === 'seat' ? '內裝' : '') + LABEL[k](v)]);
   if (f.y1 || f.y2) tags.push(['y', '', !f.y1 ? `${f.y2} 年以前` : !f.y2 ? `${f.y1} 年以後` : `${f.y1}～${f.y2} 年`]);
   if (f.km) tags.push(['km', '', `${f.km / 10000} 萬公里以下`]);
   if (f.t1 || f.t2) tags.push(['t', '', !f.t1 ? `車價 ${f.t2} 萬以下` : !f.t2 ? `車價 ${f.t1} 萬以上` : `車價 ${f.t1}～${f.t2} 萬`]);

@@ -18,7 +18,7 @@ const enc = q => encodeURIComponent(q).replace(/%2E/g, '.');
 
 /**
  * 把篩選條件轉成 Encar 查詢字串
- * f = { ct:'A'|'Y'|'N', ex:[], mk, mg, md, fuel:[], tm:[], cat:[], color:[], rg:[], y1, y2, km, p1, p2 }
+ * f = { ct:'A'|'Y'|'N', ex:[], mk, mg, md, fuel:[], tm:[], cat:[], color:[], seat:[], rg:[], y1, y2, km, p1, p2 }
  * skip：產生「選單用」查詢時要略過的層級（例如列出廠牌時略過 mk/mg/md）
  */
 // Encar 燃料分類（全部）
@@ -51,7 +51,7 @@ export function buildQuery(f, skip = {}) {
   }
   if (ex.includes('acc')) parts.push('(Or.Accident.N._.Accident.F.)'); // Encar 判定：N 無事故、F 無資料、Y 有事故
   multi('FuelType', fuel); multi('Transmission', f.tm); multi('Category', f.cat);
-  multi('Color', f.color); multi('OfficeCityState', f.rg);
+  multi('Color', f.color); multi('SeatColor', f.seat); multi('OfficeCityState', f.rg);
   if (f.y1 || f.y2) parts.push(`Year.range(${f.y1 ? f.y1 + '00' : ''}..${f.y2 ? f.y2 + '12' : ''}).`);
   if (f.km) parts.push(`Mileage.range(..${f.km}).`);
   // 價格：排除 Encar 上「1 萬」「9999 萬」這類假價格（洽詢價、租賃）
