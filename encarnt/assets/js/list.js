@@ -1,16 +1,16 @@
 // 選車列表頁
-import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=88';
-import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, fuelEx, notAccepted, blockReason, BLOCK_MAKERS, OLD_YEARS } from './lib/encar.js?v=88';
-import { getRate } from './lib/rate.js?v=88';
-import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=88';
-import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=88';
-import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=88';
+import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=89';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, fuelEx, notAccepted, blockReason, BLOCK_MAKERS, OLD_YEARS } from './lib/encar.js?v=89';
+import { getRate } from './lib/rate.js?v=89';
+import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=89';
+import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=89';
+import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=89';
 
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 
 const PAGE = 20;
-const EX_ALL = ['diesel', 'ev', 'lpg', 'acc', 'old', 'biz']; // 預設排除：柴油、電動、LPG、事故車、太舊的車、營業用車
-const EX_LABEL = { diesel: '柴油車', ev: '電動車', lpg: ' LPG 車', acc: '事故車', old: `逾 ${OLD_YEARS} 年車`, biz: '營業用車' };
+const EX_ALL = ['diesel', 'ev', 'lpg', 'acc', 'old']; // 預設排除：柴油、電動、LPG、事故車、太舊的車（營業用車一律隱藏，不做開關）
+const EX_LABEL = { diesel: '柴油車', ev: '電動車', lpg: ' LPG 車', acc: '事故車', old: `逾 ${OLD_YEARS} 年車` };
 const MULTI = ['fuel', 'tm', 'cat', 'color', 'seat', 'rg'];
 const NUMS = ['y1', 'y2', 'km', 't1', 't2'];
 const KM_OPTS = [10000, 30000, 50000, 80000, 100000, 150000];
@@ -133,7 +133,7 @@ async function load(reset, size = PAGE) {
     const uniq = [];
     for (const c of cars) {
       const br = blockReason(c.Manufacturer, c.Model, c.Badge, c.BadgeDetail);
-      if (br === 'origin' || (br === 'biz' && (f.ex || []).includes('biz'))) continue; // 產地限制一律不顯示；營業用車依開關
+      if (br) continue; // 產地限制、營業用車（計程車型）一律不顯示
       const k = c.Photo ? [c.Photo, c.Mileage, c.Badge].join('|') : c.Id, prev = seenCar.get(k); // 照片、里程、等級都一樣才算同一台
       if (!prev) { seenCar.set(k, { orig: isOrig(c), id: c.Id }); uniq.push(c); continue; }
       if (prev.orig || !isOrig(c)) continue;

@@ -32,7 +32,7 @@ export const fuelEx = (x, v) => (x === 'diesel' && isDiesel(v)) || (x === 'ev' &
 export const notAccepted = v => (isDiesel(v) ? '柴油車' : isEv(v) ? '電動車' : '');
 
 // 產地限制：依法規不能進口的產地（列表用廠牌／車款判斷；詳細頁再用車身號碼第一碼確認）
-// 營業用：計程車等，列表依「不含營業用車」開關決定是否顯示
+// 營業用：計程車型等，列表一律不顯示（幾乎都是 LPG 或電動車）；詳細頁照常顯示價格
 export const BLOCK_MAKERS = ['BYD', '동풍소콘', '북기은상', '신위안', '지리', '지커', '조이롱', '포톤', '폴스타'];
 export const vinBlocked = vin => /^L/i.test(vin || ''); // 車身號碼第一碼
 export function blockReason(maker, model, badge, badgeDetail) {
