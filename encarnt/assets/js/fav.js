@@ -1,10 +1,10 @@
 // 我的收藏：列出收藏的車，向 Encar 確認是否還在刊登、價格有沒有變
-import { loadI18n, tSpec } from './lib/i18n.js?v=71';
-import { getDetail, notAccepted } from './lib/encar.js?v=71';
-import { getRate } from './lib/rate.js?v=71';
-import { calcPrice } from './lib/pricing.js?v=71';
-import { $, fmt, wan, esc, km, askLine, toast, isTouch } from './lib/ui.js?v=71';
-import { favList, removeFav, updateFav, HEART, updateFavCount } from './lib/fav.js?v=71';
+import { loadI18n, tSpec } from './lib/i18n.js?v=73';
+import { getDetail, notAccepted } from './lib/encar.js?v=73';
+import { getRate } from './lib/rate.js?v=73';
+import { calcPrice } from './lib/pricing.js?v=73';
+import { $, fmt, wan, esc, km, askLine, toast, isTouch } from './lib/ui.js?v=73';
+import { favList, removeFav, updateFav, HEART, updateFavCount } from './lib/fav.js?v=73';
 
 updateFavCount();
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 比較能直接跳出
@@ -24,7 +24,7 @@ function syncCmp() {
   document.querySelectorAll('[data-cmp]').forEach(b => { const on = pick.includes(b.dataset.cmp); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
   const can = favList().filter(x => status[x.id] !== 'sold');
   const gone = favList().filter(x => status[x.id] === 'sold').length;
-  const rs = $('#rmSold'); if (rs) { rs.hidden = !gone; rs.textContent = `移除已售出（${gone}）`; }
+  const rs = $('#rmSold'); if (rs) { rs.hidden = !gone; rs.textContent = `移除已售出／下架（${gone}）`; }
   const sa = $('#selAll'); if (sa) { sa.hidden = can.length < 2; sa.textContent = n ? '取消選取' : (can.length > CMP_MAX ? `選取前 ${CMP_MAX} 台` : '全選比較'); }
 }
 // 一鍵：沒選任何車 → 選取前 4 台（已售出的跳過）；已有選取 → 全部取消
@@ -66,7 +66,9 @@ const brand = x => (x.t || '').split(' ')[0];
 function shown(list) {
   if (!$('#fMk')) return list; // 舊版網頁還在快取時
   const mk = $('#fMk').value, so = $('#fSort').value;
+  const q = ($('#fQ') ? $('#fQ').value : '').trim().toLowerCase().replace(/\s+/g, '');
   let a = mk ? list.filter(x => brand(x) === mk) : list.slice();
+  if (q) a = a.filter(x => (x.t + x.s).toLowerCase().replace(/\s+/g, '').includes(q));
   const by = { pa: (x, y) => x.price - y.price, pd: (x, y) => y.price - x.price, yd: (x, y) => (+y.y || 0) - (+x.y || 0), ka: (x, y) => (x.km || 0) - (y.km || 0) }[so];
   if (by) a.sort(by);
   return a;
@@ -82,12 +84,19 @@ function render() {
   $('#favTools').hidden = all.length < 2;
   }
   $('#grid').innerHTML = !all.length ? ''
-    : !list.length ? '<div class="empty">這個廠牌沒有收藏的車</div>'
+    : !list.length ? '<div class="empty">沒有符合的收藏車輛</div>'
     : list.map(cardHtml).join('');
   if (!all.length) $('#grid').innerHTML = '<div class="empty">還沒有收藏的車<br><br>看到喜歡的車，點照片右上角的 ♡<br>就能收藏，之後回來這裡查看。<br><br><a class="btn-m" href="./" style="text-decoration:none;display:inline-block">去看車</a></div>';
   syncCmp();
 }
 if ($('#fMk')) { $('#fMk').onchange = render; $('#fSort').onchange = render; }
+// 筆的按鈕：切換成輸入框（廠牌、排序先收起來）
+if ($('#fQs')) {
+  const qOn = on => { $('#favTools').classList.toggle('searching', on); if (on) $('#fQ').focus(); else { $('#fQ').value = ''; render(); } };
+  $('#fQs').onclick = () => qOn(true);
+  $('#fQx').onclick = () => qOn(false);
+  $('#fQ').addEventListener('input', render);
+}
 
 $('#grid').addEventListener('click', e => {
   const c = e.target.closest('[data-cmp]');

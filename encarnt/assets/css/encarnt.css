@@ -580,3 +580,14 @@ body:has(.favhd) .car .acts { flex-wrap: nowrap; justify-content: space-between;
 .favtools select { flex: 1; min-width: 0; height: 40px; border: 1.5px solid var(--bd); border-radius: 10px; padding: 0 10px; font-size: 16px; background: #fff; color: var(--fg); }
 /* iPhone：任何東西都不能超出畫面右邊（避免整頁被縮小） */
 html, body { overflow-x: clip; }
+/* 收藏篩選：筆的按鈕與輸入框 */
+.favtools .fq { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; border: 0; background: var(--gold-l); color: var(--navy); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.favtools .fq svg { width: 18px; height: 18px; }
+.favtools #fQ, .favtools .fqx { display: none; }
+.favtools.searching .fq, .favtools.searching select { display: none; }
+.favtools.searching #fQ { display: block; flex: 1; min-width: 0; height: 40px; border: 1.5px solid var(--gold); border-radius: 10px; padding: 0 12px; font-size: 16px; background: #fff; color: var(--fg); -webkit-appearance: none; appearance: none; }
+.favtools.searching .fqx { display: block; flex-shrink: 0; border: 0; background: none; color: var(--navy); font-weight: 700; font-size: 15px; padding: 0 4px; cursor: pointer; }
+/* 收藏頁標題列：標題不斷行，按鈕放不下就自己換一行 */
+.favrow { flex-wrap: wrap; row-gap: 8px; }
+.favrow h1 { white-space: nowrap; }
+.favbtns { margin-left: auto; flex-wrap: nowrap; }

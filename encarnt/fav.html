@@ -27,8 +27,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&text=KOREA%20ENCAR%20SELECT&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@900&text=%E4%BD%B3%E5%BE%B7%E6%B1%BD%E8%BB%8A&display=swap">
-<link rel="stylesheet" href="assets/css/encarnt.css?v=71">
-<script type="module" src="assets/js/fav.js?v=71"></script>
+<link rel="stylesheet" href="assets/css/encarnt.css?v=73">
+<script type="module" src="assets/js/fav.js?v=73"></script>
 </head>
 <body>
 <header class="hd">
@@ -44,10 +44,13 @@
 <main class="wrap">
   <a class="back" href="./"><span aria-hidden="true">‹</span>返回車輛列表</a>
   <div class="favhd">
-    <div class="favrow"><h1>我的收藏 <small id="favCount"></small></h1><span class="favbtns"><button class="btn-s" id="rmSold" type="button" hidden>移除已售出</button><button class="btn-s" id="selAll" type="button" hidden>全選比較</button></span></div>
+    <div class="favrow"><h1>我的收藏 <small id="favCount"></small></h1><span class="favbtns"><button class="btn-s" id="rmSold" type="button" hidden>移除已售出／下架</button><button class="btn-s" id="selAll" type="button" hidden>全選比較</button></span></div>
     <p class="fine">收藏只存在這台裝置的瀏覽器裡，換手機或清除瀏覽資料就會不見。</p>
   </div>
   <div class="favtools" id="favTools" hidden>
+    <button type="button" class="fq" id="fQs" aria-label="輸入文字搜尋收藏"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="m13.5 6.5 4 4" stroke="currentColor" stroke-width="2.4"/></svg></button>
+    <input id="fQ" type="search" autocomplete="off" enterkeyhint="search" placeholder="輸入車款，例如 GLC、Odyssey" aria-label="搜尋收藏">
+    <button type="button" class="fqx" id="fQx">取消</button>
     <select id="fMk" aria-label="依廠牌篩選"><option value="">全部廠牌</option></select>
     <select id="fSort" aria-label="排序">
       <option value="">收藏順序</option><option value="pa">價格：低 → 高</option><option value="pd">價格：高 → 低</option>
