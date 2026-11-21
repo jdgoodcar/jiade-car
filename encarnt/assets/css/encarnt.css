@@ -440,3 +440,5 @@ body:has(.cmpmain) .cft { padding-bottom: calc(150px + env(safe-area-inset-botto
 .cmpt .rmc { top: 16px !important; right: 14px !important; width: 30px !important; height: 30px !important; background: #fff !important; color: var(--navy) !important; box-shadow: 0 2px 8px rgba(20,28,46,.3); display: grid !important; place-items: center; padding: 0; font-size: 0 !important; z-index: 1; }
 .cmpt .rmc svg { width: 14px; height: 14px; display: block; }
 .cmpt .rmc:active { transform: scale(.92); }
+/* 配備列的「只列出不同 N 項／顯示全部」：左右滑動時固定在左欄旁 */
+.cmpt tr.sec .optw { position: sticky; left: 92px; display: inline-flex; align-items: center; white-space: nowrap; }

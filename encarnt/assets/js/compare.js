@@ -88,7 +88,7 @@ function render(cars, rate) {
       ${row('事故車判定', c => c.acc, c => (c.accBad ? 'warn' : c.acc === '非事故車' ? 'okc' : ''))}
       ${row('保險理賠（本車）', c => (c.claims == null ? '—' : `${c.claims} 次`), c => (c.claims ? 'warn' : ''))}
       ${row('車主變更', c => (c.owners == null ? '—' : `${c.owners} 次`))}
-      ${sec('配備', `<span class="optn">${showAll ? `全部 ${codes.length} 項` : `只列出不同的 ${list.length} 項`}</span><button type="button" class="btn-s" id="optAll">${showAll ? '只看不同' : '顯示全部'}</button>`)}
+      ${sec('配備', `<span class="optw"><span class="optn">${showAll ? `全部 ${codes.length} 項` : `只列出不同的 ${list.length} 項`}</span><button type="button" class="btn-s" id="optAll">${showAll ? '只看不同' : '顯示全部'}</button></span>`)}
       ${optRows}
     </tbody>
   </table></div>
