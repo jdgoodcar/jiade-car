@@ -1,6 +1,6 @@
 // 共用的小工具：數字格式、LINE 詢問、提示訊息、車輛標題
 
-import { tMaker, tName } from './i18n.js?v=77';
+import { tMaker, tName } from './i18n.js?v=78';
 
 // /R/ 格式的 LINE 連結在手機上會直接開啟 LINE App
 export const LINE_URL = 'https://line.me/R/ti/p/Pnn6ZRFaYI';
@@ -15,7 +15,18 @@ export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;'
 
 /** 2021 年 3 月 → 「2021/03」 */
 export const ym = v => { const s = String(Math.round(v || 0)); return s.length >= 6 ? `${s.slice(0, 4)}/${s.slice(4, 6)}` : s; };
-export const km = v => (v >= 10000 ? wan(v) + ' 萬公里' : fmt(v || 0) + ' 公里');
+// 里程 0：賣家沒填（新車也至少有幾公里）
+export const km = v => (!v ? '里程未填' : v >= 10000 ? wan(v) + ' 萬公里' : fmt(v) + ' 公里');
+
+// 照片載入失敗（Encar 上的照片檔不存在）：不顯示破圖，改成「暫無照片」
+addEventListener('error', e => {
+  const img = e.target;
+  if (!(img instanceof HTMLImageElement) || img.dataset.err) return;
+  img.dataset.err = '1';
+  const box = img.closest('.ph, .cimg, .sp, .gal');
+  if (box) box.classList.add('noimg');
+  img.style.visibility = 'hidden';
+}, true);
 
 /** 車輛標題：{ title: 'Hyundai The New Grandeur (GN7)', sub: '汽油 2.5 Premium' } */
 export function carTitle(maker, model, badge, detail) {

@@ -603,3 +603,7 @@ body.editing .favtools, body.editing #rmSold, body.editing #selAll, body.editing
 .editbar .eb-x { height: 48px; border: 0; background: var(--bg); color: var(--navy); border-radius: 12px; padding: 0 16px; font-weight: 700; font-size: 15px; cursor: pointer; }
 .editbar .eb-rm { height: 48px; border: 0; background: var(--red); color: #fff; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; }
 .editbar .eb-rm:disabled { background: #e7c3c5; cursor: default; }
+/* 照片載入失敗 */
+.noimg { position: relative; }
+.noimg::after { content: "暫無照片"; position: absolute; inset: 0; display: grid; place-items: center; color: #9aa2b3; font-size: 14px; font-weight: 700; pointer-events: none; }
+.gal.noimg::after { color: #6b7590; }
