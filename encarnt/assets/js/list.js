@@ -1,10 +1,10 @@
 // 選車列表頁
-import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=84';
-import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted, blockReason, CN_MAKERS, OLD_YEARS } from './lib/encar.js?v=84';
-import { getRate } from './lib/rate.js?v=84';
-import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=84';
-import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=84';
-import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=84';
+import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=85';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted, blockReason, CN_MAKERS, OLD_YEARS } from './lib/encar.js?v=85';
+import { getRate } from './lib/rate.js?v=85';
+import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=85';
+import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=85';
+import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=85';
 
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 
@@ -277,6 +277,7 @@ $('#resetF').onclick = () => { for (const k of [...MULTI, ...NUMS]) delete draft
 $('#applyF').onclick = () => {
   if (draft.y1 && draft.y2 && draft.y1 > draft.y2) [draft.y1, draft.y2] = [draft.y2, draft.y1];
   if (draft.t1 && draft.t2 && draft.t1 > draft.t2) [draft.t1, draft.t2] = [draft.t2, draft.t1];
+  if (draft.y1 || draft.y2) draft.ex = draft.ex.filter(x => x !== 'old'); // 自己選了年份就以年份為準，關掉「不含舊車」
   const exChanged = draft.ex.join() !== (f.ex || []).join();
   f = draft; closeSheet(); apply(true); if (exChanged) loadCounts();
 };
@@ -299,6 +300,7 @@ $('#exT').onclick = e => {
   const b = e.target.closest('.tog'); if (!b) return;
   const v = b.dataset.v, i = f.ex.indexOf(v);
   i < 0 ? f.ex.push(v) : f.ex.splice(i, 1);
+  if (i < 0 && v === 'old') { const cut = thisYear - OLD_YEARS; if (f.y1 && f.y1 < cut) delete f.y1; if (f.y2 && f.y2 < cut) delete f.y2; } // 打開「不含舊車」時拿掉衝突的年份
   if (i < 0 && v !== 'acc' && f.fuel) f.fuel = f.fuel.filter(x => !(v === 'diesel' && isDiesel(x)) && !(v === 'ev' && isEv(x)));
   apply(true); loadCounts();
 };

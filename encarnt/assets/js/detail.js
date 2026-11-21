@@ -1,11 +1,11 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=84';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, blockReason, searchCars } from './lib/encar.js?v=84';
-import { getRate } from './lib/rate.js?v=84';
-import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=84';
-import { getInspection, inspectionCard } from './lib/inspect.js?v=84';
-import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=84';
-import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=84';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=85';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, blockReason, searchCars } from './lib/encar.js?v=85';
+import { getRate } from './lib/rate.js?v=85';
+import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=85';
+import { getInspection, inspectionCard } from './lib/inspect.js?v=85';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=85';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=85';
 
 updateFavCount();
 
@@ -367,7 +367,7 @@ async function similarCard(c, priceMan, rate, selfPhoto, selfKm) {
     const zh = ko ? await autoTranslate([ko.replace(/\s*\n\s*/g, ' ')], 'zh-TW') : null;
     $('#inspBox').innerHTML = await inspectionCard(insp, zh && zh[0]);
     const dd = insp && insp.master && insp.master.detail || {};
-    warn(dd.tuning && '改裝', (dd.waterlog || (dd.seriousTypes || []).length) && '泡水或火災');
+    warn(dd.tuning && '改裝', (dd.waterlog || (dd.seriousTypes || []).length) && '泡水或火災', /^L/i.test(dd.vin || '') && '中國製造（車身號碼 L 開頭）');
   })().catch(() => { $('#inspBox').innerHTML = '<div class="card"><h2>車況報告</h2><p class="fine" style="margin:0">暫時無法讀取，請稍後重新整理。</p></div>'; });
   const rec = d.vehicleId && d.vehicleNo ? await getRecord(d.vehicleId, d.vehicleNo) : null;
   $('#recBox').innerHTML = recordCard(rec, rate, d.condition && d.condition.seizing);
@@ -380,5 +380,5 @@ function warn(...items) {
   for (const x of items) if (x) warned.add(x);
   const box = document.getElementById('warnBox'); if (!box || !warned.size) return;
   box.hidden = false;
-  box.innerHTML = `<div class="card warnc"><b>這台車暫不接受代購</b><span>紀錄顯示有：${[...warned].join('、')}</span></div>`;
+  box.innerHTML = `<div class="card warnc"><b>這台車暫不接受代購</b><span>原因：${[...warned].join('、')}</span></div>`;
 }

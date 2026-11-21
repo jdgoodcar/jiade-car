@@ -1,11 +1,11 @@
 // 車輛比較：compare.html?ids=編號,編號（2～4 台），左右並排
-import { loadI18n, tMaker, tName, tSpec, tOption, optionCodes, optionGroups } from './lib/i18n.js?v=84';
-import { getDetail, getRecord, photoUrl, notAccepted, carUrl } from './lib/encar.js?v=84';
-import { getInspection } from './lib/inspect.js?v=84';
-import { getRate } from './lib/rate.js?v=84';
-import { calcPrice } from './lib/pricing.js?v=84';
-import { $, fmt, wan, esc, ym, km, askLine, isTouch, toast } from './lib/ui.js?v=84';
-import { updateFavCount, favList } from './lib/fav.js?v=84';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionCodes, optionGroups } from './lib/i18n.js?v=85';
+import { getDetail, getRecord, photoUrl, notAccepted, carUrl } from './lib/encar.js?v=85';
+import { getInspection } from './lib/inspect.js?v=85';
+import { getRate } from './lib/rate.js?v=85';
+import { calcPrice } from './lib/pricing.js?v=85';
+import { $, fmt, wan, esc, ym, km, askLine, isTouch, toast } from './lib/ui.js?v=85';
+import { updateFavCount, favList } from './lib/fav.js?v=85';
 
 updateFavCount();
 if (isTouch) $('#hdLine').removeAttribute('target');
