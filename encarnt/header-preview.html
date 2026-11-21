@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>頁首樣式預覽 | 佳德汽車</title>
+<link rel="stylesheet" href="assets/css/encarnt.css?v=52">
+<style>
+  body { background: #eef1f6; }
+  .pv { margin: 0 0 28px; }
+  .pv > p { margin: 18px 16px 8px; font-weight: 700; color: var(--navy); font-size: 15px; }
+  .pv > p small { display: block; font-weight: 500; color: var(--mut); font-size: 13px; margin-top: 2px; }
+  .pv .hd { position: relative; }
+  .mini-intro { background: var(--navy); color: #fff; text-align: center; padding: 18px 16px 22px; }
+  .mini-intro h1 { margin: 0; font-size: 20px; } .mini-intro em { color: var(--gold-l); font-style: normal; }
+  /* A：深藍底，白字 logo，金色細線分隔 */
+  .hA .brand { gap: 12px; }
+  .hA .lg { height: 24px; width: auto; display: block; background: none !important; padding: 0 !important; border-radius: 0 !important; }
+  .hB .lg { background: none !important; padding: 0 !important; border-radius: 0 !important; }
+  .hA .dv { width: 1px; height: 22px; background: rgba(243,207,122,.55); }
+  .hA .nm { color: var(--gold-l); font-size: 14px; font-weight: 700; letter-spacing: .04em; white-space: nowrap; }
+  /* B：白底頁首，深藍字，下方金線 */
+  .hB { background: #fff !important; color: var(--navy) !important; box-shadow: 0 1px 0 #e3e7ef, 0 2px 10px rgba(20,28,46,.06) !important; border-bottom: 2px solid var(--gold-l); }
+  .hB .lg { height: 24px; width: auto; display: block; }
+  .hB .dv { width: 1px; height: 22px; background: #d9dfea; }
+  .hB .nm { color: var(--navy); font-size: 14px; font-weight: 700; white-space: nowrap; }
+  .hB .brand { gap: 12px; }
+  .hB .hfav { color: var(--navy); border-color: #d9dfea; }
+  /* C：深藍底，JD 圖示 + 兩行文字 */
+  .hC .brand { gap: 10px; }
+  .hC .ic { width: 34px; height: 34px; border-radius: 9px; background: #fff; padding: 3px; display: block; box-shadow: 0 0 0 1.5px rgba(243,207,122,.6); }
+  .hC .tx { display: flex; flex-direction: column; line-height: 1.15; }
+  .hC .tx b { color: #fff !important; font-size: 16px !important; letter-spacing: .06em; }
+  .hC .tx span { color: var(--gold-l); font-size: 11px; font-weight: 700; letter-spacing: .12em; margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="pv">
+  <p>A．深藍底＋白字 logo（建議）<small>拿掉白框，logo 改成白字，和下方深藍融為一體；金色細線分隔「Encar 線上選車」。</small></p>
+  <header class="hd hA"><div class="wrap">
+    <div class="brand"><img class="lg" src="assets/logo-light.png" alt="佳德汽車"><span class="dv"></span><span class="nm">Encar 線上選車</span></div>
+    <span class="sp"></span>
+    <a class="hfav" href="#" aria-label="我的收藏"><svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-9.3-9.4C1.5 7.9 3.6 4.5 7 4.5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.4 0 5.5 3.4 4.3 6.6-1.8 4.8-9.3 9.4-9.3 9.4Z"/></svg><span class="favN">2</span></a>
+    <a class="btn-line" href="#"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5s5.9-3.5 8-6C21.4 14.2 22 12.7 22 11c0-4.4-4.5-8-10-8Z"/></svg>LINE<span class="t2"> 詢問</span></a>
+  </div></header>
+  <div class="mini-intro"><h1>韓國 <em>Encar</em> 車庫 ✦ 自助線上選車</h1></div>
+</div>
+
+<div class="pv">
+  <p>B．白底頁首<small>原本的彩色 logo 不變，整條改白底、下方金色細線；和深藍的標題區上下分開。</small></p>
+  <header class="hd hB"><div class="wrap">
+    <div class="brand"><img class="lg" src="../logo.png" alt="佳德汽車"><span class="dv"></span><span class="nm">Encar 線上選車</span></div>
+    <span class="sp"></span>
+    <a class="hfav" href="#" aria-label="我的收藏"><svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-9.3-9.4C1.5 7.9 3.6 4.5 7 4.5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.4 0 5.5 3.4 4.3 6.6-1.8 4.8-9.3 9.4-9.3 9.4Z"/></svg><span class="favN">2</span></a>
+    <a class="btn-line" href="#"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5s5.9-3.5 8-6C21.4 14.2 22 12.7 22 11c0-4.4-4.5-8-10-8Z"/></svg>LINE<span class="t2"> 詢問</span></a>
+  </div></header>
+  <div class="mini-intro"><h1>韓國 <em>Encar</em> 車庫 ✦ 自助線上選車</h1></div>
+</div>
+
+<div class="pv">
+  <p>C．JD 圖示＋兩行字<small>只留 JD 圖示（小白方塊），右邊兩行：「佳德汽車」白字、「ENCAR 線上選車」金色小字。</small></p>
+  <header class="hd hC"><div class="wrap">
+    <div class="brand"><img class="ic" src="assets/logo-icon.png" alt=""><span class="tx"><b>佳德汽車</b><span>ENCAR 線上選車</span></span></div>
+    <span class="sp"></span>
+    <a class="hfav" href="#" aria-label="我的收藏"><svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-9.3-9.4C1.5 7.9 3.6 4.5 7 4.5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.4 0 5.5 3.4 4.3 6.6-1.8 4.8-9.3 9.4-9.3 9.4Z"/></svg><span class="favN">2</span></a>
+    <a class="btn-line" href="#"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5s5.9-3.5 8-6C21.4 14.2 22 12.7 22 11c0-4.4-4.5-8-10-8Z"/></svg>LINE<span class="t2"> 詢問</span></a>
+  </div></header>
+  <div class="mini-intro"><h1>韓國 <em>Encar</em> 車庫 ✦ 自助線上選車</h1></div>
+</div>
+
+<div class="pv">
+  <p>目前的樣式（對照用）</p>
+  <header class="hd"><div class="wrap">
+    <div class="brand"><img src="../logo.png" alt="佳德汽車" width="104" height="26"><b>Encar 線上選車</b></div>
+    <span class="sp"></span>
+    <a class="hfav" href="#" aria-label="我的收藏"><svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-9.3-9.4C1.5 7.9 3.6 4.5 7 4.5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.4 0 5.5 3.4 4.3 6.6-1.8 4.8-9.3 9.4-9.3 9.4Z"/></svg><span class="favN">2</span></a>
+    <a class="btn-line" href="#"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5s5.9-3.5 8-6C21.4 14.2 22 12.7 22 11c0-4.4-4.5-8-10-8Z"/></svg>LINE<span class="t2"> 詢問</span></a>
+  </div></header>
+  <div class="mini-intro"><h1>韓國 <em>Encar</em> 車庫 ✦ 自助線上選車</h1></div>
+</div>
+</body>
+</html>
