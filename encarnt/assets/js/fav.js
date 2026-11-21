@@ -8,6 +8,8 @@ import { favList, removeFav, updateFav, HEART } from './lib/fav.js';
 
 let rate = null;
 const status = {}; // id → 'ok' | 'sold'
+// 示範模式：第 1 台顯示成已售出、第 2 台顯示成收藏後降價（只改畫面，不改收藏資料）
+const DEMO = new URLSearchParams(location.search).has('demo');
 
 addEventListener('scroll', () => $('#toTop').classList.toggle('on', scrollY > 600), { passive: true });
 $('#toTop').onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
@@ -22,7 +24,9 @@ function priceHtml(x) {
 }
 
 function cardHtml(x) {
-  const st = status[x.id], sold = st === 'sold';
+  const list = favList(), di = DEMO ? list.findIndex(v => v.id === x.id) : -1;
+  if (di === 1) x = { ...x, p0: Math.round(x.price * 1.1) };
+  const st = di === 0 ? 'sold' : status[x.id], sold = st === 'sold';
   const p0 = x.p0 ?? x.price; // 收藏當時的價格
   const chg = !sold && p0 !== x.price
     ? `<div class="chg ${x.price < p0 ? 'down' : 'up'}">收藏後${x.price < p0 ? '降價' : '漲價'}：${fmt(p0)} → ${fmt(x.price)} 萬韓元</div>` : '';
@@ -40,7 +44,7 @@ function render() {
   $('#favCount').textContent = list.length ? `${list.length} 台` : '';
   $('#bar').hidden = !list.some(x => status[x.id] !== 'sold');
   $('#grid').innerHTML = list.length ? list.map(cardHtml).join('')
-    : '<div class="empty">還沒有收藏的車<br><br>在車輛照片右上角點 ♡ 就能收藏，方便之後比較。<br><br><a class="btn-m" href="./" style="text-decoration:none;display:inline-block">去看車</a></div>';
+    : '<div class="empty">還沒有收藏的車<br><br>看到喜歡的車，點照片右上角的 ♡<br>就能收藏，之後回來這裡查看。<br><br><a class="btn-m" href="./" style="text-decoration:none;display:inline-block">去看車</a></div>';
 }
 
 $('#grid').addEventListener('click', e => {

@@ -141,7 +141,9 @@ async function load(reset, size = PAGE) {
 }
 
 // 無限捲動：接近底部自動載入下一批
-new IntersectionObserver(es => { if (es[0].isIntersecting && !loading && offset > 0 && offset < total) load(false); }, { rootMargin: '600px' }).observe($('#sentinel'));
+// 自動載入到 60 台就停，之後按「載入更多」，這樣才滑得到最下面的公司資訊
+const AUTO_MAX = PAGE * 3;
+new IntersectionObserver(es => { if (es[0].isIntersecting && !loading && offset > 0 && offset < total && offset < AUTO_MAX) load(false); }, { rootMargin: '600px' }).observe($('#sentinel'));
 $('#more').onclick = () => load(false);
 
 // 進入詳細頁前記住捲動位置，按上一頁回來時還原

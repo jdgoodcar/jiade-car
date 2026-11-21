@@ -222,9 +222,9 @@ async function compareCard(c, fuel, priceMan, cc, rate, mileage) {
     </div>
     <div style="display:grid;gap:16px">
       <div class="card"><h2>車輛規格</h2><div class="kv">${kv.map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div></div>
+      ${optionsCard(d.options)}
       <div id="inspBox"><div class="card"><h2>車況報告</h2><p class="fine" style="margin:0">讀取中…</p></div></div>
       <div id="recBox"><div class="card"><h2>保險／事故紀錄</h2><p class="fine" style="margin:0">讀取中…</p></div></div>
-      ${optionsCard(d.options)}
       <div class="card src"><h2>原始車源</h2><p style="margin:0 0 6px">在 Encar 查看原始刊登頁面（韓文）：</p><a href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a>
         <p class="fine">車輛編號 ${esc(id)}。車輛資料取自 Encar，車輛隨時可能售出。</p></div>
     </div></div>`;
