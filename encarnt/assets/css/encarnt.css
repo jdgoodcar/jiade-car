@@ -464,3 +464,8 @@ body:has(.cmpmain) .cft { padding-bottom: calc(150px + env(safe-area-inset-botto
 @media (max-width: 420px) { .hd .bc .tx b { font-size: 15px; } .hd .bc .tx span { font-size: 9.5px; letter-spacing: .1em; } }
 /* JD 圖示白邊改細 */
 .hd .bc .ic { padding: 1.5px; border-radius: 8px; width: 32px; height: 32px; }
+/* 更多篩選：深藍實心、金色篩選圖示 */
+.btn-f { border: 0 !important; background: linear-gradient(135deg, #1d2f5e, var(--navy)) !important; color: #fff !important; border-radius: 10px; padding: 0 16px !important; gap: 7px !important; font-size: 15px; letter-spacing: .02em; box-shadow: 0 3px 10px rgba(22,36,74,.22); transition: transform .1s, box-shadow .15s; }
+.btn-f svg { width: 18px; height: 18px; color: var(--gold-l); flex-shrink: 0; }
+.btn-f:active { transform: scale(.97); box-shadow: 0 1px 4px rgba(22,36,74,.2); }
+.btn-f .n { background: var(--gold-l) !important; color: var(--navy) !important; font-weight: 800; }
