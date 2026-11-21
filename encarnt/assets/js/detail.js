@@ -151,7 +151,7 @@ function optionsText(lang, title) {
   return L.join('\n\n');
 }
 
-// 同款比價：Encar 上同車型、同登錄年份、同燃料的車（夠多時再限縮到同等級），看這台的價格落在哪裡
+// 參考比價：Encar 上同車型、同登錄年份、同燃料的車（夠多時再限縮到同等級），看這台的價格落在哪裡
 async function compareCard(c, fuel, priceMan, cc, rate, mileage) {
   const regY = String(c.yearMonth || '').slice(0, 4);
   if (!regY || !c.modelName || !priceMan) return '';
@@ -181,7 +181,7 @@ async function compareCard(c, fuel, priceMan, cc, rate, mileage) {
   const cmpWho = total > all.length
     ? `${base}，取最新刊登的 500 台${grade ? `中同等級的 ${fmt(cars.length)} 台` : ''}比較`
     : `${base}${grade ? `，其中同等級 ${fmt(cars.length)} 台` : ''}`;
-  return `<div class="card cmp"><h2>同款比價</h2>
+  return `<div class="card cmp"><h2>參考比價</h2>
     <p class="cmpv">${verdict}</p>
     <div class="cmpbar"><span class="med" style="left:50%"></span><span class="me${pos(priceMan) > 85 ? ' r' : pos(priceMan) < 15 ? ' l' : ''}" style="left:${pos(priceMan)}%"><i>這台</i></span></div>
     <div class="cmpk"><div><span>最低</span><b>${twd(min)}</b></div><div><span>中位數</span><b>${twd(med)}</b></div><div><span>最高</span><b>${twd(max)}</b></div></div>
