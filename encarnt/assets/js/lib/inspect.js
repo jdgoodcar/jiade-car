@@ -1,6 +1,6 @@
 // 車況報告：韓國「中古車性能・狀態檢查紀錄」（Encar 提供），翻成中文
-import { API, PHOTO } from './encar.js?v=73';
-import { esc, fmt } from './ui.js?v=73';
+import { API, PHOTO } from './encar.js?v=76';
+import { esc, fmt } from './ui.js?v=76';
 
 let dict = null;
 async function loadDict() {

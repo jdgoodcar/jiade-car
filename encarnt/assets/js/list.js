@@ -1,10 +1,10 @@
 // 選車列表頁
-import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=73';
-import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=73';
-import { getRate } from './lib/rate.js?v=73';
-import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=73';
-import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=73';
-import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=73';
+import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=76';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=76';
+import { getRate } from './lib/rate.js?v=76';
+import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=76';
+import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=76';
+import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=76';
 
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 
@@ -110,8 +110,9 @@ function cardHtml(c, eager) {
 const skeleton = n => Array.from({ length: n }, () => '<div class="car sk"><div class="ph"></div><div class="bd"><div class="ln" style="width:80%"></div><div class="ln" style="width:55%"></div><div class="ln" style="width:40%;height:22px;margin-top:10px"></div></div></div>').join('');
 
 // ---------- 讀取列表 ----------
+const seenCar = new Set(); // 已顯示過的車（用照片判斷同一台）
 async function load(reset, size = PAGE) {
-  if (reset) { offset = 0; if (ctl) ctl.abort(); loading = false; }
+  if (reset) { offset = 0; seenCar.clear(); if (ctl) ctl.abort(); loading = false; }
   if (loading) return;
   loading = true; const my = ++seq; ctl = new AbortController();
   const grid = $('#grid');
@@ -126,7 +127,9 @@ async function load(reset, size = PAGE) {
       grid.innerHTML = `<div class="empty"><b style="display:block;color:var(--navy);margin-bottom:6px">沒有符合條件的車輛</b><span class="tip">可試試換一個車系或車型、<br>減少「更多篩選」裡的條件，<br>或放寬搜尋條件</span><button class="btn-m" type="button" id="emptyReset">重設所有條件</button></div>`;
       $('#emptyReset').onclick = () => $('#resetAll').click();
     }
-    const frag = document.createElement('div'); const first = offset === 0; frag.innerHTML = cars.map((c, i) => cardHtml(c, first && i < 2)).join('');
+    // Encar 有時同一台車有兩則刊登（一則是複本），照片相同 → 只顯示一次
+    const uniq = cars.filter(c => { const k = c.Photo || c.Id; if (seenCar.has(k)) return false; seenCar.add(k); return true; });
+    const frag = document.createElement('div'); const first = offset === 0; frag.innerHTML = uniq.map((c, i) => cardHtml(c, first && i < 2)).join('');
     for (const el of [...frag.children]) {
       const c = cars.find(x => String(x.Id) === el.dataset.id);
       if (c && !notAccepted(c.FuelType) && ccOf(c) == null && c.Price * 10000 < 7e7) { el._car = c; ccSeen.observe(el); }

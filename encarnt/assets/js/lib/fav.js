@@ -10,14 +10,22 @@ function save(a) {
   try { localStorage.setItem(KEY, JSON.stringify(a)); } catch (e) { /* 私密瀏覽等情況存不了，略過 */ }
   updateFavCount();
 }
-export const isFav = id => favList().some(x => String(x.id) === String(id));
+export const isFav = (id, img) => favList().some(x => String(x.id) === String(id) || (img && x.img === img));
 
 /** 加入或移除，回傳加入後的狀態（true = 已收藏），超過上限回傳 null */
 export function toggleFav(item) {
   const a = favList(), i = a.findIndex(x => String(x.id) === String(item.id));
   if (i >= 0) { a.splice(i, 1); save(a); return false; }
+  if (item.img && a.some(x => x.img === item.img)) return true; // 同一台車的另一則刊登，已經收藏過
   if (a.length >= FAV_MAX) return null;
   a.unshift({ ...item, id: String(item.id), p0: item.price, at: Date.now() }); save(a); return true;
+}
+/** 清掉重複收藏（同一台車兩則刊登，照片相同），保留先收藏的那筆 */
+export function dedupeFav() {
+  const a = favList(), seen = new Set();
+  const b = a.filter(x => { if (!x.img) return true; if (seen.has(x.img)) return false; seen.add(x.img); return true; });
+  if (b.length !== a.length) save(b);
+  return a.length - b.length;
 }
 export function removeFav(id) { save(favList().filter(x => String(x.id) !== String(id))); }
 export function updateFav(id, patch) {
