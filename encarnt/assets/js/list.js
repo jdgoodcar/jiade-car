@@ -1,10 +1,10 @@
 // 選車列表頁
-import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=62';
-import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=62';
-import { getRate } from './lib/rate.js?v=62';
-import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=62';
-import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=62';
-import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=62';
+import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=63';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=63';
+import { getRate } from './lib/rate.js?v=63';
+import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=63';
+import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=63';
+import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=63';
 
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 
@@ -315,12 +315,34 @@ const norm = s => String(s || '').toLowerCase().replace(/[\s\-_.·()（）]/g, '
 async function loadSearch() {
   if (!SX) SX = fetch('assets/data/search.json?v=1').then(r => r.json()).then(j => {
     j.m.forEach(m => { m.key = norm(m.slice(0, 4).join(' ')); });
-    j.g.forEach(g => { g.key = norm(g[1] + ' ' + g[2]); });
+    j.g.forEach(g => { g.key = norm(g[1] + ' ' + g[2] + ' ' + (MODEL_ALIAS[g[1]] || '')); });
     return j;
   });
   return SX;
 }
+// 車系別名：台灣的中文名稱、海外車名
+const MODEL_ALIAS = {
+  '쏘나타': '索納塔', '아반떼': 'elantra 伊倫強 伊蘭特', '투싼': '途勝', '싼타페': '山塔菲 聖塔菲', '그랜저': 'azera 雅尊',
+  '카니발': '嘉年華', '쏘렌토': '索蘭托', '스포티지': '獅跑', '팰리세이드': '帕里斯', '모닝': 'picanto', '코나': '柯納',
+  'K5': 'optima', 'K3': 'forte cerato', 'K8': 'cadenza', '니로': '尼諾', '스타리아': '史塔利亞',
+  '3시리즈': '3系列 3series', '5시리즈': '5系列 5series', '7시리즈': '7系列 7series', '4시리즈': '4系列', '6시리즈': '6系列', '2시리즈': '2系列', '1시리즈': '1系列', '8시리즈': '8系列',
+};
+// 輸入車型代號時（例如 E300、GLC300、530i、X5 40i），換成車系再找一次
+function trimToModel(q) {
+  const t = norm(q);
+  let m = t.match(/^(a|b|c|e|s|g|cla|cls|gla|glb|glc|gle|gls|sl|slk|amggt)(\d{2,3})[a-z]*$/);
+  if (m) return m[1] + 'class';
+  m = t.match(/^([1-8])\d{2}[a-z]*$/);
+  if (m) return m[1] + 'series';
+  return null;
+}
 function searchHits(j, q) {
+  const r = searchHits0(j, q);
+  if (r.length) return r;
+  const alt = trimToModel(q);
+  return alt ? searchHits0(j, alt) : r;
+}
+function searchHits0(j, q) {
   const words = q.trim().toLowerCase().split(/\s+/).map(norm).filter(Boolean);
   if (!words.length) return [];
   const out = [];
