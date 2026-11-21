@@ -535,3 +535,25 @@ body:has(.cmpmain) .cft { padding-bottom: calc(150px + env(safe-area-inset-botto
 /* 收藏頁：標題列右側的全選按鈕 */
 .favrow { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .favrow .btn-s[hidden] { display: none; }
+/* 收藏頁：精簡橫向卡片（左邊小照片、右邊資料），一個畫面看得到多台，方便勾選比較 */
+body:has(.favhd) .grid { grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 700px) { body:has(.favhd) .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+body:has(.favhd) .car { flex-direction: row; align-items: stretch; }
+body:has(.favhd) .car .ph { flex: 0 0 38%; max-width: 150px; aspect-ratio: auto; min-height: 112px; }
+body:has(.favhd) .car .ph img { position: absolute; inset: 0; }
+body:has(.favhd) .car .yr { font-size: 11px; padding: 1px 6px; left: 6px; top: 6px; }
+body:has(.favhd) .car .ph .fav { width: 30px; height: 30px; right: 6px; top: auto; bottom: 6px; }
+body:has(.favhd) .car .ph .fav svg { width: 16px; height: 16px; }
+body:has(.favhd) .car .soldtag { font-size: 12px; padding: 4px 10px; }
+body:has(.favhd) .car .bd { padding: 9px 10px; gap: 2px; min-width: 0; }
+body:has(.favhd) .car h3 { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body:has(.favhd) .car .sub { font-size: 12px; }
+body:has(.favhd) .car .specs { font-size: 12px; margin-top: 0; }
+body:has(.favhd) .car .chg { font-size: 12px; margin-top: 2px; }
+body:has(.favhd) .car .pr { border-top: 0; padding-top: 4px; margin-top: 2px; align-items: center; }
+body:has(.favhd) .car .pr .l { display: none; }
+body:has(.favhd) .car .pr .v { font-size: 17px; }
+body:has(.favhd) .car .pr .k { font-size: 11px; }
+body:has(.favhd) .car .pr .k br { display: none; }
+body:has(.favhd) .cmpb { margin-top: 6px; padding: 5px 12px 5px 8px; font-size: 13px; align-self: flex-start; }
+body:has(.favhd) .cmpb i { width: 16px; height: 16px; }
