@@ -475,3 +475,7 @@ body:has(.cmpmain) .cft { padding-bottom: calc(150px + env(safe-area-inset-botto
 /* 頁首：小 logo 放在「佳德汽車」前面同一行 */
 .hd .bc .tx b { display: flex; align-items: center; gap: 7px; }
 .hd .bc .tx b .ic { width: 22px; height: 22px; padding: 1px; border-radius: 5px; background: #fff; flex-shrink: 0; }
+/* 小 logo 再縮小，讓「佳德汽車」更突出 */
+.hd .bc .tx b { gap: 6px; font-size: 17px; }
+.hd .bc .tx b .ic { width: 17px; height: 17px; padding: 1px; border-radius: 4px; }
+@media (max-width: 420px) { .hd .bc .tx b { font-size: 16px; } }
