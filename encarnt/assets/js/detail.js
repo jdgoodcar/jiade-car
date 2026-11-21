@@ -1,11 +1,11 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=66';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=66';
-import { getRate } from './lib/rate.js?v=66';
-import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=66';
-import { getInspection, inspectionCard } from './lib/inspect.js?v=66';
-import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=66';
-import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=66';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=67';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=67';
+import { getRate } from './lib/rate.js?v=67';
+import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=67';
+import { getInspection, inspectionCard } from './lib/inspect.js?v=67';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=67';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=67';
 
 updateFavCount();
 
@@ -30,6 +30,10 @@ addEventListener('scroll', () => $('#toTop').classList.toggle('on', scrollY > 60
 $('#toTop').onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
 
 const id = new URLSearchParams(location.search).get('id');
+// 從列表點進來：列表上那張照片已經在手機裡，先顯示出來，不用等資料
+let listPhoto = '';
+try { const ph = JSON.parse(sessionStorage.getItem('encarnt_ph')); if (ph && String(ph.id) === String(id)) listPhoto = ph.src; } catch (e) { /* 無 */ }
+if (listPhoto) { const sk = document.querySelector('.gal.sk .ph'); if (sk) sk.innerHTML = `<img src="${esc(listPhoto)}" alt="" style="width:100%;height:100%;object-fit:contain;display:block">`; }
 
 // 返回：從列表、我的收藏、比較進來就回到原本那一頁（保留捲動位置），否則回車輛列表
 const from = (() => {
@@ -56,8 +60,10 @@ function gallery(photos, alt, under) {
   // 大圖用 1280 寬（手機高解析螢幕才清楚），下方小縮圖只要 240 寬（省流量）
   const size = (u, w, h) => (u.startsWith('https://ci.encar.com') ? `${u}?impolicy=heightRate&rh=${h}&cw=${w}&ch=${h}&cg=Center`
     : w <= 240 ? u.replace('?d=1080x608', '?d=240x135') : u);
+  // 大圖載入前，先用小縮圖（第一張用列表上已經載好的照片）墊在底下，不會看到一塊黑
+  const ph = (u, i) => (i === 0 && listPhoto ? listPhoto : size(u, 240, 180));
   return `<div class="gal"><div class="track" id="track">${list.map((u, i) =>
-    `<img src="${esc(size(u, 1280, 960))}" alt="${esc(alt)} 照片 ${i + 1}" ${i ? 'loading="lazy"' : 'fetchpriority="high"'} decoding="async" width="640" height="480">`).join('')}</div>
+    `<img src="${esc(size(u, 1280, 960))}" alt="${esc(alt)} 照片 ${i + 1}" ${i > 1 ? 'loading="lazy"' : i ? '' : 'fetchpriority="high"'} decoding="async" width="640" height="480" style="background-image:url('${esc(ph(u, i))}')">`).join('')}</div>
     <button class="nav prev" type="button" aria-label="上一張">‹</button><button class="nav next" type="button" aria-label="下一張">›</button>
     <span class="cnt" id="cnt">1 / ${list.length}</span></div>
     <div class="thumbs" id="thumbs">${list.map((u, i) => `<img src="${esc(size(u, 240, 180))}" alt="" loading="lazy" decoding="async" data-i="${i}" class="${i ? '' : 'on'}">`).join('')}</div>`;
@@ -234,7 +240,7 @@ async function similarCard(c, priceMan, rate) {
     return `<a class="sim" href="detail.html?id=${encodeURIComponent(x.Id)}"><div class="sp">${img ? `<img src="${esc(img)}" alt="" loading="lazy" decoding="async">` : ''}<span>${esc(x.FormYear || String(x.Year).slice(0, 4))}</span></div>
       <b>${esc(t.sub || t.title)}</b><small>${esc(km(x.Mileage))}</small>
       <em>${no ? `<i class="no">${no}暫不接受代購</i>` : p ? `約 ${wan(p.price)} 萬` : `${fmt(x.Price)} 萬韓元`}</em></a>`;
-  }).join('')}</div><p class="fine">同車型中價格最接近這台的車，預估車價依排氣量推估，點進去可看準確金額。</p></div>`;
+  }).join('')}</div><p class="fine">點進去可看準確金額。</p></div>`;
 }
 
 (async () => {
@@ -284,9 +290,9 @@ async function similarCard(c, priceMan, rate) {
       <div id="inspBox"><div class="card"><h2>車況報告</h2><p class="fine" style="margin:0">讀取中…</p></div></div>
       <div id="recBox"><div class="card"><h2>保險／事故紀錄</h2><p class="fine" style="margin:0">讀取中…</p></div></div>
       ${optionsCard(d.options)}
-      <div id="simBox"></div>
       <div class="card src"><h2>原始車源</h2><p style="margin:0 0 6px">在 Encar 查看原始刊登頁面（韓文）：</p><a href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a>
         <p class="fine">車輛編號 ${esc(id)}。車輛資料取自 Encar，車輛隨時可能售出。</p></div>
+      <div id="simBox"></div>
     </div></div>`;
   bindGallery();
 

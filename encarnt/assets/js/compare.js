@@ -1,11 +1,11 @@
 // 車輛比較：compare.html?ids=編號,編號（2～4 台），左右並排
-import { loadI18n, tMaker, tName, tSpec, tOption, optionCodes, optionGroups } from './lib/i18n.js?v=66';
-import { getDetail, getRecord, photoUrl, notAccepted } from './lib/encar.js?v=66';
-import { getInspection } from './lib/inspect.js?v=66';
-import { getRate } from './lib/rate.js?v=66';
-import { calcPrice } from './lib/pricing.js?v=66';
-import { $, fmt, wan, esc, ym, km, askLine, isTouch, toast } from './lib/ui.js?v=66';
-import { updateFavCount } from './lib/fav.js?v=66';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionCodes, optionGroups } from './lib/i18n.js?v=67';
+import { getDetail, getRecord, photoUrl, notAccepted, carUrl } from './lib/encar.js?v=67';
+import { getInspection } from './lib/inspect.js?v=67';
+import { getRate } from './lib/rate.js?v=67';
+import { calcPrice } from './lib/pricing.js?v=67';
+import { $, fmt, wan, esc, ym, km, askLine, isTouch, toast } from './lib/ui.js?v=67';
+import { updateFavCount, favList } from './lib/fav.js?v=67';
 
 updateFavCount();
 if (isTouch) $('#hdLine').removeAttribute('target');
@@ -103,6 +103,7 @@ function render(cars, rate) {
   <p class="fine">資料取自 Encar，車況與配備以各車詳細頁及原始紀錄為準。預估車價未含手續費。</p>`;
   $('#optAll').onclick = () => { showAll = !showAll; render(cars, rate); };
   miniHead(cars);
+  addBack();
 }
 const rm = id => (ids.length > 2 ? `<a class="rmc" href="compare.html?ids=${ids.filter(x => x !== id).map(encodeURIComponent).join(',')}" aria-label="移除這台" title="從比較中移除"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></a>` : '');
 
@@ -182,7 +183,8 @@ async function makeImage() {
   const t = src.cloneNode(true);
   t.querySelectorAll('.rmc, .btn-s, .cimg, .optn').forEach(e => e.remove());
   box.appendChild(t);
-  box.insertAdjacentHTML('beforeend', '<p class="ex-f">資料取自韓國 Encar，預估車價未含手續費，實際以報價單為準。LINE 詢問：佳德汽車</p>');
+  const links = [...document.querySelectorAll('.cmpt thead th.cc')].map((th, i) => ({ t: th.querySelector('b')?.textContent || '', id: ids[i] })).filter(x => x.id);
+  box.insertAdjacentHTML('beforeend', `<div class="ex-l">${links.map((x, i) => `<div><b>${i + 1}. ${esc(x.t)}</b><span>${esc(carUrl(x.id))}</span></div>`).join('')}</div><p class="ex-f">資料取自韓國 Encar，預估車價未含手續費，實際以報價單為準。LINE 詢問：佳德汽車</p>`);
   box.style.width = Math.max(560, src.scrollWidth + 32) + 'px';
   document.body.appendChild(box);
   try {
@@ -213,3 +215,16 @@ $('#saveImg').onclick = async () => {
 $('#imgShare').onclick = shareOrDownload;
 $('#imgX').onclick = () => { $('#imgSheet').hidden = true; };
 $('#imgSheet').onclick = e => { if (e.target.id === 'imgSheet') $('#imgSheet').hidden = true; };
+
+// ---------- 從收藏加入比較（誤刪也能快速加回）----------
+function addBack() {
+  document.querySelector('.cmpadd')?.remove();
+  const rest = favList().filter(x => !ids.includes(String(x.id)));
+  if (!rest.length) return;
+  const full = ids.length >= 4;
+  const el = document.createElement('div'); el.className = 'card cmpadd';
+  el.innerHTML = `<h2>從收藏加入比較</h2><p class="fine" style="margin:0 0 10px">${full ? '最多比較 4 台，請先按照片右上角的 × 移除一台。' : '點一下就加入比較表。'}</p>
+    <div class="adds">${rest.map(x => `<a class="add${full ? ' off' : ''}" href="${full ? '#' : 'compare.html?ids=' + ids.concat(String(x.id)).map(encodeURIComponent).join(',')}">${x.img ? `<img src="${esc(x.img)}" alt="" loading="lazy">` : ''}<span><b>${esc(x.t)}</b><small>${esc(x.s || '')}</small></span><i>＋</i></a>`).join('')}</div>`;
+  $('#app').appendChild(el);
+  if (full) el.querySelectorAll('.add').forEach(a => { a.onclick = e => { e.preventDefault(); toast('最多比較 4 台'); }; });
+}

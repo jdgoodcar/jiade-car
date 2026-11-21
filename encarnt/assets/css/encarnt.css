@@ -508,3 +508,20 @@ body:has(.cmpmain) .cft { padding-bottom: calc(150px + env(safe-area-inset-botto
 .cmpexp .cmpt { min-width: 0 !important; width: 100%; }
 .cmpexp .cmpt th, .cmpexp .cmpt td, .cmpexp .cmpt .optw { position: static !important; box-shadow: none !important; }
 .cmpexp .ex-f { font-size: 12px; color: var(--mut); margin: 10px 2px 0; }
+/* 詳細頁大圖：載入前先顯示墊底的小圖 */
+.gal .track img { background-color: #0d1424; background-size: contain; background-position: center; background-repeat: no-repeat; }
+.gal.sk .ph { background: #0d1424; }
+/* 比較圖片：各車 Encar 網址 */
+.cmpexp .ex-l { margin: 12px 2px 0; display: grid; gap: 6px; font-size: 12px; }
+.cmpexp .ex-l b { display: block; color: var(--navy); }
+.cmpexp .ex-l span { color: var(--mut); word-break: break-all; }
+/* 比較頁：從收藏加入 */
+.cmpadd { margin-top: 16px; }
+.cmpadd .adds { display: grid; gap: 8px; }
+.cmpadd .add { display: flex; align-items: center; gap: 10px; padding: 8px; border: 1.5px solid var(--bd); border-radius: 12px; text-decoration: none; color: var(--fg); background: #fff; }
+.cmpadd .add img { width: 64px; height: 48px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+.cmpadd .add span { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.cmpadd .add b { font-size: 14px; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cmpadd .add small { font-size: 12px; color: var(--mut); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cmpadd .add i { font-style: normal; width: 30px; height: 30px; border-radius: 50%; background: var(--navy); color: #fff; display: grid; place-items: center; font-size: 18px; flex-shrink: 0; }
+.cmpadd .add.off { opacity: .5; }

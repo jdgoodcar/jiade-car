@@ -1,10 +1,10 @@
 // 選車列表頁
-import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=66';
-import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=66';
-import { getRate } from './lib/rate.js?v=66';
-import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=66';
-import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=66';
-import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=66';
+import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=67';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=67';
+import { getRate } from './lib/rate.js?v=67';
+import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=67';
+import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=67';
+import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=67';
 
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 
@@ -123,11 +123,7 @@ async function load(reset, size = PAGE) {
     total = t; $('#total').textContent = fmt(t);
     if (reset) grid.innerHTML = '';
     if (!cars.length && offset === 0) {
-      const tips = [];
-      if (f.mg || f.md) tips.push('換一個車系或車型');
-      if (NUMS.some(k => f[k]) || MULTI.some(k => (f[k] || []).length)) tips.push('減少「更多篩選」裡的條件');
-      if ((f.ex || []).length) tips.push('把「預設排除」的柴油車／電動車／事故車打開');
-      grid.innerHTML = `<div class="empty"><b style="display:block;color:var(--navy);margin-bottom:6px">沒有符合條件的車輛</b>${tips.length ? '可以試試：' + tips.join('、') : '試試其他廠牌或車系'}<br><br><button class="btn-m" type="button" id="emptyReset">重設所有條件</button></div>`;
+      grid.innerHTML = `<div class="empty"><b style="display:block;color:var(--navy);margin-bottom:6px">沒有符合條件的車輛</b>可以試試：換一個車系或車型、減少「更多篩選」裡的條件，或放寬搜尋條件<br><br><button class="btn-m" type="button" id="emptyReset">重設所有條件</button></div>`;
       $('#emptyReset').onclick = () => $('#resetAll').click();
     }
     const frag = document.createElement('div'); const first = offset === 0; frag.innerHTML = cars.map((c, i) => cardHtml(c, first && i < 2)).join('');
@@ -166,6 +162,8 @@ $('#grid').addEventListener('click', e => {
   }
   if (!e.target.closest('.car')) return;
   try { sessionStorage.setItem('encarnt_back', JSON.stringify({ k: stateKey(), n: offset, y: scrollY })); } catch (er) { /* 略過 */ }
+  const card = e.target.closest('.car'), im = card.querySelector('img');
+  if (im) try { sessionStorage.setItem('encarnt_ph', JSON.stringify({ id: card.dataset.id, src: im.currentSrc || im.src })); } catch (er) { /* 略過 */ }
 });
 
 // ---------- 廠牌／車系／車型 ----------
