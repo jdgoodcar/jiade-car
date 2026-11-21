@@ -40,3 +40,8 @@
   **換網域時**：把這三個檔案裡的 `https://jdgoodcar.github.io/jiade-car/encarnt/` 換成新網址。LINE 會快取舊預覽，換完可能要過幾天才更新。
 - Encar 沒有「年份：舊 → 新」排序（只有新 → 舊），所以排序選單沒有這項。
 - 車輛比較：`compare.html?ids=編號,編號`（2～4 台）+ `assets/js/compare.js`。在收藏頁勾選「加入比較」後進入；左右並排價格、基本資料、車況、配備（預設只列出不同的配備）。
+
+## 版本號（更新程式時一定要改）
+- 所有頁面的 CSS／JS 與 `assets/js` 裡每一個 `import ... from './xxx.js?v=N'` 都用**同一個** `?v=N`。
+- 改了任何 CSS／JS 後，把全部的 `?v=N` 一起換成新號碼（HTML 和 JS 都要），手機才不會混用新舊檔案。
+  例：`grep -rl "?v=61" *.html assets/js | xargs sed -i 's/?v=61/?v=62/g'`

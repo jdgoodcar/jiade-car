@@ -1,10 +1,10 @@
 // 車輛比較：compare.html?ids=編號,編號（2～4 台），左右並排
-import { loadI18n, tMaker, tName, tSpec, tOption, optionCodes, optionGroups } from './lib/i18n.js';
-import { getDetail, getRecord, photoUrl, notAccepted } from './lib/encar.js';
-import { getInspection } from './lib/inspect.js';
-import { getRate } from './lib/rate.js';
-import { calcPrice } from './lib/pricing.js';
-import { $, fmt, wan, esc, ym, km, askLine } from './lib/ui.js';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionCodes, optionGroups } from './lib/i18n.js?v=61';
+import { getDetail, getRecord, photoUrl, notAccepted } from './lib/encar.js?v=61';
+import { getInspection } from './lib/inspect.js?v=61';
+import { getRate } from './lib/rate.js?v=61';
+import { calcPrice } from './lib/pricing.js?v=61';
+import { $, fmt, wan, esc, ym, km, askLine } from './lib/ui.js?v=61';
 
 // 回到最上面（往下滑一段後出現）
 addEventListener('scroll', () => $('#toTop').classList.toggle('on', scrollY > 600), { passive: true });
@@ -121,10 +121,10 @@ const rm = id => (ids.length > 2 ? `<a class="rmc" href="compare.html?ids=${ids.
 })();
 
 // 往下捲、看不到上方車名時：頁首下方固定一條「哪台是哪台」的小標題，跟表格一起左右滑
-let miniObs = null;
+let miniOff = null;
 function miniHead(cars) {
   document.querySelector('.cmpmini')?.remove();
-  if (miniObs) miniObs.disconnect();
+  if (miniOff) miniOff();
   const wrap = $('.cmpwrap'), ths = [...document.querySelectorAll('.cmpt thead th.cc')];
   const bar = document.createElement('div');
   bar.className = 'cmpmini'; bar.setAttribute('aria-hidden', 'true');
@@ -140,7 +140,8 @@ function miniHead(cars) {
     ths.forEach((th, i) => { cells[i].style.width = th.getBoundingClientRect().width + 'px'; });
     inner.style.transform = `translateX(${-wrap.scrollLeft}px)`;
   };
-  wrap.addEventListener('scroll', () => { inner.style.transform = `translateX(${-wrap.scrollLeft}px)`; }, { passive: true });
+  const onH = () => { inner.style.transform = `translateX(${-wrap.scrollLeft}px)`; };
+  wrap.addEventListener('scroll', onH, { passive: true });
   addEventListener('resize', layout);
   layout();
   // 點車名條的某一台：捲回表格頂端，並把那台的欄位滑到左欄旁邊
@@ -160,4 +161,5 @@ function miniHead(cars) {
   };
   addEventListener('scroll', check, { passive: true });
   check();
+  miniOff = () => { wrap.removeEventListener('scroll', onH); removeEventListener('resize', layout); removeEventListener('scroll', check); };
 }

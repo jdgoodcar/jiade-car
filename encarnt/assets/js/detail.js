@@ -1,11 +1,11 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js';
-import { getRate } from './lib/rate.js';
-import { calcPrice, RULES } from './lib/pricing.js';
-import { getInspection, inspectionCard } from './lib/inspect.js';
-import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch } from './lib/ui.js';
-import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=61';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=61';
+import { getRate } from './lib/rate.js?v=61';
+import { calcPrice, RULES } from './lib/pricing.js?v=61';
+import { getInspection, inspectionCard } from './lib/inspect.js?v=61';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch } from './lib/ui.js?v=61';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=61';
 
 updateFavCount();
 
@@ -31,10 +31,17 @@ $('#toTop').onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
 
 const id = new URLSearchParams(location.search).get('id');
 
-$('#back').onclick = () => {
-  if (document.referrer && new URL(document.referrer).pathname.replace(/index\.html$/, '') === location.pathname.replace(/detail\.html$/, '')) history.back();
-  else location.href = './';
-};
+// 返回：從列表、我的收藏、比較進來就回到原本那一頁（保留捲動位置），否則回車輛列表
+const from = (() => {
+  try {
+    const r = new URL(document.referrer), here = location.pathname.replace(/detail\.html$/, '');
+    if (r.origin !== location.origin || !r.pathname.startsWith(here)) return null;
+    const page = r.pathname.slice(here.length);
+    return page === 'fav.html' ? '返回我的收藏' : page === 'compare.html' ? '返回車輛比較' : (page === '' || page === 'index.html') ? '返回車輛列表' : null;
+  } catch (e) { return null; }
+})();
+if (from) $('#back').lastChild.textContent = from;
+$('#back').onclick = () => { if (from) history.back(); else location.href = './'; };
 
 function fail(title, msg) {
   $('#app').innerHTML = `<div class="err"><b>${esc(title)}</b>${esc(msg)}<br><br><a class="btn-m" href="./" style="text-decoration:none;display:inline-block">回到車輛列表</a></div>`;
