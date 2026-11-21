@@ -23,7 +23,8 @@ const origLink = j => (j.vehicleId ? `<a class="orig" href="${esc(`https://www.e
 const ymd = s => (s && s.length >= 8 ? `${s.slice(0, 4)}/${s.slice(4, 6)}/${s.slice(6, 8)}` : '');
 
 function partName(T, ko) {
-  let s = ko || '';
+  // 同一個零件韓文有不同拼法（휀더／펜다…），先統一
+  let s = (ko || '').replace(/휀더|휀다|펜다/g, '펜더');
   for (const [a, b] of T.partWords) s = s.split(a).join(b);
   s = s.replace(/\s+/g, ' ').replace(/ ?（/g, '（').trim();
   return /[가-힣]/.test(s) ? `${s}（${ko}）` : s;
