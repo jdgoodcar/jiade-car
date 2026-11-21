@@ -430,3 +430,5 @@ body:has(.cmpmain) .cft { padding-bottom: calc(150px + env(safe-area-inset-botto
 .bar .enc { border: 0 !important; background: var(--bg) !important; color: #3c4763 !important; border-radius: 24px !important; font-weight: 600; align-self: center; min-height: 48px; }
 .bar .enc span:first-child { font-weight: 700; color: var(--navy); }
 .bar .enc:active { background: #e2e6ee !important; }
+/* Encar 原頁：一行就好 */
+.bar .enc { flex-direction: row !important; font-size: 14px !important; color: var(--navy) !important; font-weight: 700; white-space: nowrap; }
