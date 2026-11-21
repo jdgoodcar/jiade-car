@@ -426,3 +426,7 @@ body:has(.cmpmain) .cft { padding-bottom: calc(150px + env(safe-area-inset-botto
 .qrlink input { flex: 1; min-width: 0; border: 1.5px solid var(--bd); border-radius: 10px; padding: 10px 12px; font-size: 14px; color: var(--fg); background: #f7f8fb; }
 .qrlink input:focus { outline: 2px solid var(--gold); border-color: var(--gold); }
 .qrlink .btn-m { flex-shrink: 0; width: auto !important; margin: 0 !important; padding: 0 18px; }
+/* 底條 Encar 原始頁面：淺灰底、無外框，與分享按鈕同風格 */
+.bar .enc { border: 0 !important; background: var(--bg) !important; color: #3c4763 !important; border-radius: 24px !important; font-weight: 600; align-self: center; min-height: 48px; }
+.bar .enc span:first-child { font-weight: 700; color: var(--navy); }
+.bar .enc:active { background: #e2e6ee !important; }
