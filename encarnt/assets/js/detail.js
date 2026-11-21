@@ -156,7 +156,7 @@ async function compareCard(c, fuel, priceMan, cc, rate, mileage) {
   const regY = String(c.yearMonth || '').slice(0, 4);
   if (!regY || !c.modelName || !priceMan) return '';
   const f = { ct: c.domestic ? 'Y' : 'N', mk: c.manufacturerName, mg: c.modelGroupName, md: c.modelName, y1: regY, y2: regY, fuel: fuel ? [fuel] : [] };
-  const { total, cars: all } = await searchCars(f, 'priceAsc', 0, 500);
+  const { total, cars: all } = await searchCars(f, 'new', 0, 500); // 超過 500 台時取最新刊登的 500 台（不偏向便宜或貴的）
   let cars = all, scope = '同車型、同年份、同燃料';
   const same = all.filter(x => x.Badge && x.Badge === c.gradeName);
   if (same.length >= 5) { cars = same; scope += '、同等級'; }
@@ -168,14 +168,24 @@ async function compareCard(c, fuel, priceMan, cc, rate, mileage) {
   const diff = (priceMan - med) / med * 100;
   const verdict = Math.abs(diff) < 3 ? '價格接近同款中位數'
     : diff < 0 ? `比同款中位數便宜約 <b class="ok">${Math.round(-diff)}%</b>` : `比同款中位數高約 <b class="hi">${Math.round(diff)}%</b>`;
-  const pos = v => (max > min ? Math.max(0, Math.min(100, (v - min) / (max - min) * 100)) : 50);
+  // 依「排名」放位置：最便宜在最左、中位數在正中間（對齊下方「中位數」）、最貴在最右
+  const pos = v => {
+    if (pr.length < 2) return 50;
+    const below = pr.filter(x => x < v).length, same = pr.filter(x => x === v).length;
+    return Math.max(0, Math.min(100, (below + (same ? (same - 1) / 2 : 0)) / (pr.length - 1) * 100));
+  };
   const kms = cars.map(x => x.Mileage).filter(Boolean), avgKm = kms.length ? kms.reduce((a, b) => a + b, 0) / kms.length : 0;
   const cheaper = pr.filter(v => v < priceMan).length;
+  const grade = cars !== all;
+  const base = `Encar 上同車型、同年份、同燃料（${regY} 年登錄）共 ${fmt(total)} 台`;
+  const cmpWho = total > all.length
+    ? `${base}，取最新刊登的 500 台${grade ? `中同等級的 ${fmt(cars.length)} 台` : ''}比較`
+    : `${base}${grade ? `，其中同等級 ${fmt(cars.length)} 台` : ''}`;
   return `<div class="card cmp"><h2>同款比價</h2>
     <p class="cmpv">${verdict}</p>
-    <div class="cmpbar"><span class="med" style="left:${pos(med)}%"></span><span class="me${pos(priceMan) > 85 ? ' r' : pos(priceMan) < 15 ? ' l' : ''}" style="left:${pos(priceMan)}%"><i>這台</i></span></div>
+    <div class="cmpbar"><span class="med" style="left:50%"></span><span class="me${pos(priceMan) > 85 ? ' r' : pos(priceMan) < 15 ? ' l' : ''}" style="left:${pos(priceMan)}%"><i>這台</i></span></div>
     <div class="cmpk"><div><span>最低</span><b>${twd(min)}</b></div><div><span>中位數</span><b>${twd(med)}</b></div><div><span>最高</span><b>${twd(max)}</b></div></div>
-    <p class="fine">Encar 上${scope}（${regY} 年登錄）共 ${fmt(cars.length)} 台${total > all.length ? '（取前 500 台）' : ''}，這台比其中 ${fmt(cheaper)} 台貴。
+    <p class="fine">${cmpWho}，這台比其中 ${fmt(cheaper)} 台貴。
     同款平均里程 ${km(avgKm)}，這台 ${km(mileage)}。車況、里程、配備不同，價格也會不同，僅供參考。</p></div>`;
 }
 
