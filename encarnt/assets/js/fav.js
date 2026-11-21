@@ -1,10 +1,10 @@
 // 我的收藏：列出收藏的車，向 Encar 確認是否還在刊登、價格有沒有變
-import { loadI18n, tSpec } from './lib/i18n.js?v=61';
-import { getDetail, notAccepted } from './lib/encar.js?v=61';
-import { getRate } from './lib/rate.js?v=61';
-import { calcPrice } from './lib/pricing.js?v=61';
-import { $, fmt, wan, esc, km, askLine, toast } from './lib/ui.js?v=61';
-import { favList, removeFav, updateFav, HEART } from './lib/fav.js?v=61';
+import { loadI18n, tSpec } from './lib/i18n.js?v=62';
+import { getDetail, notAccepted } from './lib/encar.js?v=62';
+import { getRate } from './lib/rate.js?v=62';
+import { calcPrice } from './lib/pricing.js?v=62';
+import { $, fmt, wan, esc, km, askLine, toast } from './lib/ui.js?v=62';
+import { favList, removeFav, updateFav, HEART } from './lib/fav.js?v=62';
 
 let rate = null;
 const status = {}; // id → 'ok' | 'sold'

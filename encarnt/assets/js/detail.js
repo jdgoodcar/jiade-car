@@ -1,11 +1,11 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=61';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=61';
-import { getRate } from './lib/rate.js?v=61';
-import { calcPrice, RULES } from './lib/pricing.js?v=61';
-import { getInspection, inspectionCard } from './lib/inspect.js?v=61';
-import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch } from './lib/ui.js?v=61';
-import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=61';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=62';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=62';
+import { getRate } from './lib/rate.js?v=62';
+import { calcPrice, RULES } from './lib/pricing.js?v=62';
+import { getInspection, inspectionCard } from './lib/inspect.js?v=62';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch } from './lib/ui.js?v=62';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=62';
 
 updateFavCount();
 
@@ -53,11 +53,14 @@ function gallery(photos, alt, under) {
   const list = [...new Set((photos || []).filter(p => p.type !== 'THUMBNAIL').sort((a, b) => a.code.localeCompare(b.code)).map(p => photoUrl(p.path))
     .concat((under || []).filter(p => p.photoPath).map(p => 'https://imgcar.encar.com' + p.photoPath + '?d=1080x608')))];
   if (!list.length) return '<div class="gal"><div style="aspect-ratio:4/3;display:grid;place-items:center;color:#9aa2b3">沒有照片</div></div>';
+  // 大圖用 1280 寬（手機高解析螢幕才清楚），下方小縮圖只要 240 寬（省流量）
+  const size = (u, w, h) => (u.startsWith('https://ci.encar.com') ? `${u}?impolicy=heightRate&rh=${h}&cw=${w}&ch=${h}&cg=Center`
+    : w <= 240 ? u.replace('?d=1080x608', '?d=240x135') : u);
   return `<div class="gal"><div class="track" id="track">${list.map((u, i) =>
-    `<img src="${esc(u)}" alt="${esc(alt)} 照片 ${i + 1}" ${i ? 'loading="lazy"' : 'fetchpriority="high"'} decoding="async" width="640" height="480">`).join('')}</div>
+    `<img src="${esc(size(u, 1280, 960))}" alt="${esc(alt)} 照片 ${i + 1}" ${i ? 'loading="lazy"' : 'fetchpriority="high"'} decoding="async" width="640" height="480">`).join('')}</div>
     <button class="nav prev" type="button" aria-label="上一張">‹</button><button class="nav next" type="button" aria-label="下一張">›</button>
     <span class="cnt" id="cnt">1 / ${list.length}</span></div>
-    <div class="thumbs" id="thumbs">${list.map((u, i) => `<img src="${esc(u)}" alt="" loading="lazy" decoding="async" data-i="${i}" class="${i ? '' : 'on'}">`).join('')}</div>`;
+    <div class="thumbs" id="thumbs">${list.map((u, i) => `<img src="${esc(size(u, 240, 180))}" alt="" loading="lazy" decoding="async" data-i="${i}" class="${i ? '' : 'on'}">`).join('')}</div>`;
 }
 function bindGallery() {
   const tr = $('#track'); if (!tr) return;
