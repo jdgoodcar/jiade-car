@@ -1,0 +1,14 @@
+{
+  "name": "佳德汽車 Encar 線上選車",
+  "short_name": "Encar 選車",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#eef1f6",
+  "theme_color": "#16244a",
+  "icons": [
+    { "src": "../car-icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "../car-icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

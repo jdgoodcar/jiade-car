@@ -1,10 +1,10 @@
 // 選車列表頁
-import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=63';
-import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=63';
-import { getRate } from './lib/rate.js?v=63';
-import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=63';
-import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=63';
-import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=63';
+import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=64';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=64';
+import { getRate } from './lib/rate.js?v=64';
+import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=64';
+import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=64';
+import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=64';
 
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 
@@ -97,13 +97,13 @@ function favSnap(c) {
   const img = c.Photos && c.Photos[0] ? photoUrl(c.Photos[0].location) : (c.Photo ? photoUrl(c.Photo + '001.jpg') : '');
   return { id: c.Id, t: t.title, s: t.sub || t.makerZh, img, y: c.FormYear || String(c.Year).slice(0, 4), km: c.Mileage, price: c.Price, fuel: c.FuelType, cc: ccOf(c) };
 }
-function cardHtml(c) {
+function cardHtml(c, eager) {
   carById.set(String(c.Id), c);
   const t = carTitle(c.Manufacturer, c.Model, c.Badge, c.BadgeDetail);
   const img = c.Photos && c.Photos[0] ? photoUrl(c.Photos[0].location) : (c.Photo ? photoUrl(c.Photo + '001.jpg') : '');
   const specs = [km(c.Mileage), tSpec('fuel', c.FuelType), tSpec('transmission', c.Transmission), tSpec('region', c.OfficeCityState)].filter(Boolean);
   return `<a class="car" href="detail.html?id=${encodeURIComponent(c.Id)}" data-id="${esc(c.Id)}">
-    <div class="ph">${img ? `<img src="${esc(img)}" alt="${esc(t.title)}" loading="lazy" decoding="async" width="640" height="480">` : ''}<span class="yr">${esc(c.FormYear || String(c.Year).slice(0, 4))} 年式</span>${favBtn(c.Id)}</div>
+    <div class="ph">${img ? `<img src="${esc(img)}" alt="${esc(t.title)}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" width="640" height="480">` : ''}<span class="yr">${esc(c.FormYear || String(c.Year).slice(0, 4))} 年式</span>${favBtn(c.Id)}</div>
     <div class="bd"><h3>${esc(t.title)}</h3><div class="sub">${esc(t.sub || t.makerZh)}</div>
     <div class="specs">${specs.map(s => `<span>${esc(s)}</span>`).join('')}</div>${priceHtml(c)}</div></a>`;
 }
@@ -123,7 +123,7 @@ async function load(reset, size = PAGE) {
     total = t; $('#total').textContent = fmt(t);
     if (reset) grid.innerHTML = '';
     if (!cars.length && offset === 0) grid.innerHTML = '<div class="empty">沒有符合條件的車輛，試試放寬篩選條件</div>';
-    const frag = document.createElement('div'); frag.innerHTML = cars.map(cardHtml).join('');
+    const frag = document.createElement('div'); const first = offset === 0; frag.innerHTML = cars.map((c, i) => cardHtml(c, first && i < 2)).join('');
     for (const el of [...frag.children]) {
       const c = cars.find(x => String(x.Id) === el.dataset.id);
       if (c && !notAccepted(c.FuelType) && ccOf(c) == null && c.Price * 10000 < 7e7) { el._car = c; ccSeen.observe(el); }
