@@ -1,10 +1,10 @@
 // 我的收藏：列出收藏的車，向 Encar 確認是否還在刊登、價格有沒有變
-import { loadI18n, tSpec } from './lib/i18n.js?v=65';
-import { getDetail, notAccepted } from './lib/encar.js?v=65';
-import { getRate } from './lib/rate.js?v=65';
-import { calcPrice } from './lib/pricing.js?v=65';
-import { $, fmt, wan, esc, km, askLine, toast, isTouch } from './lib/ui.js?v=65';
-import { favList, removeFav, updateFav, HEART, updateFavCount } from './lib/fav.js?v=65';
+import { loadI18n, tSpec } from './lib/i18n.js?v=66';
+import { getDetail, notAccepted } from './lib/encar.js?v=66';
+import { getRate } from './lib/rate.js?v=66';
+import { calcPrice } from './lib/pricing.js?v=66';
+import { $, fmt, wan, esc, km, askLine, toast, isTouch } from './lib/ui.js?v=66';
+import { favList, removeFav, updateFav, HEART, updateFavCount } from './lib/fav.js?v=66';
 
 updateFavCount();
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 比較能直接跳出

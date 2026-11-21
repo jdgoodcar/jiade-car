@@ -1,11 +1,11 @@
 // 車輛比較：compare.html?ids=編號,編號（2～4 台），左右並排
-import { loadI18n, tMaker, tName, tSpec, tOption, optionCodes, optionGroups } from './lib/i18n.js?v=65';
-import { getDetail, getRecord, photoUrl, notAccepted } from './lib/encar.js?v=65';
-import { getInspection } from './lib/inspect.js?v=65';
-import { getRate } from './lib/rate.js?v=65';
-import { calcPrice } from './lib/pricing.js?v=65';
-import { $, fmt, wan, esc, ym, km, askLine, isTouch } from './lib/ui.js?v=65';
-import { updateFavCount } from './lib/fav.js?v=65';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionCodes, optionGroups } from './lib/i18n.js?v=66';
+import { getDetail, getRecord, photoUrl, notAccepted } from './lib/encar.js?v=66';
+import { getInspection } from './lib/inspect.js?v=66';
+import { getRate } from './lib/rate.js?v=66';
+import { calcPrice } from './lib/pricing.js?v=66';
+import { $, fmt, wan, esc, ym, km, askLine, isTouch, toast } from './lib/ui.js?v=66';
+import { updateFavCount } from './lib/fav.js?v=66';
 
 updateFavCount();
 if (isTouch) $('#hdLine').removeAttribute('target');
@@ -167,3 +167,49 @@ function miniHead(cars) {
   check();
   miniOff = () => { wrap.removeEventListener('scroll', onH); removeEventListener('resize', layout); removeEventListener('scroll', check); };
 }
+
+// ---------- 存成圖片（在瀏覽器裡產生，不經過其他網站）----------
+// Encar 的照片不允許被複製進圖片，所以圖片只放車名和所有比較項目
+const H2C = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+let h2c = null;
+const loadH2C = () => (h2c = h2c || new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = H2C; sc.onload = ok; sc.onerror = () => { h2c = null; no(); }; document.head.appendChild(sc); }));
+async function makeImage() {
+  await loadH2C();
+  const src = document.querySelector('.cmpt');
+  const box = document.createElement('div'); box.className = 'cmpexp';
+  const d = new Date(), day = `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+  box.innerHTML = `<div class="ex-h"><div><b>佳德汽車</b><span>KOREA ENCAR SELECT</span></div><em>車輛比較｜${day}</em></div>`;
+  const t = src.cloneNode(true);
+  t.querySelectorAll('.rmc, .btn-s, .cimg, .optn').forEach(e => e.remove());
+  box.appendChild(t);
+  box.insertAdjacentHTML('beforeend', '<p class="ex-f">資料取自韓國 Encar，預估車價未含手續費，實際以報價單為準。LINE 詢問：佳德汽車</p>');
+  box.style.width = Math.max(560, src.scrollWidth + 32) + 'px';
+  document.body.appendChild(box);
+  try {
+    const canvas = await window.html2canvas(box, { scale: 2, backgroundColor: '#ffffff', logging: false });
+    return await new Promise(r => canvas.toBlob(r, 'image/png'));
+  } finally { box.remove(); }
+}
+let imgBlob = null;
+const imgName = '佳德汽車-車輛比較.png';
+async function shareOrDownload() {
+  const file = new File([imgBlob], imgName, { type: 'image/png' });
+  if (isTouch && navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file] }); return; } catch (e) { if (e.name === 'AbortError') return; }
+  }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(imgBlob); a.download = imgName; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+}
+$('#saveImg').onclick = async () => {
+  const b = $('#saveImg'); if (b.disabled) return;
+  b.disabled = true; b.querySelector('b').textContent = '產生中…';
+  try {
+    imgBlob = await makeImage();
+    if (isTouch) { $('#imgOut').src = URL.createObjectURL(imgBlob); $('#imgSheet').hidden = false; } // 手機：先顯示圖片，可長按儲存
+    else { await shareOrDownload(); toast('已下載比較表圖片'); }
+  } catch (e) { toast('圖片產生失敗，請再試一次'); }
+  finally { b.disabled = false; b.querySelector('b').textContent = '存成圖片'; }
+};
+$('#imgShare').onclick = shareOrDownload;
+$('#imgX').onclick = () => { $('#imgSheet').hidden = true; };
+$('#imgSheet').onclick = e => { if (e.target.id === 'imgSheet') $('#imgSheet').hidden = true; };

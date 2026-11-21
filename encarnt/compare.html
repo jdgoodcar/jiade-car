@@ -16,8 +16,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&text=KOREA%20ENCAR%20SELECT&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@900&text=%E4%BD%B3%E5%BE%B7%E6%B1%BD%E8%BB%8A&display=swap">
-<link rel="stylesheet" href="assets/css/encarnt.css?v=65">
-<script type="module" src="assets/js/compare.js?v=65"></script>
+<link rel="stylesheet" href="assets/css/encarnt.css?v=66">
+<script type="module" src="assets/js/compare.js?v=66"></script>
 </head>
 <body>
 <header class="hd">
@@ -52,11 +52,19 @@
 
 <button type="button" class="totop" id="toTop" aria-label="回到最上面" title="回到最上面"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5 20 17.5H4z" stroke="#f3cf7a" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
 <div class="bar" id="bar" hidden>
-  <div class="wrap favbar one">
+  <div class="wrap favbar">
+    <button class="btn-cmp" id="saveImg" type="button"><b>存成圖片</b><small>保存比較表</small></button>
     <button class="btn-line" id="askCmp" type="button">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5s5.9-3.5 8-6C21.4 14.2 22 12.7 22 11c0-4.4-4.5-8-10-8Z"/></svg>
       <span class="lt">LINE 詢問這幾台<small>自動複製車輛資訊，貼上即可</small></span>
     </button>
+  </div>
+</div>
+<div class="sheet" id="imgSheet" hidden>
+  <div class="box qrbox" role="dialog" aria-modal="true" aria-labelledby="imgT">
+    <div class="top"><h2 id="imgT">比較表圖片</h2><button class="x" id="imgX" type="button" aria-label="關閉">×</button></div>
+    <div class="in"><p class="fine" style="margin:0 0 8px">長按圖片即可「加入照片」或分享；也可以按下方按鈕。</p><img id="imgOut" alt="車輛比較表" style="width:100%;border:1px solid var(--bd);border-radius:8px">
+      <button class="btn-m" id="imgShare" type="button" style="width:100%;margin-top:10px">分享／儲存圖片</button></div>
   </div>
 </div>
 </body>

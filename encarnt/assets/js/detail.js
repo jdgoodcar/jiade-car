@@ -1,11 +1,11 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=65';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=65';
-import { getRate } from './lib/rate.js?v=65';
-import { calcPrice, RULES } from './lib/pricing.js?v=65';
-import { getInspection, inspectionCard } from './lib/inspect.js?v=65';
-import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch } from './lib/ui.js?v=65';
-import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=65';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=66';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=66';
+import { getRate } from './lib/rate.js?v=66';
+import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=66';
+import { getInspection, inspectionCard } from './lib/inspect.js?v=66';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=66';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=66';
 
 updateFavCount();
 
@@ -136,6 +136,7 @@ function recordCard(rec, rate, sz) {
     ${item('失竊紀錄', rec.robberCnt ? `${rec.robberCnt} 次` : '無', !rec.robberCnt)}
     ${item('租賃車（出租）紀錄', rec.loan ? '有' : '無', !rec.loan)}
     ${item('營業用／公務用紀錄', biz ? '有' : '無', !biz)}
+    ${item('保險空窗期', gap.length ? `${gap.length} 段` : '無', !gap.length)}
     ${seizingHtml(sz)}
   </div>
   ${gap.length ? `<p class="fine"><b>保險未投保期間：</b>${gap.map(esc).join('、')}（此期間若有事故不會出現在紀錄中）</p>` : ''}
@@ -215,6 +216,27 @@ async function compareCard(c, fuel, priceMan, cc, rate, mileage) {
     同款平均里程 ${km(avgKm)}，這台 ${km(mileage)}。車況、里程、配備不同，價格也會不同，僅供參考。</p></div>`;
 }
 
+// 相似車輛：同車型（太少就放寬到同車系），價格最接近這台的 4 台
+async function similarCard(c, priceMan, rate) {
+  const base = { ct: c.domestic ? 'Y' : 'N', mk: c.manufacturerName, mg: c.modelGroupName };
+  let { cars } = await searchCars({ ...base, md: c.modelName }, 'new', 0, 80);
+  cars = cars.filter(x => String(x.Id) !== String(id));
+  if (cars.length < 4) cars = (await searchCars(base, 'new', 0, 80)).cars.filter(x => String(x.Id) !== String(id));
+  if (!cars.length) return '';
+  // 同一台車有時會有兩則刊登（照片相同），只留一則
+  const seen = new Set(), key = x => x.Photo || (x.Photos && x.Photos[0] && x.Photos[0].location) || [x.Mileage, x.Price, x.Badge].join('|');
+  const pick = cars.sort((a, b) => Math.abs(a.Price - priceMan) - Math.abs(b.Price - priceMan))
+    .filter(x => { const k = key(x); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 4);
+  return `<div class="card simc"><h2>相似車輛</h2><div class="sims">${pick.map(x => {
+    const t = carTitle(x.Manufacturer, x.Model, x.Badge, x.BadgeDetail);
+    const img = x.Photos && x.Photos[0] ? photoUrl(x.Photos[0].location) : (x.Photo ? photoUrl(x.Photo + '001.jpg') : '');
+    const no = notAccepted(x.FuelType), p = !no && calcPrice(x.Price, guessCc(x.Badge, x.BadgeDetail, x.Model) || 0, rate);
+    return `<a class="sim" href="detail.html?id=${encodeURIComponent(x.Id)}"><div class="sp">${img ? `<img src="${esc(img)}" alt="" loading="lazy" decoding="async">` : ''}<span>${esc(x.FormYear || String(x.Year).slice(0, 4))}</span></div>
+      <b>${esc(t.sub || t.title)}</b><small>${esc(km(x.Mileage))}</small>
+      <em>${no ? `<i class="no">${no}暫不接受代購</i>` : p ? `約 ${wan(p.price)} 萬` : `${fmt(x.Price)} 萬韓元`}</em></a>`;
+  }).join('')}</div><p class="fine">同車型中價格最接近這台的車，預估車價依排氣量推估，點進去可看準確金額。</p></div>`;
+}
+
 (async () => {
   if (!id) return fail('找不到車輛', '網址缺少車輛編號');
   let d, rate;
@@ -262,6 +284,7 @@ async function compareCard(c, fuel, priceMan, cc, rate, mileage) {
       <div id="inspBox"><div class="card"><h2>車況報告</h2><p class="fine" style="margin:0">讀取中…</p></div></div>
       <div id="recBox"><div class="card"><h2>保險／事故紀錄</h2><p class="fine" style="margin:0">讀取中…</p></div></div>
       ${optionsCard(d.options)}
+      <div id="simBox"></div>
       <div class="card src"><h2>原始車源</h2><p style="margin:0 0 6px">在 Encar 查看原始刊登頁面（韓文）：</p><a href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a>
         <p class="fine">車輛編號 ${esc(id)}。車輛資料取自 Encar，車輛隨時可能售出。</p></div>
     </div></div>`;
@@ -309,6 +332,7 @@ async function compareCard(c, fuel, priceMan, cc, rate, mileage) {
   if (!no && $('#cmpBox')) compareCard(c, fuel, priceMan, cc, rate, s.mileage).then(h => { $('#cmpBox').outerHTML = h || ''; }).catch(() => { $('#cmpBox').remove(); });
 
   $('#share2').onclick = $('#share').onclick; // 標題旁的圓形分享按鈕，與底條分享相同
+  similarCard(c, priceMan, rate).then(h => { $('#simBox').outerHTML = h || ''; }).catch(() => { $('#simBox')?.remove(); });
   $('#encLink').href = url;
   $('#askLine').onclick = () => askLine(lineText({ title, sub, year: `${c.formYear || ''} 年式`, mileage: km(s.mileage), price: p && !no ? wan(p.price) : '', url }));
   $('#bar').hidden = false;
