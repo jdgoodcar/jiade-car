@@ -469,3 +469,6 @@ body:has(.cmpmain) .cft { padding-bottom: calc(150px + env(safe-area-inset-botto
 .btn-f svg { width: 18px; height: 18px; color: var(--gold-l); flex-shrink: 0; }
 .btn-f:active { transform: scale(.97); box-shadow: 0 1px 4px rgba(22,36,74,.2); }
 .btn-f .n { background: var(--gold-l) !important; color: var(--navy) !important; font-weight: 800; }
+/* 頁首副標：Cinzel 字型 */
+.hd .bc .tx span { font-family: 'Cinzel', 'Times New Roman', serif; font-weight: 600; font-size: 11px; letter-spacing: .16em; margin-top: 3px; }
+@media (max-width: 420px) { .hd .bc .tx span { font-size: 10px; letter-spacing: .13em; } }
