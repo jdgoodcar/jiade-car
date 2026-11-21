@@ -1,11 +1,11 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=80';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=80';
-import { getRate } from './lib/rate.js?v=80';
-import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=80';
-import { getInspection, inspectionCard } from './lib/inspect.js?v=80';
-import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=80';
-import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=80';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=81';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=81';
+import { getRate } from './lib/rate.js?v=81';
+import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=81';
+import { getInspection, inspectionCard } from './lib/inspect.js?v=81';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=81';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=81';
 
 updateFavCount();
 
@@ -157,7 +157,7 @@ function recordCard(rec, rate, sz) {
   </div>
   ${gap.length ? `<p class="fine"><b>保險未投保期間：</b>${gap.map(esc).join('、')}（此期間若有事故不會出現在紀錄中）</p>` : ''}
   ${krwTwd ? `<p class="fine">理賠金額以今日匯率 1 韓元 ≒ ${krwTwd.toFixed(4)} 台幣直接換算。</p>` : ''}
-  <p class="fine">資料來源：韓國保險開發院（經 Encar 公開），僅含有申請保險理賠的紀錄；抵押／扣押為 Encar 提供的車籍登記資料，有紀錄需先解除才能過戶。</p></div>`;
+  <p class="fine">資料來源：韓國保險開發院（經 Encar 公開），僅含有申請保險理賠的紀錄；抵押／扣押為 Encar 提供的車籍登記資料，有紀錄需先解除才能辦理出口。</p></div>`;
 }
 
 // 配備：依類別分組。另外讀「原廠選配」（新車時加價選購的套件，名稱只有韓文）
