@@ -1,10 +1,10 @@
 // 選車列表頁
-import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=89';
-import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, fuelEx, notAccepted, blockReason, BLOCK_MAKERS, OLD_YEARS } from './lib/encar.js?v=89';
-import { getRate } from './lib/rate.js?v=89';
-import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=89';
-import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=89';
-import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=89';
+import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=90';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, fuelEx, notAccepted, blockReason, BLOCK_MAKERS, OLD_YEARS } from './lib/encar.js?v=90';
+import { getRate } from './lib/rate.js?v=90';
+import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=90';
+import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=90';
+import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=90';
 
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 

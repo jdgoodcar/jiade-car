@@ -29,7 +29,7 @@ export const isLpg = v => /LPG/.test(v || ''); // LPG、LPG 油電、汽油＋LP
 // 開關排除的燃料：這個燃料 v 是否屬於開關 x（diesel／ev／lpg）
 export const fuelEx = (x, v) => (x === 'diesel' && isDiesel(v)) || (x === 'ev' && isEv(v)) || (x === 'lpg' && isLpg(v));
 // 暫不接受代購的燃料：回傳名稱（柴油車／電動車），可接受則回傳空字串
-export const notAccepted = v => (isDiesel(v) ? '柴油車' : isEv(v) ? '電動車' : '');
+export const notAccepted = v => (isDiesel(v) ? '柴油車' : isEv(v) ? '電動車' : isLpg(v) ? 'LPG 車' : '');
 
 // 產地限制：依法規不能進口的產地（列表用廠牌／車款判斷；詳細頁再用車身號碼第一碼確認）
 // 營業用：計程車型等，列表一律不顯示（幾乎都是 LPG 或電動車）；詳細頁照常顯示價格
