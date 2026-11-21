@@ -1,10 +1,10 @@
 // 我的收藏：列出收藏的車，向 Encar 確認是否還在刊登、價格有沒有變
-import { loadI18n, tSpec } from './lib/i18n.js?v=69';
-import { getDetail, notAccepted } from './lib/encar.js?v=69';
-import { getRate } from './lib/rate.js?v=69';
-import { calcPrice } from './lib/pricing.js?v=69';
-import { $, fmt, wan, esc, km, askLine, toast, isTouch } from './lib/ui.js?v=69';
-import { favList, removeFav, updateFav, HEART, updateFavCount } from './lib/fav.js?v=69';
+import { loadI18n, tSpec } from './lib/i18n.js?v=70';
+import { getDetail, notAccepted } from './lib/encar.js?v=70';
+import { getRate } from './lib/rate.js?v=70';
+import { calcPrice } from './lib/pricing.js?v=70';
+import { $, fmt, wan, esc, km, askLine, toast, isTouch } from './lib/ui.js?v=70';
+import { favList, removeFav, updateFav, HEART, updateFavCount } from './lib/fav.js?v=70';
 
 updateFavCount();
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 比較能直接跳出
@@ -24,6 +24,8 @@ function syncCmp() {
   document.querySelectorAll('[data-cmp]').forEach(b => { const on = pick.includes(b.dataset.cmp); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
   const can = favList().filter(x => status[x.id] !== 'sold');
   $('#selAll').hidden = can.length < 2;
+  const gone = favList().filter(x => status[x.id] === 'sold').length;
+  $('#rmSold').hidden = !gone; $('#rmSold').textContent = `移除已售出（${gone}）`;
   $('#selAll').textContent = n ? '取消選取' : (can.length > CMP_MAX ? `選取前 ${CMP_MAX} 台` : '全選比較');
 }
 // 一鍵：沒選任何車 → 選取前 4 台（已售出的跳過）；已有選取 → 全部取消
@@ -54,10 +56,10 @@ function cardHtml(x) {
   return `<a class="car${sold ? ' gone' : ''}" href="detail.html?id=${encodeURIComponent(x.id)}" data-id="${esc(x.id)}">
     <div class="ph">${x.img ? `<img src="${esc(x.img)}" alt="${esc(x.t)}" loading="lazy" decoding="async" width="640" height="480">` : ''}
       <span class="yr">${esc(x.y)} 年式</span>${sold ? '<span class="soldtag">已售出或下架</span>' : ''}
-      <button type="button" class="fav on" data-rm="${esc(x.id)}" aria-label="移除收藏">${HEART}</button></div>
+</div>
     <div class="bd"><h3>${esc(x.t)}</h3><div class="sub">${esc(x.s)}</div>
     <div class="specs">${specs.map(s => `<span>${esc(s)}</span>`).join('')}${st ? '' : '<span class="chk">確認中…</span>'}</div>${chg}${priceHtml(x)}
-    ${sold ? '' : `<button type="button" class="cmpb" data-cmp="${esc(x.id)}" aria-pressed="false"><i></i>加入比較</button>`}</div></a>`;
+    <div class="acts">${sold ? '' : `<button type="button" class="cmpb" data-cmp="${esc(x.id)}" aria-pressed="false"><i></i>加入比較</button>`}<button type="button" class="rmb" data-rm="${esc(x.id)}">✕ 移除收藏</button></div></div></a>`;
 }
 
 function render() {
@@ -117,3 +119,11 @@ $('#askAll').onclick = () => {
   };
   await Promise.all([work(), work(), work()]);
 })();
+
+// 一鍵移除已售出或下架的車
+$('#rmSold').onclick = () => {
+  const gone = favList().filter(x => status[x.id] === 'sold');
+  if (!gone.length) return;
+  if (!confirm(`要移除 ${gone.length} 台已售出或下架的車嗎？`)) return;
+  gone.forEach(x => removeFav(x.id)); render(); toast(`已移除 ${gone.length} 台`);
+};

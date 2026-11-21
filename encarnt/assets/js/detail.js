@@ -1,11 +1,11 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=69';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=69';
-import { getRate } from './lib/rate.js?v=69';
-import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=69';
-import { getInspection, inspectionCard } from './lib/inspect.js?v=69';
-import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=69';
-import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=69';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=70';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=70';
+import { getRate } from './lib/rate.js?v=70';
+import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=70';
+import { getInspection, inspectionCard } from './lib/inspect.js?v=70';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=70';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=70';
 
 updateFavCount();
 
@@ -57,19 +57,29 @@ function gallery(photos, alt, under) {
   const list = [...new Set((photos || []).filter(p => p.type !== 'THUMBNAIL').sort((a, b) => a.code.localeCompare(b.code)).map(p => photoUrl(p.path))
     .concat((under || []).filter(p => p.photoPath).map(p => 'https://imgcar.encar.com' + p.photoPath + '?d=1080x608')))];
   if (!list.length) return '<div class="gal"><div style="aspect-ratio:4/3;display:grid;place-items:center;color:#9aa2b3">沒有照片</div></div>';
-  // 大圖用 1280 寬（手機高解析螢幕才清楚），下方小縮圖只要 240 寬（省流量）
-  const size = (u, w, h) => (u.startsWith('https://ci.encar.com') ? `${u}?impolicy=heightRate&rh=${h}`
-    : w <= 240 ? u.replace('?d=1080x608', '?d=240x135') : u);
-  // 大圖載入前，先用小縮圖（第一張用列表上已經載好的照片）墊在底下，不會看到一塊黑
-  const ph = (u, i) => (i === 0 && listPhoto ? listPhoto : size(u, 240, 180));
+  // Encar 的一般照片是現成檔案，載入最快；清晰版（高解析）要 Encar 現場縮放，較慢
+  // → 先顯示一般照片，清晰版在背景載好後再換上（畫面構圖相同，不會跳動）
+  const hi = u => (u.startsWith('https://ci.encar.com') ? `${u}?impolicy=heightRate&rh=960` : '');
+  const ph = i => (i === 0 && listPhoto ? ` style="background-image:url('${esc(listPhoto)}')"` : '');
   return `<div class="gal"><div class="track" id="track">${list.map((u, i) =>
-    `<img src="${esc(size(u, 1280, 960))}" alt="${esc(alt)} 照片 ${i + 1}" ${i > 1 ? 'loading="lazy"' : i ? '' : 'fetchpriority="high"'} decoding="async" width="640" height="480" style="background-image:url('${esc(ph(u, i))}')">`).join('')}</div>
+    `<img src="${esc(u)}"${hi(u) ? ` data-hi="${esc(hi(u))}"` : ''} alt="${esc(alt)} 照片 ${i + 1}" ${i > 1 ? 'loading="lazy"' : i ? '' : 'fetchpriority="high"'} decoding="async" width="640" height="480"${ph(i)}>`).join('')}</div>
     <button class="nav prev" type="button" aria-label="上一張">‹</button><button class="nav next" type="button" aria-label="下一張">›</button>
     <span class="cnt" id="cnt">1 / ${list.length}</span></div>
-    <div class="thumbs" id="thumbs">${list.map((u, i) => `<img src="${esc(size(u, 240, 180))}" alt="" loading="lazy" decoding="async" data-i="${i}" class="${i ? '' : 'on'}">`).join('')}</div>`;
+    <div class="thumbs" id="thumbs">${list.map((u, i) => `<img src="${esc(u)}" alt="" loading="lazy" decoding="async" data-i="${i}" class="${i ? '' : 'on'}">`).join('')}</div>`;
 }
 function bindGallery() {
   const tr = $('#track'); if (!tr) return;
+  // 一般照片顯示後，背景載入清晰版，載好再換上
+  const upgrade = img => {
+    const u = img.dataset.hi; if (!u) return;
+    delete img.dataset.hi;
+    const pre = new Image(); pre.decoding = 'async';
+    pre.onload = () => { img.src = u; img.style.backgroundImage = ''; };
+    pre.src = u;
+  };
+  tr.querySelectorAll('img[data-hi]').forEach(img => {
+    if (img.complete && img.naturalWidth) upgrade(img); else img.addEventListener('load', () => upgrade(img), { once: true });
+  });
   const n = tr.children.length, th = $('#thumbs');
   const go = i => tr.scrollTo({ left: Math.max(0, Math.min(n - 1, i)) * tr.clientWidth, behavior: 'smooth' });
   const cur = () => Math.round(tr.scrollLeft / tr.clientWidth);
@@ -146,6 +156,7 @@ function recordCard(rec, rate, sz) {
     ${seizingHtml(sz)}
   </div>
   ${gap.length ? `<p class="fine"><b>保險未投保期間：</b>${gap.map(esc).join('、')}（此期間若有事故不會出現在紀錄中）</p>` : ''}
+  ${krwTwd ? `<p class="fine">理賠金額以今日匯率 1 韓元 ≒ ${krwTwd.toFixed(4)} 台幣直接換算。</p>` : ''}
   <p class="fine">資料來源：韓國保險開發院（經 Encar 公開），僅含有申請保險理賠的紀錄；抵押／扣押為 Encar 提供的車籍登記資料，有紀錄需先解除才能過戶。</p></div>`;
 }
 

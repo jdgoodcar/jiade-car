@@ -557,3 +557,14 @@ body:has(.favhd) .car .pr .k { font-size: 11px; }
 body:has(.favhd) .car .pr .k br { display: none; }
 body:has(.favhd) .cmpb { margin-top: 6px; padding: 5px 12px 5px 8px; font-size: 13px; align-self: flex-start; }
 body:has(.favhd) .cmpb i { width: 16px; height: 16px; }
+/* 比較圖片：每台車的欄位一樣寬 */
+.cmpexp .cmpt { table-layout: fixed; }
+.cmpexp .cmpt thead th.lab, .cmpexp .cmpt tbody th { width: 92px; }
+/* 收藏頁：加入比較＋移除收藏 */
+body:has(.favhd) .car .acts { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+body:has(.favhd) .car .acts .cmpb { margin-top: 0; }
+.rmb { border: 1.5px solid #e3c4c6; background: #fff; color: var(--red); border-radius: 999px; padding: 5px 10px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.rmb:active { background: #fdeeee; }
+.favbtns { display: inline-flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.favbtns .btn-s[hidden] { display: none; }
+#rmSold { color: var(--red); border-color: #e3c4c6; }
