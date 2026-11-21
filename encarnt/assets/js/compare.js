@@ -139,6 +139,15 @@ function miniHead(cars) {
   wrap.addEventListener('scroll', () => { inner.style.transform = `translateX(${-wrap.scrollLeft}px)`; }, { passive: true });
   addEventListener('resize', layout);
   layout();
+  // 點車名條的某一台：捲回表格頂端，並把那台的欄位滑到左欄旁邊
+  cells.forEach((cell, i) => {
+    cell.onclick = () => {
+      const labW = document.querySelector('.cmpt thead th.lab').getBoundingClientRect().width;
+      wrap.scrollTo({ left: Math.max(0, ths[i].offsetLeft - labW), behavior: 'smooth' });
+      const y = scrollY + wrap.getBoundingClientRect().top - document.querySelector('.hd').offsetHeight - 8;
+      scrollTo({ top: y, behavior: 'smooth' });
+    };
+  });
   // 表頭（照片＋車名）捲出畫面、但表格還在畫面上時才顯示
   const head = document.querySelector('.cmpt thead'), top = document.querySelector('.hd').offsetHeight;
   const check = () => {
