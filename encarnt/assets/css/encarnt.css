@@ -479,3 +479,6 @@ body:has(.cmpmain) .cft { padding-bottom: calc(150px + env(safe-area-inset-botto
 .hd .bc .tx b { gap: 6px; font-size: 17px; }
 .hd .bc .tx b .ic { width: 17px; height: 17px; padding: 1px; border-radius: 4px; }
 @media (max-width: 420px) { .hd .bc .tx b { font-size: 16px; } }
+/* 頁首只放文字 */
+.hd .bc .tx b { font-size: 18px; letter-spacing: .08em; }
+@media (max-width: 420px) { .hd .bc .tx b { font-size: 17px; } }
