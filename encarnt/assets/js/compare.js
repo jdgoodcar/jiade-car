@@ -1,11 +1,11 @@
 // 車輛比較：compare.html?ids=編號,編號（2～4 台），左右並排
-import { loadI18n, tMaker, tName, tSpec, tOption, optionCodes, optionGroups } from './lib/i18n.js?v=67';
-import { getDetail, getRecord, photoUrl, notAccepted, carUrl } from './lib/encar.js?v=67';
-import { getInspection } from './lib/inspect.js?v=67';
-import { getRate } from './lib/rate.js?v=67';
-import { calcPrice } from './lib/pricing.js?v=67';
-import { $, fmt, wan, esc, ym, km, askLine, isTouch, toast } from './lib/ui.js?v=67';
-import { updateFavCount, favList } from './lib/fav.js?v=67';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionCodes, optionGroups } from './lib/i18n.js?v=68';
+import { getDetail, getRecord, photoUrl, notAccepted, carUrl } from './lib/encar.js?v=68';
+import { getInspection } from './lib/inspect.js?v=68';
+import { getRate } from './lib/rate.js?v=68';
+import { calcPrice } from './lib/pricing.js?v=68';
+import { $, fmt, wan, esc, ym, km, askLine, isTouch, toast } from './lib/ui.js?v=68';
+import { updateFavCount, favList } from './lib/fav.js?v=68';
 
 updateFavCount();
 if (isTouch) $('#hdLine').removeAttribute('target');
@@ -188,7 +188,12 @@ async function makeImage() {
   box.style.width = Math.max(560, src.scrollWidth + 32) + 'px';
   document.body.appendChild(box);
   try {
-    const canvas = await window.html2canvas(box, { scale: 2, backgroundColor: '#ffffff', logging: false });
+    // iPhone 的畫布有大小上限，太大會當掉：總像素控制在約 800 萬以內
+    const scale = Math.min(2, Math.sqrt(6e6 / (box.offsetWidth * box.offsetHeight)));
+    // 只複製比較表本身，不複製整頁（整頁有很多照片，iPhone 記憶體會不夠）
+    const keep = new Set(['HTML', 'HEAD', 'BODY', 'STYLE', 'LINK', 'META', 'TITLE']);
+    const ignoreElements = el => !keep.has(el.tagName) && !el.contains(box) && !box.contains(el);
+    const canvas = await window.html2canvas(box, { scale, backgroundColor: '#ffffff', logging: false, ignoreElements });
     return await new Promise(r => canvas.toBlob(r, 'image/png'));
   } finally { box.remove(); }
 }
@@ -216,15 +221,14 @@ $('#imgShare').onclick = shareOrDownload;
 $('#imgX').onclick = () => { $('#imgSheet').hidden = true; };
 $('#imgSheet').onclick = e => { if (e.target.id === 'imgSheet') $('#imgSheet').hidden = true; };
 
-// ---------- 從收藏加入比較（誤刪也能快速加回）----------
+// ---------- 從收藏加入比較：右上角下拉選單（誤刪也能快速加回）----------
 function addBack() {
-  document.querySelector('.cmpadd')?.remove();
   const rest = favList().filter(x => !ids.includes(String(x.id)));
+  const box = $('#addBox'), sel = $('#addSel');
+  box.hidden = !rest.length;
   if (!rest.length) return;
   const full = ids.length >= 4;
-  const el = document.createElement('div'); el.className = 'card cmpadd';
-  el.innerHTML = `<h2>從收藏加入比較</h2><p class="fine" style="margin:0 0 10px">${full ? '最多比較 4 台，請先按照片右上角的 × 移除一台。' : '點一下就加入比較表。'}</p>
-    <div class="adds">${rest.map(x => `<a class="add${full ? ' off' : ''}" href="${full ? '#' : 'compare.html?ids=' + ids.concat(String(x.id)).map(encodeURIComponent).join(',')}">${x.img ? `<img src="${esc(x.img)}" alt="" loading="lazy">` : ''}<span><b>${esc(x.t)}</b><small>${esc(x.s || '')}</small></span><i>＋</i></a>`).join('')}</div>`;
-  $('#app').appendChild(el);
-  if (full) el.querySelectorAll('.add').forEach(a => { a.onclick = e => { e.preventDefault(); toast('最多比較 4 台'); }; });
+  sel.innerHTML = `<option value="">${full ? '最多 4 台，請先移除一台' : '選擇要加入的車'}</option>` +
+    rest.map(x => `<option value="${esc(x.id)}"${full ? ' disabled' : ''}>${esc(x.t)}${x.s ? '｜' + esc(x.s) : ''}</option>`).join('');
+  sel.onchange = () => { if (sel.value && !full) location.href = 'compare.html?ids=' + ids.concat(sel.value).map(encodeURIComponent).join(','); };
 }

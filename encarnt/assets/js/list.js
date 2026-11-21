@@ -1,10 +1,10 @@
 // 選車列表頁
-import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=67';
-import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=67';
-import { getRate } from './lib/rate.js?v=67';
-import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=67';
-import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=67';
-import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=67';
+import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=68';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=68';
+import { getRate } from './lib/rate.js?v=68';
+import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=68';
+import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=68';
+import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=68';
 
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 
@@ -123,7 +123,7 @@ async function load(reset, size = PAGE) {
     total = t; $('#total').textContent = fmt(t);
     if (reset) grid.innerHTML = '';
     if (!cars.length && offset === 0) {
-      grid.innerHTML = `<div class="empty"><b style="display:block;color:var(--navy);margin-bottom:6px">沒有符合條件的車輛</b>可以試試：換一個車系或車型、減少「更多篩選」裡的條件，或放寬搜尋條件<br><br><button class="btn-m" type="button" id="emptyReset">重設所有條件</button></div>`;
+      grid.innerHTML = `<div class="empty"><b style="display:block;color:var(--navy);margin-bottom:6px">沒有符合條件的車輛</b><span class="tip">可試試換一個車系或車型、<br>減少「更多篩選」裡的條件，<br>或放寬搜尋條件</span><button class="btn-m" type="button" id="emptyReset">重設所有條件</button></div>`;
       $('#emptyReset').onclick = () => $('#resetAll').click();
     }
     const frag = document.createElement('div'); const first = offset === 0; frag.innerHTML = cars.map((c, i) => cardHtml(c, first && i < 2)).join('');

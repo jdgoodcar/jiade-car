@@ -1,10 +1,10 @@
 // 我的收藏：列出收藏的車，向 Encar 確認是否還在刊登、價格有沒有變
-import { loadI18n, tSpec } from './lib/i18n.js?v=67';
-import { getDetail, notAccepted } from './lib/encar.js?v=67';
-import { getRate } from './lib/rate.js?v=67';
-import { calcPrice } from './lib/pricing.js?v=67';
-import { $, fmt, wan, esc, km, askLine, toast, isTouch } from './lib/ui.js?v=67';
-import { favList, removeFav, updateFav, HEART, updateFavCount } from './lib/fav.js?v=67';
+import { loadI18n, tSpec } from './lib/i18n.js?v=68';
+import { getDetail, notAccepted } from './lib/encar.js?v=68';
+import { getRate } from './lib/rate.js?v=68';
+import { calcPrice } from './lib/pricing.js?v=68';
+import { $, fmt, wan, esc, km, askLine, toast, isTouch } from './lib/ui.js?v=68';
+import { favList, removeFav, updateFav, HEART, updateFavCount } from './lib/fav.js?v=68';
 
 updateFavCount();
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 比較能直接跳出
@@ -22,7 +22,15 @@ function syncCmp() {
   $('#cmpGo').disabled = n < 2;
   $('#cmpN').textContent = n < 2 ? '勾選 2–4 台' : `比較 ${n} 台`;
   document.querySelectorAll('[data-cmp]').forEach(b => { const on = pick.includes(b.dataset.cmp); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+  const can = favList().filter(x => status[x.id] !== 'sold');
+  $('#selAll').hidden = can.length < 2;
+  $('#selAll').textContent = n ? '取消選取' : (can.length > CMP_MAX ? `選取前 ${CMP_MAX} 台` : '全選比較');
 }
+// 一鍵：沒選任何車 → 選取前 4 台（已售出的跳過）；已有選取 → 全部取消
+$('#selAll').onclick = () => {
+  pick = pick.length ? [] : favList().filter(x => status[x.id] !== 'sold').slice(0, CMP_MAX).map(x => String(x.id));
+  savePick(); syncCmp();
+};
 $('#cmpGo').onclick = () => { if (pick.length >= 2) location.href = 'compare.html?ids=' + pick.map(encodeURIComponent).join(','); };
 
 addEventListener('scroll', () => $('#toTop').classList.toggle('on', scrollY > 600), { passive: true });

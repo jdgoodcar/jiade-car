@@ -1,11 +1,11 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=67';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=67';
-import { getRate } from './lib/rate.js?v=67';
-import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=67';
-import { getInspection, inspectionCard } from './lib/inspect.js?v=67';
-import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=67';
-import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=67';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=68';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=68';
+import { getRate } from './lib/rate.js?v=68';
+import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=68';
+import { getInspection, inspectionCard } from './lib/inspect.js?v=68';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=68';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=68';
 
 updateFavCount();
 
@@ -58,7 +58,7 @@ function gallery(photos, alt, under) {
     .concat((under || []).filter(p => p.photoPath).map(p => 'https://imgcar.encar.com' + p.photoPath + '?d=1080x608')))];
   if (!list.length) return '<div class="gal"><div style="aspect-ratio:4/3;display:grid;place-items:center;color:#9aa2b3">沒有照片</div></div>';
   // 大圖用 1280 寬（手機高解析螢幕才清楚），下方小縮圖只要 240 寬（省流量）
-  const size = (u, w, h) => (u.startsWith('https://ci.encar.com') ? `${u}?impolicy=heightRate&rh=${h}&cw=${w}&ch=${h}&cg=Center`
+  const size = (u, w, h) => (u.startsWith('https://ci.encar.com') ? `${u}?impolicy=heightRate&rh=${h}`
     : w <= 240 ? u.replace('?d=1080x608', '?d=240x135') : u);
   // 大圖載入前，先用小縮圖（第一張用列表上已經載好的照片）墊在底下，不會看到一塊黑
   const ph = (u, i) => (i === 0 && listPhoto ? listPhoto : size(u, 240, 180));
@@ -240,7 +240,7 @@ async function similarCard(c, priceMan, rate) {
     return `<a class="sim" href="detail.html?id=${encodeURIComponent(x.Id)}"><div class="sp">${img ? `<img src="${esc(img)}" alt="" loading="lazy" decoding="async">` : ''}<span>${esc(x.FormYear || String(x.Year).slice(0, 4))}</span></div>
       <b>${esc(t.sub || t.title)}</b><small>${esc(km(x.Mileage))}</small>
       <em>${no ? `<i class="no">${no}暫不接受代購</i>` : p ? `約 ${wan(p.price)} 萬` : `${fmt(x.Price)} 萬韓元`}</em></a>`;
-  }).join('')}</div><p class="fine">點進去可看準確金額。</p></div>`;
+  }).join('')}</div><p class="fine">同車型中價格最接近這台的車，預估車價依排氣量推估。</p></div>`;
 }
 
 (async () => {
