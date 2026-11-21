@@ -455,3 +455,10 @@ body:has(.cmpmain) .cft { padding-bottom: calc(150px + env(safe-area-inset-botto
 .cmpmini.on { pointer-events: auto; }
 .cmpmini .mi-c { cursor: pointer; }
 .cmpmini .mi-c:active { background: #eef1f6; }
+/* 頁首：JD 圖示（白底小方塊）＋兩行字 */
+.hd .bc > a { display: flex; align-items: center; gap: 10px; text-decoration: none; min-width: 0; }
+.hd .bc .ic { width: 34px; height: 34px; flex-shrink: 0; border-radius: 9px; background: #fff; padding: 3px; display: block; box-sizing: border-box; }
+.hd .bc .tx { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
+.hd .bc .tx b { color: #fff; font-size: 16px; letter-spacing: .06em; white-space: nowrap; overflow: visible; }
+.hd .bc .tx span { color: var(--gold-l); font-size: 10px; font-weight: 700; letter-spacing: .12em; margin-top: 3px; white-space: nowrap; }
+@media (max-width: 420px) { .hd .bc .tx b { font-size: 15px; } .hd .bc .tx span { font-size: 9.5px; letter-spacing: .1em; } }
