@@ -216,7 +216,7 @@ async function compareCard(c, fuel, priceMan, cc, rate, mileage) {
   $('#app').innerHTML = `<div class="dt">
     <div>${gallery(d.photos, title, ad.underBodyPhotos)}</div>
     <div class="side" style="display:grid;gap:16px">
-      <div class="card ttl"><button type="button" class="fav" id="favB">${HEART}</button><div class="mk">${esc(mk.zh)}${sold ? '　<span class="lux">此車已售出或暫停刊登</span>' : ''}</div><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div>
+      <div class="card ttl"><button type="button" class="fav" id="favB">${HEART}</button><button type="button" class="tshr" id="share2" aria-label="分享這台車" title="分享這台車"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="mk">${esc(mk.zh)}${sold ? '　<span class="lux">此車已售出或暫停刊登</span>' : ''}</div><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div>
       ${no ? `<div class="card price"><h2>預估車價</h2><div class="big no">${no}暫不接受代購</div><div class="krw">韓國售價 ${fmt(priceMan)} 萬韓元</div></div>` : priceCard(p, priceMan, rate, cc)}
       ${no ? '' : '<div id="cmpBox"></div>'}
     </div>
@@ -271,6 +271,7 @@ async function compareCard(c, fuel, priceMan, cc, rate, mileage) {
   };
   if (!no && $('#cmpBox')) compareCard(c, fuel, priceMan, cc, rate, s.mileage).then(h => { $('#cmpBox').outerHTML = h || ''; }).catch(() => { $('#cmpBox').remove(); });
 
+  $('#share2').onclick = $('#share').onclick; // 標題旁的圓形分享按鈕，與底條分享相同
   $('#encLink').href = url;
   $('#askLine').onclick = () => askLine(lineText({ title, sub, year: `${c.formYear || ''} 年式`, mileage: km(s.mileage), price: p && !no ? wan(p.price) : '', url }));
   $('#bar').hidden = false;

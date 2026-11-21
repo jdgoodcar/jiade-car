@@ -359,3 +359,9 @@ body:has(.favhd) main { padding-bottom: 24px !important; }
 .cft .c1 { font-size: 12px; line-height: 16px; color: #64748b; }
 .cft .c2 { font-size: 11px; color: #475569; font-style: italic; margin-top: 8px; }
 @media (min-width: 640px) { .cft .t { font-size: 20px; } }
+/* 標題旁圓形分享（與愛心同風格） */
+.ttl .tshr { position: absolute; right: 12px; top: 56px; width: 36px; height: 36px; border-radius: 50%; border: 0; padding: 0; display: grid; place-items: center; cursor: pointer; background: var(--bg); color: var(--navy); }
+.ttl .tshr svg { width: 19px; height: 19px; }
+.ttl .tshr:active svg { transform: scale(.85); }
+.ttl .sub { padding-right: 44px; }
+.ttl { min-height: 104px; }
