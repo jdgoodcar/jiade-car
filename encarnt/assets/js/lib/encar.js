@@ -28,6 +28,17 @@ export const isEv = v => /^(전기|수소)$/.test(v || ''); // 純電、氫能�
 // 暫不接受代購的燃料：回傳名稱（柴油車／電動車），可接受則回傳空字串
 export const notAccepted = v => (isDiesel(v) ? '柴油車' : isEv(v) ? '電動車' : '');
 
+// 不接受代購的車：中國大陸製造（台灣禁止進口）、計程車／營業用
+// 中國品牌＋在中國生產、韓國有賣的車款（Tesla Model 3／Y 上海廠、Volvo S90 大慶廠）。有新車款時加在這裡
+export const CN_MAKERS = ['BYD', '동풍소콘', '북기은상', '신위안', '지리', '지커', '조이롱', '포톤', '폴스타'];
+export function blockReason(maker, model, badge, badgeDetail) {
+  const m = model || '';
+  if (CN_MAKERS.includes(maker) || (maker === '테슬라' && /(모델|Model)s*[3Y]/i.test(m)) || (maker === '볼보' && /S90/.test(m))) return '中國製造車輛';
+  if (/택시|영업|모범형/.test([m, badge, badgeDetail].join(' '))) return '計程車';
+  return '';
+}
+export const OLD_YEARS = 10; // 預設排除幾年以上的舊車（過不了台灣現行排放標準的機率高）
+
 export function buildQuery(f, skip = {}) {
   const chain = ['CarType.' + (f.ct || 'A') + '.'];
   if (!skip.mk && f.mk) {
@@ -52,7 +63,8 @@ export function buildQuery(f, skip = {}) {
   if (ex.includes('acc')) parts.push('(Or.Accident.N._.Accident.F.)'); // Encar 判定：N 無事故、F 無資料、Y 有事故
   multi('FuelType', fuel); multi('Transmission', f.tm); multi('Category', f.cat);
   multi('Color', f.color); multi('SeatColor', f.seat); multi('OfficeCityState', f.rg);
-  if (f.y1 || f.y2) parts.push(`Year.range(${f.y1 ? f.y1 + '00' : ''}..${f.y2 ? f.y2 + '12' : ''}).`);
+  const y1 = f.y1 || (ex.includes('old') ? new Date().getFullYear() - OLD_YEARS : 0); // 沒自己選年份時，預設不含太舊的車
+  if (y1 || f.y2) parts.push(`Year.range(${y1 ? y1 + '00' : ''}..${f.y2 ? f.y2 + '12' : ''}).`);
   if (f.km) parts.push(`Mileage.range(..${f.km}).`);
   // 價格：排除 Encar 上「1 萬」「9999 萬」這類假價格（洽詢價、租賃）
   const p1 = Math.max(100, f.p1 || 0), p2 = f.p2 && f.p2 < 99999 ? f.p2 : 99998;

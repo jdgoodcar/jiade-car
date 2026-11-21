@@ -80,6 +80,9 @@ img { display: block; max-width: 100%; }
 .car .pr .k { text-align: right; font-size: 12px; color: var(--mut); white-space: nowrap; }
 .car .pr .v.no { font-family: var(--font); font-size: 14px; color: var(--red); }
 .price .big.no { font-family: var(--font); font-size: 20px; color: var(--red); }
+.warnc { border: 2px solid var(--red); display: grid; gap: 4px; }
+.warnc b { color: var(--red); font-size: 17px; }
+.warnc span { color: var(--fg); font-size: 14px; }
 .approx { font-size: 11px; color: var(--gold); font-weight: 700; }
 .lux { display: inline-block; font-size: 11px; color: var(--red); font-weight: 700; }
 
