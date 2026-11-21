@@ -1,11 +1,11 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=70';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=70';
-import { getRate } from './lib/rate.js?v=70';
-import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=70';
-import { getInspection, inspectionCard } from './lib/inspect.js?v=70';
-import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=70';
-import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=70';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=71';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=71';
+import { getRate } from './lib/rate.js?v=71';
+import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=71';
+import { getInspection, inspectionCard } from './lib/inspect.js?v=71';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=71';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=71';
 
 updateFavCount();
 
@@ -133,7 +133,7 @@ function seizingHtml(sz) {
 }
 function recordCard(rec, rate, sz) {
   if (!rec || !rec.openData) return `<div class="card"><h2>保險／事故紀錄</h2>${sz ? `<div class="rec">${seizingHtml(sz)}</div>` : ''}<p class="fine" style="margin:${sz ? '10px' : '0'} 0 0">賣家未公開此車的保險紀錄，可透過 LINE 請我們協助查詢。</p></div>`;
-  const krwTwd = rate ? rate.usdTwd / rate.usdKrw : 0;
+  const krwTwd = rate ? Number((rate.usdTwd / rate.usdKrw).toFixed(4)) : 0; // 與下方說明寫的匯率一致
   const money = w => (w ? `₩${fmt(w)}${krwTwd ? `<br><small>約 NT$ ${fmt(w * krwTwd)}</small>` : ''}` : '無');
   const flood = (rec.floodTotalLossCnt || 0) + (rec.floodPartLossCnt || 0);
   const biz = (rec.business || 0) + (rec.government || 0);

@@ -568,3 +568,15 @@ body:has(.favhd) .car .acts .cmpb { margin-top: 0; }
 .favbtns { display: inline-flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 .favbtns .btn-s[hidden] { display: none; }
 #rmSold { color: var(--red); border-color: #e3c4c6; }
+/* 收藏頁照片：固定 4:3，不再被拉長切掉 */
+body:has(.favhd) .car { align-items: flex-start; }
+body:has(.favhd) .car .ph { flex: 0 0 40%; max-width: 170px; aspect-ratio: 4 / 3; min-height: 0; align-self: flex-start; margin: 10px 0 10px 10px; border-radius: 10px; }
+body:has(.favhd) .car .acts { flex-wrap: nowrap; justify-content: space-between; }
+.rmb { border: 0 !important; background: none !important; color: #8a93a6 !important; padding: 4px 2px !important; font-size: 12px !important; font-weight: 600 !important; text-decoration: underline; text-underline-offset: 3px; border-radius: 0 !important; }
+.rmb:active { color: var(--red) !important; }
+/* 收藏頁：篩選列 */
+.favtools { display: flex; gap: 8px; margin: 0 0 12px; }
+.favtools[hidden] { display: none; }
+.favtools select { flex: 1; min-width: 0; height: 40px; border: 1.5px solid var(--bd); border-radius: 10px; padding: 0 10px; font-size: 16px; background: #fff; color: var(--fg); }
+/* iPhone：任何東西都不能超出畫面右邊（避免整頁被縮小） */
+html, body { overflow-x: clip; }

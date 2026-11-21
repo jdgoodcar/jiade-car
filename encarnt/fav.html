@@ -27,8 +27,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&text=KOREA%20ENCAR%20SELECT&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@900&text=%E4%BD%B3%E5%BE%B7%E6%B1%BD%E8%BB%8A&display=swap">
-<link rel="stylesheet" href="assets/css/encarnt.css?v=70">
-<script type="module" src="assets/js/fav.js?v=70"></script>
+<link rel="stylesheet" href="assets/css/encarnt.css?v=71">
+<script type="module" src="assets/js/fav.js?v=71"></script>
 </head>
 <body>
 <header class="hd">
@@ -46,6 +46,13 @@
   <div class="favhd">
     <div class="favrow"><h1>我的收藏 <small id="favCount"></small></h1><span class="favbtns"><button class="btn-s" id="rmSold" type="button" hidden>移除已售出</button><button class="btn-s" id="selAll" type="button" hidden>全選比較</button></span></div>
     <p class="fine">收藏只存在這台裝置的瀏覽器裡，換手機或清除瀏覽資料就會不見。</p>
+  </div>
+  <div class="favtools" id="favTools" hidden>
+    <select id="fMk" aria-label="依廠牌篩選"><option value="">全部廠牌</option></select>
+    <select id="fSort" aria-label="排序">
+      <option value="">收藏順序</option><option value="pa">價格：低 → 高</option><option value="pd">價格：高 → 低</option>
+      <option value="yd">年式：新 → 舊</option><option value="ka">里程：少 → 多</option>
+    </select>
   </div>
   <div class="grid" id="grid"></div>
 </main>

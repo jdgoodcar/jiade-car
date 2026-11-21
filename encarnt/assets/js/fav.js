@@ -1,10 +1,10 @@
 // 我的收藏：列出收藏的車，向 Encar 確認是否還在刊登、價格有沒有變
-import { loadI18n, tSpec } from './lib/i18n.js?v=70';
-import { getDetail, notAccepted } from './lib/encar.js?v=70';
-import { getRate } from './lib/rate.js?v=70';
-import { calcPrice } from './lib/pricing.js?v=70';
-import { $, fmt, wan, esc, km, askLine, toast, isTouch } from './lib/ui.js?v=70';
-import { favList, removeFav, updateFav, HEART, updateFavCount } from './lib/fav.js?v=70';
+import { loadI18n, tSpec } from './lib/i18n.js?v=71';
+import { getDetail, notAccepted } from './lib/encar.js?v=71';
+import { getRate } from './lib/rate.js?v=71';
+import { calcPrice } from './lib/pricing.js?v=71';
+import { $, fmt, wan, esc, km, askLine, toast, isTouch } from './lib/ui.js?v=71';
+import { favList, removeFav, updateFav, HEART, updateFavCount } from './lib/fav.js?v=71';
 
 updateFavCount();
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 比較能直接跳出
@@ -23,13 +23,12 @@ function syncCmp() {
   $('#cmpN').textContent = n < 2 ? '勾選 2–4 台' : `比較 ${n} 台`;
   document.querySelectorAll('[data-cmp]').forEach(b => { const on = pick.includes(b.dataset.cmp); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
   const can = favList().filter(x => status[x.id] !== 'sold');
-  $('#selAll').hidden = can.length < 2;
   const gone = favList().filter(x => status[x.id] === 'sold').length;
-  $('#rmSold').hidden = !gone; $('#rmSold').textContent = `移除已售出（${gone}）`;
-  $('#selAll').textContent = n ? '取消選取' : (can.length > CMP_MAX ? `選取前 ${CMP_MAX} 台` : '全選比較');
+  const rs = $('#rmSold'); if (rs) { rs.hidden = !gone; rs.textContent = `移除已售出（${gone}）`; }
+  const sa = $('#selAll'); if (sa) { sa.hidden = can.length < 2; sa.textContent = n ? '取消選取' : (can.length > CMP_MAX ? `選取前 ${CMP_MAX} 台` : '全選比較'); }
 }
 // 一鍵：沒選任何車 → 選取前 4 台（已售出的跳過）；已有選取 → 全部取消
-$('#selAll').onclick = () => {
+if ($('#selAll')) $('#selAll').onclick = () => {
   pick = pick.length ? [] : favList().filter(x => status[x.id] !== 'sold').slice(0, CMP_MAX).map(x => String(x.id));
   savePick(); syncCmp();
 };
@@ -59,17 +58,36 @@ function cardHtml(x) {
 </div>
     <div class="bd"><h3>${esc(x.t)}</h3><div class="sub">${esc(x.s)}</div>
     <div class="specs">${specs.map(s => `<span>${esc(s)}</span>`).join('')}${st ? '' : '<span class="chk">確認中…</span>'}</div>${chg}${priceHtml(x)}
-    <div class="acts">${sold ? '' : `<button type="button" class="cmpb" data-cmp="${esc(x.id)}" aria-pressed="false"><i></i>加入比較</button>`}<button type="button" class="rmb" data-rm="${esc(x.id)}">✕ 移除收藏</button></div></div></a>`;
+    <div class="acts">${sold ? '' : `<button type="button" class="cmpb" data-cmp="${esc(x.id)}" aria-pressed="false"><i></i>加入比較</button>`}<button type="button" class="rmb" data-rm="${esc(x.id)}" aria-label="移除收藏">移除</button></div></div></a>`;
 }
 
+// 篩選與排序（只影響畫面，不改收藏資料）
+const brand = x => (x.t || '').split(' ')[0];
+function shown(list) {
+  if (!$('#fMk')) return list; // 舊版網頁還在快取時
+  const mk = $('#fMk').value, so = $('#fSort').value;
+  let a = mk ? list.filter(x => brand(x) === mk) : list.slice();
+  const by = { pa: (x, y) => x.price - y.price, pd: (x, y) => y.price - x.price, yd: (x, y) => (+y.y || 0) - (+x.y || 0), ka: (x, y) => (x.km || 0) - (y.km || 0) }[so];
+  if (by) a.sort(by);
+  return a;
+}
 function render() {
-  const list = favList();
-  $('#favCount').textContent = list.length ? `${list.length} 台` : '';
-  $('#bar').hidden = !list.some(x => status[x.id] !== 'sold');
-  $('#grid').innerHTML = list.length ? list.map(cardHtml).join('')
-    : '<div class="empty">還沒有收藏的車<br><br>看到喜歡的車，點照片右上角的 ♡<br>就能收藏，之後回來這裡查看。<br><br><a class="btn-m" href="./" style="text-decoration:none;display:inline-block">去看車</a></div>';
+  const all = favList(), list = shown(all);
+  $('#favCount').textContent = all.length ? `${all.length} 台` : '';
+  $('#bar').hidden = !all.some(x => status[x.id] !== 'sold');
+  // 廠牌選單：收藏裡有的廠牌
+  if ($('#fMk')) {
+  const mks = [...new Set(all.map(brand))].sort(), cur = $('#fMk').value;
+  $('#fMk').innerHTML = '<option value="">全部廠牌</option>' + mks.map(m => `<option${m === cur ? ' selected' : ''}>${esc(m)}</option>`).join('');
+  $('#favTools').hidden = all.length < 2;
+  }
+  $('#grid').innerHTML = !all.length ? ''
+    : !list.length ? '<div class="empty">這個廠牌沒有收藏的車</div>'
+    : list.map(cardHtml).join('');
+  if (!all.length) $('#grid').innerHTML = '<div class="empty">還沒有收藏的車<br><br>看到喜歡的車，點照片右上角的 ♡<br>就能收藏，之後回來這裡查看。<br><br><a class="btn-m" href="./" style="text-decoration:none;display:inline-block">去看車</a></div>';
   syncCmp();
 }
+if ($('#fMk')) { $('#fMk').onchange = render; $('#fSort').onchange = render; }
 
 $('#grid').addEventListener('click', e => {
   const c = e.target.closest('[data-cmp]');
@@ -121,7 +139,7 @@ $('#askAll').onclick = () => {
 })();
 
 // 一鍵移除已售出或下架的車
-$('#rmSold').onclick = () => {
+if ($('#rmSold')) $('#rmSold').onclick = () => {
   const gone = favList().filter(x => status[x.id] === 'sold');
   if (!gone.length) return;
   if (!confirm(`要移除 ${gone.length} 台已售出或下架的車嗎？`)) return;
