@@ -1,6 +1,6 @@
 // 共用的小工具：數字格式、LINE 詢問、提示訊息、車輛標題
 
-import { tMaker, tName } from './i18n.js?v=79';
+import { tMaker, tName } from './i18n.js?v=80';
 
 // /R/ 格式的 LINE 連結在手機上會直接開啟 LINE App
 export const LINE_URL = 'https://line.me/R/ti/p/Pnn6ZRFaYI';

@@ -1,10 +1,10 @@
 // 選車列表頁
-import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=79';
-import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=79';
-import { getRate } from './lib/rate.js?v=79';
-import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=79';
-import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=79';
-import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=79';
+import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=80';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=80';
+import { getRate } from './lib/rate.js?v=80';
+import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=80';
+import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=80';
+import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=80';
 
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 

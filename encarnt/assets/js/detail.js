@@ -1,11 +1,11 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=79';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=79';
-import { getRate } from './lib/rate.js?v=79';
-import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=79';
-import { getInspection, inspectionCard } from './lib/inspect.js?v=79';
-import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=79';
-import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=79';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=80';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=80';
+import { getRate } from './lib/rate.js?v=80';
+import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=80';
+import { getInspection, inspectionCard } from './lib/inspect.js?v=80';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=80';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=80';
 
 updateFavCount();
 
@@ -307,7 +307,7 @@ async function similarCard(c, priceMan, rate, selfPhoto, selfKm) {
       <div id="recBox"><div class="card"><h2>保險／事故紀錄</h2><p class="fine" style="margin:0">讀取中…</p></div></div>
       ${optionsCard(d.options)}
       <div class="card src"><h2>原始車源</h2><p style="margin:0 0 6px">在 Encar 查看原始刊登頁面（韓文）：</p><a href="${esc(url)}" target="_blank" rel="noopener">${esc(url)}</a>
-        <p class="fine">車輛編號 ${esc(id)}。車輛資料取自 Encar，車輛隨時可能售出。</p></div>
+        <p class="fine">車輛編號 ${esc(id)}<br>車輛資料取自 Encar，車輛隨時可能售出。</p></div>
       <div id="simBox"></div>
     </div></div>`;
   bindGallery();
