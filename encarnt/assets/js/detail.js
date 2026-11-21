@@ -1,10 +1,13 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
 import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted } from './lib/encar.js';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js';
 import { getRate } from './lib/rate.js';
 import { calcPrice, RULES } from './lib/pricing.js';
 import { getInspection, inspectionCard } from './lib/inspect.js';
 import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch } from './lib/ui.js';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js';
+
+updateFavCount();
 
 // 電腦版分享：QR Code（在瀏覽器裡產生，不經過其他網站）
 const QR_LIB = 'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js';
@@ -147,6 +150,34 @@ function optionsText(lang, title) {
   return L.join('\n\n');
 }
 
+// 同款比價：Encar 上同車型、同登錄年份、同燃料的車（夠多時再限縮到同等級），看這台的價格落在哪裡
+async function compareCard(c, fuel, priceMan, cc, rate, mileage) {
+  const regY = String(c.yearMonth || '').slice(0, 4);
+  if (!regY || !c.modelName || !priceMan) return '';
+  const f = { ct: c.domestic ? 'Y' : 'N', mk: c.manufacturerName, mg: c.modelGroupName, md: c.modelName, y1: regY, y2: regY, fuel: fuel ? [fuel] : [] };
+  const { total, cars: all } = await searchCars(f, 'priceAsc', 0, 500);
+  let cars = all, scope = '同車型、同年份、同燃料';
+  const same = all.filter(x => x.Badge && x.Badge === c.gradeName);
+  if (same.length >= 5) { cars = same; scope += '、同等級'; }
+  if (cars.length < 4) return '';
+  const pr = cars.map(x => x.Price).sort((a, b) => a - b);
+  const med = pr.length % 2 ? pr[(pr.length - 1) / 2] : (pr[pr.length / 2 - 1] + pr[pr.length / 2]) / 2;
+  const min = pr[0], max = pr[pr.length - 1];
+  const twd = man => { const p = calcPrice(man, cc, rate); return p ? `約 ${wan(p.price)} 萬` : `${fmt(man)} 萬韓元`; };
+  const diff = (priceMan - med) / med * 100;
+  const verdict = Math.abs(diff) < 3 ? '價格接近同款中位數'
+    : diff < 0 ? `比同款中位數便宜約 <b class="ok">${Math.round(-diff)}%</b>` : `比同款中位數高約 <b class="hi">${Math.round(diff)}%</b>`;
+  const pos = v => (max > min ? Math.max(0, Math.min(100, (v - min) / (max - min) * 100)) : 50);
+  const kms = cars.map(x => x.Mileage).filter(Boolean), avgKm = kms.length ? kms.reduce((a, b) => a + b, 0) / kms.length : 0;
+  const cheaper = pr.filter(v => v < priceMan).length;
+  return `<div class="card cmp"><h2>同款比價</h2>
+    <p class="cmpv">${verdict}</p>
+    <div class="cmpbar"><span class="med" style="left:${pos(med)}%"></span><span class="me${pos(priceMan) > 85 ? ' r' : pos(priceMan) < 15 ? ' l' : ''}" style="left:${pos(priceMan)}%"><i>這台</i></span></div>
+    <div class="cmpk"><div><span>最低</span><b>${twd(min)}</b></div><div><span>中位數</span><b>${twd(med)}</b></div><div><span>最高</span><b>${twd(max)}</b></div></div>
+    <p class="fine">Encar 上${scope}（${regY} 年登錄）共 ${fmt(cars.length)} 台${total > all.length ? '（取前 500 台）' : ''}，這台比其中 ${fmt(cheaper)} 台貴。
+    同款平均里程 ${km(avgKm)}，這台 ${km(mileage)}。車況、里程、配備不同，價格也會不同，僅供參考。</p></div>`;
+}
+
 (async () => {
   if (!id) return fail('找不到車輛', '網址缺少車輛編號');
   let d, rate;
@@ -185,8 +216,9 @@ function optionsText(lang, title) {
   $('#app').innerHTML = `<div class="dt">
     <div>${gallery(d.photos, title, ad.underBodyPhotos)}</div>
     <div class="side" style="display:grid;gap:16px">
-      <div class="card ttl"><div class="mk">${esc(mk.zh)}${sold ? '　<span class="lux">此車已售出或暫停刊登</span>' : ''}</div><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div>
+      <div class="card ttl"><button type="button" class="fav" id="favB">${HEART}</button><div class="mk">${esc(mk.zh)}${sold ? '　<span class="lux">此車已售出或暫停刊登</span>' : ''}</div><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div>
       ${no ? `<div class="card price"><h2>預估車價</h2><div class="big no">${no}暫不接受代購</div><div class="krw">韓國售價 ${fmt(priceMan)} 萬韓元</div></div>` : priceCard(p, priceMan, rate, cc)}
+      ${no ? '' : '<div id="cmpBox"></div>'}
     </div>
     <div style="display:grid;gap:16px">
       <div class="card"><h2>車輛規格</h2><div class="kv">${kv.map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div></div>
@@ -227,6 +259,18 @@ function optionsText(lang, title) {
     if (isTouch) { toast((await copyText(link)) ? '已複製這台車的連結' : '無法複製，請手動複製網址'); return; }
     openQr(link);
   };
+  // 收藏
+  const fb = $('#favB'), firstPhoto = (d.photos || []).filter(x => x.type !== 'THUMBNAIL').sort((a, b) => a.code.localeCompare(b.code))[0];
+  const snap = { id, t: title, s: sub || mk.zh, img: firstPhoto ? photoUrl(firstPhoto.path) : '', y: c.formYear || '', km: s.mileage, price: priceMan, fuel, cc };
+  setHeart(fb, isFav(id));
+  if (isFav(id)) updateFav(id, { price: priceMan, km: s.mileage, cc }); // 價格有變就更新
+  fb.onclick = () => {
+    const on = toggleFav(snap);
+    if (on === null) return toast(`最多收藏 ${FAV_MAX} 台，請先到收藏頁移除一些`);
+    setHeart(fb, on); toast(on ? '已加入收藏' : '已取消收藏');
+  };
+  if (!no && $('#cmpBox')) compareCard(c, fuel, priceMan, cc, rate, s.mileage).then(h => { $('#cmpBox').outerHTML = h || ''; }).catch(() => { $('#cmpBox').remove(); });
+
   $('#encLink').href = url;
   $('#askLine').onclick = () => askLine(lineText({ title, sub, year: `${c.formYear || ''} 年式`, mileage: km(s.mileage), price: p && !no ? wan(p.price) : '', url }));
   $('#bar').hidden = false;

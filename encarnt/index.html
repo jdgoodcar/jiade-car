@@ -6,21 +6,33 @@
 <meta name="robots" content="noindex, nofollow"><!-- 預覽期間不讓 Google 收錄；正式上線時移除 -->
 <title>Encar 線上選車 | 佳德汽車</title>
 <meta name="description" content="韓國 Encar 中古車，中文瀏覽、台幣預估車價，佳德汽車代購。">
+<!-- 分享預覽卡：換網域時要一起改這裡的網址 -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="佳德汽車">
+<meta property="og:title" content="韓國 Encar 車庫 ✦ 自助線上選車｜佳德汽車">
+<meta property="og:description" content="中文瀏覽韓國 Encar 中古車，自動換算台幣預估車價，有疑問隨時用 LINE 問我們。">
+<meta property="og:url" content="https://jdgoodcar.github.io/jiade-car/encarnt/">
+<meta property="og:image" content="https://jdgoodcar.github.io/jiade-car/encarnt/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="zh_TW">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#16244a">
 <link rel="icon" href="../favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="../favicon.png">
 <link rel="preconnect" href="https://api.encar.com" crossorigin>
 <link rel="preconnect" href="https://ci.encar.com">
-<link rel="stylesheet" href="assets/css/encarnt.css?v=30">
-<script type="module" src="assets/js/list.js?v=30"></script>
+<link rel="stylesheet" href="assets/css/encarnt.css?v=32">
+<script type="module" src="assets/js/list.js?v=32"></script>
 </head>
 <body>
 <header class="hd">
   <div class="wrap">
     <div class="brand"><a href="./" aria-label="回到選車列表"><img src="../logo.png" alt="佳德汽車" width="104" height="26"></a><b>Encar 線上選車</b></div>
     <span class="sp"></span>
+    <a class="hfav" href="fav.html" aria-label="我的收藏" title="我的收藏"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.3-9.4C1.5 7.9 3.6 4.5 7 4.5c2 0 3.4 1.1 5 3 1.6-1.9 3-3 5-3 3.4 0 5.5 3.4 4.3 6.6-1.8 4.8-9.3 9.4-9.3 9.4Z"/></svg><span class="favN" hidden></span></a>
     <a class="btn-line" id="hdLine" href="https://line.me/R/ti/p/Pnn6ZRFaYI" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5s5.9-3.5 8-6C21.4 14.2 22 12.7 22 11c0-4.4-4.5-8-10-8Z"/></svg>LINE 詢問</a>
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3C6.5 3 2 6.6 2 11c0 3.9 3.5 7.2 8.3 7.9.3.1.8.2.9.5.1.3.1.7 0 1l-.1.9c0 .3-.2 1 .9.5s5.9-3.5 8-6C21.4 14.2 22 12.7 22 11c0-4.4-4.5-8-10-8Z"/></svg>LINE<span class="t2"> 詢問</span></a>
   </div>
 </header>
 
@@ -38,10 +50,13 @@
       <button data-v="Y" role="tab">韓國車<small id="cY">&nbsp;</small></button>
       <button data-v="N" role="tab">進口車<small id="cN">&nbsp;</small></button>
     </div>
+    <div class="srow">
     <div class="srch" id="srch">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="m20 20-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       <input id="q" type="search" inputmode="search" autocomplete="off" enterkeyhint="search" placeholder="輸入車款，例如GLC、X4" aria-label="搜尋車款">
       <ul class="sugg" id="sugg" role="listbox" hidden></ul>
+    </div>
+      <button class="btn-r" id="resetAll" type="button" title="全部條件回到預設"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>重設</button>
     </div>
     <div class="sel3">
       <label class="fld"><select id="mk" aria-label="廠牌"><option value="">全部廠牌</option></select></label>
@@ -58,7 +73,6 @@
         <option value="kmDesc">里程：多 → 少</option>
       </select></label>
       <button class="btn-f" id="openF" type="button">更多篩選 <span class="n" id="fN" hidden></span></button>
-      <button class="btn-r" id="resetAll" type="button" title="全部條件回到預設"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>重設</button>
     </div>
     <p class="exhd">預設搜尋排除以下三項：</p>
     <div class="extog" id="exT" aria-label="排除條件"></div>

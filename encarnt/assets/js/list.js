@@ -4,6 +4,7 @@ import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted
 import { getRate } from './lib/rate.js';
 import { calcPrice, guessCc, manForTwd } from './lib/pricing.js';
 import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js';
+import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js';
 
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 
@@ -88,12 +89,21 @@ function priceHtml(c) {
   const tag = p.lux ? '<span class="lux">含奢侈稅</span>' : (!p.ccKnown ? '<span class="approx">約</span>' : '');
   return `<div class="pr"><div><div class="l">預估車價 ${tag}</div><div class="v">${wan(p.price)}<small> 萬</small></div></div><div class="k">${krw}</div></div>`;
 }
+// 收藏按鈕（卡片右上角愛心）
+const carById = new Map();
+const favBtn = id => { const on = isFav(id); return `<button type="button" class="fav${on ? ' on' : ''}" data-fav="${esc(id)}" aria-pressed="${on}" aria-label="${on ? '取消收藏' : '加入收藏'}">${HEART}</button>`; };
+function favSnap(c) {
+  const t = carTitle(c.Manufacturer, c.Model, c.Badge, c.BadgeDetail);
+  const img = c.Photos && c.Photos[0] ? photoUrl(c.Photos[0].location) : (c.Photo ? photoUrl(c.Photo + '001.jpg') : '');
+  return { id: c.Id, t: t.title, s: t.sub || t.makerZh, img, y: c.FormYear || String(c.Year).slice(0, 4), km: c.Mileage, price: c.Price, fuel: c.FuelType, cc: ccOf(c) };
+}
 function cardHtml(c) {
+  carById.set(String(c.Id), c);
   const t = carTitle(c.Manufacturer, c.Model, c.Badge, c.BadgeDetail);
   const img = c.Photos && c.Photos[0] ? photoUrl(c.Photos[0].location) : (c.Photo ? photoUrl(c.Photo + '001.jpg') : '');
   const specs = [km(c.Mileage), tSpec('fuel', c.FuelType), tSpec('transmission', c.Transmission), tSpec('region', c.OfficeCityState)].filter(Boolean);
   return `<a class="car" href="detail.html?id=${encodeURIComponent(c.Id)}" data-id="${esc(c.Id)}">
-    <div class="ph">${img ? `<img src="${esc(img)}" alt="${esc(t.title)}" loading="lazy" decoding="async" width="640" height="480">` : ''}<span class="yr">${esc(c.FormYear || String(c.Year).slice(0, 4))} 年式</span></div>
+    <div class="ph">${img ? `<img src="${esc(img)}" alt="${esc(t.title)}" loading="lazy" decoding="async" width="640" height="480">` : ''}<span class="yr">${esc(c.FormYear || String(c.Year).slice(0, 4))} 年式</span>${favBtn(c.Id)}</div>
     <div class="bd"><h3>${esc(t.title)}</h3><div class="sub">${esc(t.sub || t.makerZh)}</div>
     <div class="specs">${specs.map(s => `<span>${esc(s)}</span>`).join('')}</div>${priceHtml(c)}</div></a>`;
 }
@@ -136,6 +146,15 @@ $('#more').onclick = () => load(false);
 
 // 進入詳細頁前記住捲動位置，按上一頁回來時還原
 $('#grid').addEventListener('click', e => {
+  const fb = e.target.closest('[data-fav]');
+  if (fb) {
+    e.preventDefault(); e.stopPropagation();
+    const c = carById.get(fb.dataset.fav); if (!c) return;
+    const on = toggleFav(favSnap(c));
+    if (on === null) return toast(`最多收藏 ${FAV_MAX} 台，請先到收藏頁移除一些`);
+    setHeart(fb, on); toast(on ? '已加入收藏' : '已取消收藏');
+    return;
+  }
   if (!e.target.closest('.car')) return;
   try { sessionStorage.setItem('encarnt_back', JSON.stringify({ k: stateKey(), n: offset, y: scrollY })); } catch (er) { /* 略過 */ }
 });
@@ -414,3 +433,10 @@ $('#toTop').onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
   else { await load(true); if (back && back.k === stateKey()) requestAnimationFrame(() => scrollTo(0, back.y)); }
   loadHierarchy(); loadCounts();
 })();
+
+// ---------- 收藏 ----------
+updateFavCount();
+addEventListener('pageshow', () => {
+  updateFavCount();
+  document.querySelectorAll('#grid [data-fav]').forEach(b => setHeart(b, isFav(b.dataset.fav)));
+});
