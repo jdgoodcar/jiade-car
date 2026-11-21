@@ -39,3 +39,4 @@
 - 分享預覽卡：`index.html`、`detail.html`、`fav.html` 的 `og:` 標籤，圖片 `assets/og.jpg`（1200×630）。
   **換網域時**：把這三個檔案裡的 `https://jdgoodcar.github.io/jiade-car/encarnt/` 換成新網址。LINE 會快取舊預覽，換完可能要過幾天才更新。
 - Encar 沒有「年份：舊 → 新」排序（只有新 → 舊），所以排序選單沒有這項。
+- 車輛比較：`compare.html?ids=編號,編號`（2～4 台）+ `assets/js/compare.js`。在收藏頁勾選「加入比較」後進入；左右並排價格、基本資料、車況、配備（預設只列出不同的配備）。
