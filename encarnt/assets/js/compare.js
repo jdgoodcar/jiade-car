@@ -95,7 +95,7 @@ function render(cars, rate) {
   <p class="fine">資料取自 Encar，車況與配備以各車詳細頁及原始紀錄為準。預估車價未含手續費。</p>`;
   $('#optAll').onclick = () => { showAll = !showAll; render(cars, rate); };
 }
-const rm = id => (ids.length > 2 ? `<a class="rmc" href="compare.html?ids=${ids.filter(x => x !== id).map(encodeURIComponent).join(',')}" aria-label="移除這台">×</a>` : '');
+const rm = id => (ids.length > 2 ? `<a class="rmc" href="compare.html?ids=${ids.filter(x => x !== id).map(encodeURIComponent).join(',')}" aria-label="移除這台" title="從比較中移除"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></a>` : '');
 
 (async () => {
   if (ids.length < 2) { $('#app').innerHTML = '<div class="empty">請在「我的收藏」勾選 2～4 台車再比較<br><br><a class="btn-m" href="fav.html" style="text-decoration:none;display:inline-block">前往我的收藏</a></div>'; return; }
