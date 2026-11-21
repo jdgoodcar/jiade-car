@@ -1,16 +1,16 @@
 // 選車列表頁
-import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=85';
-import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted, blockReason, CN_MAKERS, OLD_YEARS } from './lib/encar.js?v=85';
-import { getRate } from './lib/rate.js?v=85';
-import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=85';
-import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=85';
-import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=85';
+import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=86';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted, blockReason, BLOCK_MAKERS, OLD_YEARS } from './lib/encar.js?v=86';
+import { getRate } from './lib/rate.js?v=86';
+import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=86';
+import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=86';
+import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=86';
 
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 
 const PAGE = 20;
-const EX_ALL = ['diesel', 'ev', 'acc', 'old']; // 預設排除：柴油、電動、事故車、太舊的車
-const EX_LABEL = { diesel: '柴油車', ev: '電動車', acc: '事故車', old: ` ${OLD_YEARS} 年以上舊車` };
+const EX_ALL = ['diesel', 'ev', 'acc', 'old', 'biz']; // 預設排除：柴油、電動、事故車、太舊的車、營業用車
+const EX_LABEL = { diesel: '柴油車', ev: '電動車', acc: '事故車', old: ` ${OLD_YEARS} 年以上舊車`, biz: '營業用車' };
 const MULTI = ['fuel', 'tm', 'cat', 'color', 'seat', 'rg'];
 const NUMS = ['y1', 'y2', 'km', 't1', 't2'];
 const KM_OPTS = [10000, 30000, 50000, 80000, 100000, 150000];
@@ -132,7 +132,8 @@ async function load(reset, size = PAGE) {
     // 兩則都出現時保留原始刊登；原始刊登比複本晚出現，就把畫面上的複本換掉
     const uniq = [];
     for (const c of cars) {
-      if (blockReason(c.Manufacturer, c.Model, c.Badge, c.BadgeDetail)) continue; // 中國製造、計程車：不顯示
+      const br = blockReason(c.Manufacturer, c.Model, c.Badge, c.BadgeDetail);
+      if (br === 'origin' || (br === 'biz' && (f.ex || []).includes('biz'))) continue; // 產地限制一律不顯示；營業用車依開關
       const k = c.Photo ? [c.Photo, c.Mileage, c.Badge].join('|') : c.Id, prev = seenCar.get(k); // 照片、里程、等級都一樣才算同一台
       if (!prev) { seenCar.set(k, { orig: isOrig(c), id: c.Id }); uniq.push(c); continue; }
       if (prev.orig || !isOrig(c)) continue;
@@ -189,7 +190,7 @@ function fillSelect(sel, items, label, allText) {
 async function loadHierarchy() {
   const mk = $('#mk'), mg = $('#mg'), md = $('#md');
   try {
-    const makers = (await hierarchy(f, 'mk')).filter(x => !CN_MAKERS.includes(x.value)); // 中國品牌不列出
+    const makers = (await hierarchy(f, 'mk')).filter(x => !BLOCK_MAKERS.includes(x.value)); // 產地限制的廠牌不列出
     // 廠牌選單：最上面放「熱門廠牌」（台數最多的 8 個），下面依英文字母排列全部廠牌
     const mkLabel = x => { const m = tMaker(x.value); return m.zh.includes(m.en) ? m.zh : `${m.zh} ${m.en}`; };
     const opt = x => `<option value="${esc(x.value)}">${esc(mkLabel(x))}（${fmt(x.count)}）</option>`;

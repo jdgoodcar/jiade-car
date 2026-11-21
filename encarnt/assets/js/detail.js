@@ -1,11 +1,11 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=85';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, blockReason, searchCars } from './lib/encar.js?v=85';
-import { getRate } from './lib/rate.js?v=85';
-import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=85';
-import { getInspection, inspectionCard } from './lib/inspect.js?v=85';
-import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=85';
-import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=85';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=86';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, blockReason, vinBlocked, searchCars } from './lib/encar.js?v=86';
+import { getRate } from './lib/rate.js?v=86';
+import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=86';
+import { getInspection, inspectionCard } from './lib/inspect.js?v=86';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=86';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=86';
 
 updateFavCount();
 
@@ -252,10 +252,10 @@ async function similarCard(c, priceMan, rate, selfPhoto, selfKm) {
   return `<div class="card simc"><h2>相似車輛</h2><div class="sims">${pick.map(x => {
     const t = carTitle(x.Manufacturer, x.Model, x.Badge, x.BadgeDetail);
     const img = x.Photos && x.Photos[0] ? photoUrl(x.Photos[0].location) : (x.Photo ? photoUrl(x.Photo + '001.jpg') : '');
-    const no = notAccepted(x.FuelType) || blockReason(x.Manufacturer, x.Model, x.Badge, x.BadgeDetail), p = !no && calcPrice(x.Price, guessCc(x.Badge, x.BadgeDetail, x.Model) || 0, rate);
+    const no = notAccepted(x.FuelType) || (blockReason(x.Manufacturer, x.Model, x.Badge, x.BadgeDetail) === 'origin' ? ' ' : ''), p = !no && calcPrice(x.Price, guessCc(x.Badge, x.BadgeDetail, x.Model) || 0, rate);
     return `<a class="sim" href="detail.html?id=${encodeURIComponent(x.Id)}"><div class="sp">${img ? `<img src="${esc(img)}" alt="" loading="lazy" decoding="async">` : ''}<span>${esc(x.FormYear || String(x.Year).slice(0, 4))}</span></div>
       <b>${esc(t.sub || t.title)}</b><small>${esc(km(x.Mileage))}</small>
-      <em>${no ? `<i class="no">${no}暫不接受代購</i>` : p ? `約 ${wan(p.price)} 萬` : `${fmt(x.Price)} 萬韓元`}</em></a>`;
+      <em>${no ? `<i class="no">${no.trim()}暫不接受代購</i>` : p ? `約 ${wan(p.price)} 萬` : `${fmt(x.Price)} 萬韓元`}</em></a>`;
   }).join('')}</div><p class="fine">同車型中價格最接近這台的車，預估車價依排氣量推估。</p></div>`;
 }
 
@@ -277,7 +277,7 @@ async function similarCard(c, priceMan, rate, selfPhoto, selfKm) {
   document.title = `${title} | 佳德汽車 Encar 線上選車`;
 
   const fuel = s.fuelName || '';
-  const no = notAccepted(fuel) || blockReason(c.manufacturerName, c.modelName, c.gradeName, c.gradeDetailName); // 柴油、純電、氫能、中國製造、計程車：暫不接受代購
+  const no = notAccepted(fuel) || (blockReason(c.manufacturerName, c.modelName, c.gradeName, c.gradeDetailName) === 'origin' ? ' ' : ''); // 柴油、純電、氫能、產地限制：暫不接受代購（產地不寫原因）
   const cc = s.displacement || 0;
   const priceMan = ad.price;
   const p = calcPrice(priceMan, cc, rate);
@@ -298,7 +298,7 @@ async function similarCard(c, priceMan, rate, selfPhoto, selfKm) {
     <div>${gallery(d.photos, title, ad.underBodyPhotos)}</div>
     <div class="side" style="display:grid;gap:16px">
       <div class="card ttl"><button type="button" class="fav" id="favB">${HEART}</button><button type="button" class="tshr" id="share2" aria-label="分享這台車" title="分享這台車"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="mk">${esc(mk.zh)}${sold ? '　<span class="lux">此車已售出或暫停刊登</span>' : ''}</div><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}${listingInfo(d.manage)}</div>
-      ${no ? `<div class="card price"><h2>預估車價</h2><div class="big no">${no}暫不接受代購</div><div class="krw">韓國售價 ${fmt(priceMan)} 萬韓元</div></div>` : priceCard(p, priceMan, rate, cc)}
+      ${no ? `<div class="card price"><h2>預估車價</h2><div class="big no">${no.trim()}暫不接受代購</div><div class="krw">韓國售價 ${fmt(priceMan)} 萬韓元</div></div>` : priceCard(p, priceMan, rate, cc)}
       ${no ? '' : '<div id="cmpBox"></div>'}
     </div>
     <div style="display:grid;gap:16px">
@@ -367,18 +367,20 @@ async function similarCard(c, priceMan, rate, selfPhoto, selfKm) {
     const zh = ko ? await autoTranslate([ko.replace(/\s*\n\s*/g, ' ')], 'zh-TW') : null;
     $('#inspBox').innerHTML = await inspectionCard(insp, zh && zh[0]);
     const dd = insp && insp.master && insp.master.detail || {};
-    warn(dd.tuning && '改裝', (dd.waterlog || (dd.seriousTypes || []).length) && '泡水或火災', /^L/i.test(dd.vin || '') && '中國製造（車身號碼 L 開頭）');
+    if (vinBlocked(dd.vin)) blockAll = true;
+    warn(dd.tuning && '改裝');
   })().catch(() => { $('#inspBox').innerHTML = '<div class="card"><h2>車況報告</h2><p class="fine" style="margin:0">暫時無法讀取，請稍後重新整理。</p></div>'; });
   const rec = d.vehicleId && d.vehicleNo ? await getRecord(d.vehicleId, d.vehicleNo) : null;
   $('#recBox').innerHTML = recordCard(rec, rate, d.condition && d.condition.seizing);
-  if (rec) warn(rec.totalLossCnt && '全損', ((rec.floodTotalLossCnt || 0) + (rec.floodPartLossCnt || 0)) && '泡水', rec.business && '營業用');
 })();
 
-// 車況／保險紀錄有改裝、泡水、全損、營業用 → 在最上面提醒「暫不接受代購」
+// 不能引進的車 → 在最上面提醒「暫不接受代購」：改裝寫原因；產地限制不寫原因。可以引進的（泡水、全損、營業用等）只在紀錄裡顯示，不另外提醒
 const warned = new Set();
+let blockAll = false;
 function warn(...items) {
   for (const x of items) if (x) warned.add(x);
-  const box = document.getElementById('warnBox'); if (!box || !warned.size) return;
+  const box = document.getElementById('warnBox'); if (!box || (!warned.size && !blockAll)) return;
+  if (blockAll && !warned.size && document.querySelector('.price .big.no')) return; // 價格區已寫「暫不接受代購」就不重複
   box.hidden = false;
-  box.innerHTML = `<div class="card warnc"><b>這台車暫不接受代購</b><span>原因：${[...warned].join('、')}</span></div>`;
+  box.innerHTML = `<div class="card warnc"><b>這台車暫不接受代購</b>${!blockAll && warned.size ? `<span>原因：${[...warned].join('、')}</span>` : ''}</div>`;
 }

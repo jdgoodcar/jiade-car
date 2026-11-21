@@ -28,14 +28,14 @@ export const isEv = v => /^(전기|수소)$/.test(v || ''); // 純電、氫能�
 // 暫不接受代購的燃料：回傳名稱（柴油車／電動車），可接受則回傳空字串
 export const notAccepted = v => (isDiesel(v) ? '柴油車' : isEv(v) ? '電動車' : '');
 
-// 不接受代購的車：中國大陸製造（台灣禁止進口）、計程車／營業用
-// 列表只能用廠牌／車款判斷：中國品牌＋Volvo S90（大慶廠）。Tesla 依年份有美國廠也有上海廠，列表不擋（電動車本來就預設不含），
-// 詳細頁再用車身號碼（VIN）第一碼判斷：L 開頭＝中國製造（最準）
-export const CN_MAKERS = ['BYD', '동풍소콘', '북기은상', '신위안', '지리', '지커', '조이롱', '포톤', '폴스타'];
+// 產地限制：依法規不能進口的產地（列表用廠牌／車款判斷；詳細頁再用車身號碼第一碼確認）
+// 營業用：計程車等，列表依「不含營業用車」開關決定是否顯示
+export const BLOCK_MAKERS = ['BYD', '동풍소콘', '북기은상', '신위안', '지리', '지커', '조이롱', '포톤', '폴스타'];
+export const vinBlocked = vin => /^L/i.test(vin || ''); // 車身號碼第一碼
 export function blockReason(maker, model, badge, badgeDetail) {
   const m = model || '';
-  if (CN_MAKERS.includes(maker) || (maker === '볼보' && /S90/.test(m))) return '中國製造車輛';
-  if (/택시|영업|모범형/.test([m, badge, badgeDetail].join(' '))) return '計程車';
+  if (BLOCK_MAKERS.includes(maker) || (maker === '볼보' && /S90/.test(m))) return 'origin';
+  if (/택시|영업|모범형/.test([m, badge, badgeDetail].join(' '))) return 'biz';
   return '';
 }
 export const OLD_YEARS = 10; // 預設排除幾年以上的舊車（過不了台灣現行排放標準的機率高）
