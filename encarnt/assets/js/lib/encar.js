@@ -25,6 +25,9 @@ const enc = q => encodeURIComponent(q).replace(/%2E/g, '.');
 export const FUELS = ['가솔린', '디젤', 'LPG(일반인 구입)', '가솔린+전기', '디젤+전기', 'LPG+전기', '가솔린+LPG', '가솔린+CNG', '전기', '수소', 'CNG', '기타'];
 export const isDiesel = v => /^디젤/.test(v || '');
 export const isEv = v => /^(전기|수소)$/.test(v || ''); // 純電、氫能（沒有排氣量）
+export const isLpg = v => /LPG/.test(v || ''); // LPG、LPG 油電、汽油＋LPG
+// 開關排除的燃料：這個燃料 v 是否屬於開關 x（diesel／ev／lpg）
+export const fuelEx = (x, v) => (x === 'diesel' && isDiesel(v)) || (x === 'ev' && isEv(v)) || (x === 'lpg' && isLpg(v));
 // 暫不接受代購的燃料：回傳名稱（柴油車／電動車），可接受則回傳空字串
 export const notAccepted = v => (isDiesel(v) ? '柴油車' : isEv(v) ? '電動車' : '');
 
@@ -58,8 +61,8 @@ export function buildQuery(f, skip = {}) {
   // 預設排除（f.ex）：diesel 柴油、ev 純電／氫能、acc 事故車。自己勾選燃料時以勾選為準
   const ex = f.ex || [];
   let fuel = f.fuel;
-  if ((!fuel || !fuel.length) && (ex.includes('diesel') || ex.includes('ev'))) {
-    fuel = FUELS.filter(v => !(ex.includes('diesel') && isDiesel(v)) && !(ex.includes('ev') && isEv(v)));
+  if ((!fuel || !fuel.length) && ex.some(x => ['diesel', 'ev', 'lpg'].includes(x))) {
+    fuel = FUELS.filter(v => !ex.some(x => fuelEx(x, v)));
   }
   if (ex.includes('acc')) parts.push('(Or.Accident.N._.Accident.F.)'); // Encar 判定：N 無事故、F 無資料、Y 有事故
   multi('FuelType', fuel); multi('Transmission', f.tm); multi('Category', f.cat);

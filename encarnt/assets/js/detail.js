@@ -1,11 +1,11 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=87';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, blockReason, vinBlocked, searchCars } from './lib/encar.js?v=87';
-import { getRate } from './lib/rate.js?v=87';
-import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=87';
-import { getInspection, inspectionCard } from './lib/inspect.js?v=87';
-import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=87';
-import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=87';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=88';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, blockReason, vinBlocked, searchCars } from './lib/encar.js?v=88';
+import { getRate } from './lib/rate.js?v=88';
+import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=88';
+import { getInspection, inspectionCard } from './lib/inspect.js?v=88';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=88';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=88';
 
 updateFavCount();
 

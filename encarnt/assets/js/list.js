@@ -1,16 +1,16 @@
 // 選車列表頁
-import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=87';
-import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted, blockReason, BLOCK_MAKERS, OLD_YEARS } from './lib/encar.js?v=87';
-import { getRate } from './lib/rate.js?v=87';
-import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=87';
-import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=87';
-import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=87';
+import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=88';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, fuelEx, notAccepted, blockReason, BLOCK_MAKERS, OLD_YEARS } from './lib/encar.js?v=88';
+import { getRate } from './lib/rate.js?v=88';
+import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=88';
+import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=88';
+import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=88';
 
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 
 const PAGE = 20;
-const EX_ALL = ['diesel', 'ev', 'acc', 'old', 'biz']; // 預設排除：柴油、電動、事故車、太舊的車、營業用車
-const EX_LABEL = { diesel: '柴油車', ev: '電動車', acc: '事故車', old: ` ${OLD_YEARS} 年以上舊車`, biz: '營業用車' };
+const EX_ALL = ['diesel', 'ev', 'lpg', 'acc', 'old', 'biz']; // 預設排除：柴油、電動、LPG、事故車、太舊的車、營業用車
+const EX_LABEL = { diesel: '柴油車', ev: '電動車', lpg: ' LPG 車', acc: '事故車', old: `逾 ${OLD_YEARS} 年車`, biz: '營業用車' };
 const MULTI = ['fuel', 'tm', 'cat', 'color', 'seat', 'rg'];
 const NUMS = ['y1', 'y2', 'km', 't1', 't2'];
 const KM_OPTS = [10000, 30000, 50000, 80000, 100000, 150000];
@@ -248,7 +248,7 @@ function buildSheet() {
     const vals = Object.keys(specTable(SPEC_KIND[k])).filter(v => !(k === 'fuel' && v === 'LPG') && v !== '무광');
     box.innerHTML = vals.map(v => `<button type="button" class="chip" data-v="${esc(v)}">${esc(LABEL[k](v))}</button>`).join('');
     box.onclick = e => { const b = e.target.closest('.chip'); if (!b) return; const a = draft[k] || (draft[k] = []); const v = b.dataset.v, i = a.indexOf(v);
-      if (i < 0) { a.push(v); if (k === 'fuel') draft.ex = draft.ex.filter(x => !(x === 'diesel' && isDiesel(v)) && !(x === 'ev' && isEv(v))); } else a.splice(i, 1);
+      if (i < 0) { a.push(v); if (k === 'fuel') draft.ex = draft.ex.filter(x => !fuelEx(x, v)); } else a.splice(i, 1);
       syncSheet(); };
   }
   $('#kmC').innerHTML = KM_OPTS.map(v => `<button type="button" class="chip" data-v="${v}">${v / 10000} 萬公里以下</button>`).join('');
@@ -293,7 +293,7 @@ function renderTags() {
   const n = tags.length; $('#fN').hidden = !n; $('#fN').textContent = n;
   // 打勾＝結果中也顯示這類車；預設都不打勾（不顯示）
   // 亮＝排除這類車（預設，顯示「不含X」）；暗＝不排除（顯示「搜尋包含X」）
-  $('#exT').innerHTML = EX_ALL.map(v => { const on = (f.ex || []).includes(v); return `<button type="button" class="tog${on ? ' on' : ''}" data-v="${v}" aria-pressed="${on}">${on ? '不含' : '搜尋包含'}${EX_LABEL[v]}</button>`; }).join('');
+  $('#exT').innerHTML = EX_ALL.map(v => { const on = (f.ex || []).includes(v); return `<button type="button" class="tog${on ? ' on' : ''}" data-v="${v}" aria-pressed="${on}">${on ? '不含' : '包含'}${EX_LABEL[v]}</button>`; }).join('');
   $('#tags').innerHTML = tags.map(([k, v, l]) => `<button type="button" class="tag" data-k="${k}" data-v="${esc(v)}">${esc(l)}</button>`).join('') +
     (n > 1 ? '<button type="button" class="tag clr" data-k="all">全部清除</button>' : '');
 }
@@ -302,7 +302,7 @@ $('#exT').onclick = e => {
   const v = b.dataset.v, i = f.ex.indexOf(v);
   i < 0 ? f.ex.push(v) : f.ex.splice(i, 1);
   if (i < 0 && v === 'old') { const cut = thisYear - OLD_YEARS; if (f.y1 && f.y1 < cut) delete f.y1; if (f.y2 && f.y2 < cut) delete f.y2; } // 打開「不含舊車」時拿掉衝突的年份
-  if (i < 0 && v !== 'acc' && f.fuel) f.fuel = f.fuel.filter(x => !(v === 'diesel' && isDiesel(x)) && !(v === 'ev' && isEv(x)));
+  if (i < 0 && f.fuel) f.fuel = f.fuel.filter(x => !fuelEx(v, x));
   apply(true); loadCounts();
 };
 $('#tags').onclick = e => {
