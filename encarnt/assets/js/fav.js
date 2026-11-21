@@ -1,10 +1,10 @@
 // 我的收藏：列出收藏的車，向 Encar 確認是否還在刊登、價格有沒有變
-import { loadI18n, tSpec } from './lib/i18n.js?v=76';
-import { getDetail, notAccepted } from './lib/encar.js?v=76';
-import { getRate } from './lib/rate.js?v=76';
-import { calcPrice } from './lib/pricing.js?v=76';
-import { $, fmt, wan, esc, km, askLine, toast, isTouch } from './lib/ui.js?v=76';
-import { favList, removeFav, updateFav, HEART, updateFavCount, dedupeFav } from './lib/fav.js?v=76';
+import { loadI18n, tSpec } from './lib/i18n.js?v=77';
+import { getDetail, notAccepted } from './lib/encar.js?v=77';
+import { getRate } from './lib/rate.js?v=77';
+import { calcPrice } from './lib/pricing.js?v=77';
+import { $, fmt, wan, esc, km, askLine, toast, isTouch } from './lib/ui.js?v=77';
+import { favList, removeFav, updateFav, HEART, updateFavCount, dedupeFav } from './lib/fav.js?v=77';
 
 dedupeFav();
 updateFavCount();
@@ -26,6 +26,8 @@ function syncCmp() {
   const can = favList().filter(x => status[x.id] !== 'sold');
   const gone = favList().filter(x => status[x.id] === 'sold').length;
   const rs = $('#rmSold'); if (rs) { rs.hidden = !gone; rs.textContent = `移除已售出／下架（${gone}）`; }
+  const eo = $('#editOn'); if (eo) eo.hidden = favList().length < 2;
+  if (editing) setTimeout(syncEdit);
   const sa = $('#selAll'); if (sa) { sa.hidden = can.length < 2; sa.textContent = n ? '取消選取' : (can.length > CMP_MAX ? `選取前 ${CMP_MAX} 台` : '全選比較'); }
 }
 // 一鍵：沒選任何車 → 選取前 4 台（已售出的跳過）；已有選取 → 全部取消
@@ -77,7 +79,7 @@ function shown(list) {
 function render() {
   const all = favList(), list = shown(all);
   $('#favCount').textContent = all.length ? `${all.length} 台` : '';
-  $('#bar').hidden = !all.some(x => status[x.id] !== 'sold');
+  $('#bar').hidden = (typeof editing !== 'undefined' && editing) || !all.some(x => status[x.id] !== 'sold');
   // 廠牌選單：收藏裡有的廠牌
   if ($('#fMk')) {
   const mks = [...new Set(all.map(brand))].sort(), cur = $('#fMk').value;
@@ -155,3 +157,41 @@ if ($('#rmSold')) $('#rmSold').onclick = () => {
   if (!confirm(`要移除 ${gone.length} 台已售出或下架的車嗎？`)) return;
   gone.forEach(x => removeFav(x.id)); render(); toast(`已移除 ${gone.length} 台`);
 };
+
+// ---------- 選取移除：一次移除很多台 ----------
+const del = new Set();
+let editing = false;
+function syncEdit() {
+  document.querySelectorAll('#grid .car').forEach(el => { el.classList.toggle('sel', del.has(el.dataset.id)); });
+  const all = [...document.querySelectorAll('#grid .car')].map(el => el.dataset.id);
+  if ($('#editRm')) { $('#editRm').disabled = !del.size; $('#editRm').textContent = `移除已選（${del.size}）`; }
+  if ($('#editAll')) $('#editAll').textContent = all.length && all.every(id => del.has(id)) ? '全部取消' : '全選';
+}
+function setEdit(on) {
+  editing = on; del.clear();
+  document.body.classList.toggle('editing', on);
+  $('#editBar').hidden = !on;
+  $('#bar').hidden = on || !favList().some(x => status[x.id] !== 'sold');
+  syncEdit();
+}
+if ($('#editOn')) {
+  $('#editOn').onclick = () => setEdit(true);
+  $('#editOff').onclick = () => setEdit(false);
+  $('#editAll').onclick = () => {
+    const all = [...document.querySelectorAll('#grid .car')].map(el => el.dataset.id);
+    if (all.every(id => del.has(id))) del.clear(); else all.forEach(id => del.add(id));
+    syncEdit();
+  };
+  $('#editRm').onclick = () => {
+    if (!del.size || !confirm(`要移除選取的 ${del.size} 台收藏嗎？`)) return;
+    const n = del.size; del.forEach(id => removeFav(id)); setEdit(false); render(); toast(`已移除 ${n} 台`);
+  };
+  // 選取模式：點整張卡片就是勾選，不會打開車輛頁
+  $('#grid').addEventListener('click', e => {
+    if (!editing) return;
+    const card = e.target.closest('.car'); if (!card) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    const id = card.dataset.id; if (del.has(id)) del.delete(id); else del.add(id);
+    syncEdit();
+  }, true);
+}

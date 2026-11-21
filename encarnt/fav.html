@@ -27,8 +27,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&text=KOREA%20ENCAR%20SELECT&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@900&text=%E4%BD%B3%E5%BE%B7%E6%B1%BD%E8%BB%8A&display=swap">
-<link rel="stylesheet" href="assets/css/encarnt.css?v=76">
-<script type="module" src="assets/js/fav.js?v=76"></script>
+<link rel="stylesheet" href="assets/css/encarnt.css?v=77">
+<script type="module" src="assets/js/fav.js?v=77"></script>
 </head>
 <body>
 <header class="hd">
@@ -44,7 +44,7 @@
 <main class="wrap">
   <a class="back" href="./"><span aria-hidden="true">‹</span>返回車輛列表</a>
   <div class="favhd">
-    <div class="favrow"><h1>我的收藏 <small id="favCount"></small></h1><span class="favbtns"><button class="btn-s" id="rmSold" type="button" hidden>移除已售出／下架</button><button class="btn-s" id="selAll" type="button" hidden>全選比較</button></span></div>
+    <div class="favrow"><h1>我的收藏 <small id="favCount"></small></h1><span class="favbtns"><button class="btn-s" id="editOn" type="button" hidden>選取移除</button><button class="btn-s" id="rmSold" type="button" hidden>移除已售出／下架</button><button class="btn-s" id="selAll" type="button" hidden>全選比較</button></span></div>
     <p class="fine">收藏只存在這台裝置的瀏覽器裡，換手機或清除瀏覽資料就會不見。</p>
   </div>
   <div class="favtools" id="favTools" hidden>
@@ -59,6 +59,14 @@
   </div>
   <div class="grid" id="grid"></div>
 </main>
+<!-- 選取移除模式的底條 -->
+<div class="bar editbar" id="editBar" hidden>
+  <div class="wrap">
+    <button type="button" class="btn-s eb-all" id="editAll">全選</button>
+    <button type="button" class="eb-x" id="editOff">取消</button>
+    <button type="button" class="eb-rm" id="editRm" disabled>移除已選（0）</button>
+  </div>
+</div>
 <footer class="cft">
   <div class="in">
     <p class="t">佳德汽車專業貿易進口商</p>

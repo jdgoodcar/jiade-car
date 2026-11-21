@@ -22,8 +22,11 @@ export function toggleFav(item) {
 }
 /** 清掉重複收藏（同一台車兩則刊登，照片相同），保留先收藏的那筆 */
 export function dedupeFav() {
-  const a = favList(), seen = new Set();
-  const b = a.filter(x => { if (!x.img) return true; if (seen.has(x.img)) return false; seen.add(x.img); return true; });
+  const a = favList(), keep = new Map();
+  // 同一台車留一筆：優先留原始刊登（照片檔名開頭＝自己的編號），否則留先收藏的
+  const orig = x => (x.img || '').includes('/' + x.id + '_');
+  for (const x of a) { if (!x.img) continue; const k = x.img, p = keep.get(k); if (!p || (!orig(p) && orig(x))) keep.set(k, x); }
+  const b = a.filter(x => !x.img || keep.get(x.img) === x);
   if (b.length !== a.length) save(b);
   return a.length - b.length;
 }

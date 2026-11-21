@@ -1,10 +1,10 @@
 // 選車列表頁
-import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=76';
-import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=76';
-import { getRate } from './lib/rate.js?v=76';
-import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=76';
-import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=76';
-import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=76';
+import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=77';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=77';
+import { getRate } from './lib/rate.js?v=77';
+import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=77';
+import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=77';
+import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=77';
 
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 
@@ -110,7 +110,8 @@ function cardHtml(c, eager) {
 const skeleton = n => Array.from({ length: n }, () => '<div class="car sk"><div class="ph"></div><div class="bd"><div class="ln" style="width:80%"></div><div class="ln" style="width:55%"></div><div class="ln" style="width:40%;height:22px;margin-top:10px"></div></div></div>').join('');
 
 // ---------- 讀取列表 ----------
-const seenCar = new Set(); // 已顯示過的車（用照片判斷同一台）
+const seenCar = new Map(); // 已顯示過的車：照片 → { 是否原始刊登, 編號 }（用照片判斷同一台）
+const isOrig = c => (c.Photo || '').includes('/' + c.Id + '_'); // 照片檔名開頭＝自己的編號 → 原始刊登
 async function load(reset, size = PAGE) {
   if (reset) { offset = 0; seenCar.clear(); if (ctl) ctl.abort(); loading = false; }
   if (loading) return;
@@ -128,7 +129,18 @@ async function load(reset, size = PAGE) {
       $('#emptyReset').onclick = () => $('#resetAll').click();
     }
     // Encar 有時同一台車有兩則刊登（一則是複本），照片相同 → 只顯示一次
-    const uniq = cars.filter(c => { const k = c.Photo || c.Id; if (seenCar.has(k)) return false; seenCar.add(k); return true; });
+    // 兩則都出現時保留原始刊登；原始刊登比複本晚出現，就把畫面上的複本換掉
+    const uniq = [];
+    for (const c of cars) {
+      const k = c.Photo || c.Id, prev = seenCar.get(k);
+      if (!prev) { seenCar.set(k, { orig: isOrig(c), id: c.Id }); uniq.push(c); continue; }
+      if (prev.orig || !isOrig(c)) continue;
+      seenCar.set(k, { orig: true, id: c.Id });
+      const j = uniq.findIndex(x => x.Id === prev.id);
+      if (j >= 0) { uniq[j] = c; continue; }
+      const old = grid.querySelector(`.car[data-id="${prev.id}"]`);
+      if (old) { const t = document.createElement('div'); t.innerHTML = cardHtml(c, false); old.replaceWith(t.firstElementChild); }
+    }
     const frag = document.createElement('div'); const first = offset === 0; frag.innerHTML = uniq.map((c, i) => cardHtml(c, first && i < 2)).join('');
     for (const el of [...frag.children]) {
       const c = cars.find(x => String(x.Id) === el.dataset.id);

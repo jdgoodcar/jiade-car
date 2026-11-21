@@ -591,3 +591,15 @@ html, body { overflow-x: clip; }
 .favrow { flex-wrap: wrap; row-gap: 8px; }
 .favrow h1 { white-space: nowrap; }
 .favbtns { margin-left: auto; flex-wrap: nowrap; }
+/* 收藏頁：選取移除模式 */
+body.editing #grid .car { cursor: pointer; position: relative; }
+body.editing #grid .car .acts { visibility: hidden; }
+body.editing #grid .car::after { content: ""; position: absolute; right: 12px; top: 12px; width: 24px; height: 24px; border-radius: 50%; border: 2px solid #b6bdca; background: #fff; }
+body.editing #grid .car.sel { box-shadow: 0 0 0 2px var(--red); }
+body.editing #grid .car.sel::after { border-color: var(--red); background: var(--red) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat; }
+body.editing .favtools, body.editing #rmSold, body.editing #selAll, body.editing #editOn { display: none !important; }
+.editbar .wrap { display: grid !important; grid-template-columns: auto auto 1fr; gap: 10px; align-items: center; }
+.editbar .eb-all { height: 48px; padding: 0 14px; border-radius: 12px; font-size: 14px; }
+.editbar .eb-x { height: 48px; border: 0; background: var(--bg); color: var(--navy); border-radius: 12px; padding: 0 16px; font-weight: 700; font-size: 15px; cursor: pointer; }
+.editbar .eb-rm { height: 48px; border: 0; background: var(--red); color: #fff; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; }
+.editbar .eb-rm:disabled { background: #e7c3c5; cursor: default; }
