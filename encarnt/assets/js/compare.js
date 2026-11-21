@@ -1,10 +1,14 @@
 // 車輛比較：compare.html?ids=編號,編號（2～4 台），左右並排
-import { loadI18n, tMaker, tName, tSpec, tOption, optionCodes, optionGroups } from './lib/i18n.js?v=64';
-import { getDetail, getRecord, photoUrl, notAccepted } from './lib/encar.js?v=64';
-import { getInspection } from './lib/inspect.js?v=64';
-import { getRate } from './lib/rate.js?v=64';
-import { calcPrice } from './lib/pricing.js?v=64';
-import { $, fmt, wan, esc, ym, km, askLine } from './lib/ui.js?v=64';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionCodes, optionGroups } from './lib/i18n.js?v=65';
+import { getDetail, getRecord, photoUrl, notAccepted } from './lib/encar.js?v=65';
+import { getInspection } from './lib/inspect.js?v=65';
+import { getRate } from './lib/rate.js?v=65';
+import { calcPrice } from './lib/pricing.js?v=65';
+import { $, fmt, wan, esc, ym, km, askLine, isTouch } from './lib/ui.js?v=65';
+import { updateFavCount } from './lib/fav.js?v=65';
+
+updateFavCount();
+if (isTouch) $('#hdLine').removeAttribute('target');
 
 // 回到最上面（往下滑一段後出現）
 addEventListener('scroll', () => $('#toTop').classList.toggle('on', scrollY > 600), { passive: true });

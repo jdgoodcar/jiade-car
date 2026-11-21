@@ -1,11 +1,11 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=64';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=64';
-import { getRate } from './lib/rate.js?v=64';
-import { calcPrice, RULES } from './lib/pricing.js?v=64';
-import { getInspection, inspectionCard } from './lib/inspect.js?v=64';
-import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch } from './lib/ui.js?v=64';
-import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=64';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=65';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=65';
+import { getRate } from './lib/rate.js?v=65';
+import { calcPrice, RULES } from './lib/pricing.js?v=65';
+import { getInspection, inspectionCard } from './lib/inspect.js?v=65';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch } from './lib/ui.js?v=65';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=65';
 
 updateFavCount();
 
@@ -100,8 +100,23 @@ function priceCard(p, priceMan, rate, cc) {
     <p class="fine">匯率：${esc(rate.src)}，${t.getMonth() + 1}/${t.getDate()} ${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')} 更新${rate.stale ? '（網路異常，使用上次匯率）' : ''}；台幣匯率已加 ${RULES.buffer}% 緩衝。<br>實際金額依購買當日匯率與報價單為準。</p></div>`;
 }
 
-function recordCard(rec, rate) {
-  if (!rec || !rec.openData) return `<div class="card"><h2>保險／事故紀錄</h2><p class="fine" style="margin:0">賣家未公開此車的保險紀錄，可透過 LINE 請我們協助查詢。</p></div>`;
+// Encar 刊登資訊：刊登幾天、多少人看過、多少人收藏
+function listingInfo(m) {
+  if (!m) return '';
+  const t = Date.parse(m.firstAdvertisedDateTime || m.registDateTime || '');
+  const days = isNaN(t) ? null : Math.max(0, Math.floor((Date.now() - t) / 86400000));
+  const parts = [days == null ? '' : days === 0 ? '今天剛刊登' : `Encar 刊登 ${fmt(days)} 天`,
+    m.viewCount ? `${fmt(m.viewCount)} 次瀏覽` : '', m.subscribeCount ? `${fmt(m.subscribeCount)} 人收藏` : ''].filter(Boolean);
+  return parts.length ? `<div class="lst">${parts.map(esc).join('<i>・</i>')}</div>` : '';
+}
+// 抵押、扣押（韓國車籍登記）：有的話要先解除才能過戶出口
+function seizingHtml(sz) {
+  if (!sz) return '';
+  const p = sz.pledgeCount || 0, s = sz.seizingCount || 0;
+  return `<div class="${p ? 'warn' : 'ok'}"><span>抵押紀錄</span><b>${p ? p + ' 筆' : '無'}</b></div><div class="${s ? 'warn' : 'ok'}"><span>扣押紀錄</span><b>${s ? s + ' 筆' : '無'}</b></div>`;
+}
+function recordCard(rec, rate, sz) {
+  if (!rec || !rec.openData) return `<div class="card"><h2>保險／事故紀錄</h2>${sz ? `<div class="rec">${seizingHtml(sz)}</div>` : ''}<p class="fine" style="margin:${sz ? '10px' : '0'} 0 0">賣家未公開此車的保險紀錄，可透過 LINE 請我們協助查詢。</p></div>`;
   const krwTwd = rate ? rate.usdTwd / rate.usdKrw : 0;
   const money = w => (w ? `₩${fmt(w)}${krwTwd ? `<br><small>約 NT$ ${fmt(w * krwTwd)}</small>` : ''}` : '無');
   const flood = (rec.floodTotalLossCnt || 0) + (rec.floodPartLossCnt || 0);
@@ -121,9 +136,10 @@ function recordCard(rec, rate) {
     ${item('失竊紀錄', rec.robberCnt ? `${rec.robberCnt} 次` : '無', !rec.robberCnt)}
     ${item('租賃車（出租）紀錄', rec.loan ? '有' : '無', !rec.loan)}
     ${item('營業用／公務用紀錄', biz ? '有' : '無', !biz)}
+    ${seizingHtml(sz)}
   </div>
   ${gap.length ? `<p class="fine"><b>保險未投保期間：</b>${gap.map(esc).join('、')}（此期間若有事故不會出現在紀錄中）</p>` : ''}
-  <p class="fine">資料來源：韓國保險開發院（經 Encar 公開），僅含有申請保險理賠的紀錄。</p></div>`;
+  <p class="fine">資料來源：韓國保險開發院（經 Encar 公開），僅含有申請保險理賠的紀錄；抵押／扣押為 Encar 提供的車籍登記資料，有紀錄需先解除才能過戶。</p></div>`;
 }
 
 // 配備：依類別分組。另外讀「原廠選配」（新車時加價選購的套件，名稱只有韓文）
@@ -237,7 +253,7 @@ async function compareCard(c, fuel, priceMan, cc, rate, mileage) {
   $('#app').innerHTML = `<div class="dt">
     <div>${gallery(d.photos, title, ad.underBodyPhotos)}</div>
     <div class="side" style="display:grid;gap:16px">
-      <div class="card ttl"><button type="button" class="fav" id="favB">${HEART}</button><button type="button" class="tshr" id="share2" aria-label="分享這台車" title="分享這台車"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="mk">${esc(mk.zh)}${sold ? '　<span class="lux">此車已售出或暫停刊登</span>' : ''}</div><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}</div>
+      <div class="card ttl"><button type="button" class="fav" id="favB">${HEART}</button><button type="button" class="tshr" id="share2" aria-label="分享這台車" title="分享這台車"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="mk">${esc(mk.zh)}${sold ? '　<span class="lux">此車已售出或暫停刊登</span>' : ''}</div><h1>${esc(title)}</h1>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}${listingInfo(d.manage)}</div>
       ${no ? `<div class="card price"><h2>預估車價</h2><div class="big no">${no}暫不接受代購</div><div class="krw">韓國售價 ${fmt(priceMan)} 萬韓元</div></div>` : priceCard(p, priceMan, rate, cc)}
       ${no ? '' : '<div id="cmpBox"></div>'}
     </div>
@@ -305,5 +321,5 @@ async function compareCard(c, fuel, priceMan, cc, rate, mileage) {
     $('#inspBox').innerHTML = await inspectionCard(insp, zh && zh[0]);
   })().catch(() => { $('#inspBox').innerHTML = '<div class="card"><h2>車況報告</h2><p class="fine" style="margin:0">暫時無法讀取，請稍後重新整理。</p></div>'; });
   const rec = d.vehicleId && d.vehicleNo ? await getRecord(d.vehicleId, d.vehicleNo) : null;
-  $('#recBox').innerHTML = recordCard(rec, rate);
+  $('#recBox').innerHTML = recordCard(rec, rate, d.condition && d.condition.seizing);
 })();

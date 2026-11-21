@@ -485,3 +485,6 @@ body:has(.cmpmain) .cft { padding-bottom: calc(150px + env(safe-area-inset-botto
 /* 「佳德汽車」：粗體明體 */
 .hd .bc .tx b { font-family: 'Noto Serif TC', 'Songti TC', 'PMingLiU', serif; font-weight: 900; font-size: 19px; letter-spacing: .1em; }
 @media (max-width: 420px) { .hd .bc .tx b { font-size: 18px; } }
+/* 詳細頁：Encar 刊登資訊 */
+.ttl .lst { margin-top: 8px; font-size: 13px; color: var(--mut); }
+.ttl .lst i { font-style: normal; margin: 0 4px; color: #c3c9d4; }
