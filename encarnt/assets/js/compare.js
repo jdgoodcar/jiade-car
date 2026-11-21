@@ -6,6 +6,10 @@ import { getRate } from './lib/rate.js';
 import { calcPrice } from './lib/pricing.js';
 import { $, fmt, wan, esc, ym, km, askLine } from './lib/ui.js';
 
+// 回到最上面（往下滑一段後出現）
+addEventListener('scroll', () => $('#toTop').classList.toggle('on', scrollY > 600), { passive: true });
+$('#toTop').onclick = () => scrollTo({ top: 0, behavior: 'smooth' });
+
 const ids = (new URLSearchParams(location.search).get('ids') || '').split(',').map(s => s.trim()).filter(Boolean).slice(0, 4);
 
 // 一台車整理成比較用的資料
