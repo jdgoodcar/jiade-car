@@ -1,10 +1,10 @@
 // 選車列表頁
-import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=78';
-import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=78';
-import { getRate } from './lib/rate.js?v=78';
-import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=78';
-import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=78';
-import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=78';
+import { loadI18n, tMaker, tName, tSpec, specTable } from './lib/i18n.js?v=79';
+import { searchCars, hierarchy, getDetail, photoUrl, isEv, isDiesel, notAccepted } from './lib/encar.js?v=79';
+import { getRate } from './lib/rate.js?v=79';
+import { calcPrice, guessCc, manForTwd } from './lib/pricing.js?v=79';
+import { $, fmt, wan, esc, km, carTitle, toast, isTouch } from './lib/ui.js?v=79';
+import { isFav, toggleFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=79';
 
 if (isTouch) $('#hdLine').removeAttribute('target'); // 手機在同一頁開 LINE，App 才會直接跳出
 
@@ -132,7 +132,7 @@ async function load(reset, size = PAGE) {
     // 兩則都出現時保留原始刊登；原始刊登比複本晚出現，就把畫面上的複本換掉
     const uniq = [];
     for (const c of cars) {
-      const k = c.Photo || c.Id, prev = seenCar.get(k);
+      const k = c.Photo ? [c.Photo, c.Mileage, c.Badge].join('|') : c.Id, prev = seenCar.get(k); // 照片、里程、等級都一樣才算同一台
       if (!prev) { seenCar.set(k, { orig: isOrig(c), id: c.Id }); uniq.push(c); continue; }
       if (prev.orig || !isOrig(c)) continue;
       seenCar.set(k, { orig: true, id: c.Id });

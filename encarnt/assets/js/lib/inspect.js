@@ -1,6 +1,6 @@
 // 車況報告：韓國「中古車性能・狀態檢查紀錄」（Encar 提供），翻成中文
-import { API, PHOTO } from './encar.js?v=78';
-import { esc, fmt } from './ui.js?v=78';
+import { API, PHOTO } from './encar.js?v=79';
+import { esc, fmt } from './ui.js?v=79';
 
 let dict = null;
 async function loadDict() {
@@ -49,7 +49,7 @@ function flatInners(T, inners) {
 /** 產生車況報告卡片的 HTML；comment 為已翻譯的檢查員備註（可為空） */
 export async function inspectionCard(j, comment) {
   const T = await loadDict();
-  if (!j) return `<div class="card insp"><h2>車況報告</h2><p class="fine" style="margin:0">這台車沒有提供韓國性能檢查紀錄，可透過 LINE 詢問我們協助查詢。</p></div>`;
+  if (!j) return `<div class="card insp"><h2>車況報告</h2><p class="fine" style="margin:0">這台車沒有提供韓國性能檢查紀錄。</p></div>`;
   const m = j.master || {}, d = m.detail || {};
 
   // 部分車輛的檢查紀錄只有掃描圖檔（韓文），只能顯示重點判定和原始圖片

@@ -1,11 +1,11 @@
 // 車輛詳細頁：detail.html?id=Encar 車輛編號
-import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=78';
-import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=78';
-import { getRate } from './lib/rate.js?v=78';
-import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=78';
-import { getInspection, inspectionCard } from './lib/inspect.js?v=78';
-import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=78';
-import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=78';
+import { loadI18n, tMaker, tName, tSpec, tOption, optionGroups, optionCodes, autoTranslate } from './lib/i18n.js?v=79';
+import { getDetail, getRecord, getChoices, photoUrl, carUrl, notAccepted, searchCars } from './lib/encar.js?v=79';
+import { getRate } from './lib/rate.js?v=79';
+import { calcPrice, RULES, guessCc } from './lib/pricing.js?v=79';
+import { getInspection, inspectionCard } from './lib/inspect.js?v=79';
+import { $, fmt, wan, esc, ym, km, askLine, lineText, copyText, toast, isTouch, carTitle } from './lib/ui.js?v=79';
+import { isFav, toggleFav, updateFav, setHeart, updateFavCount, HEART, FAV_MAX } from './lib/fav.js?v=79';
 
 updateFavCount();
 
@@ -202,7 +202,7 @@ async function compareCard(c, fuel, priceMan, cc, rate, mileage) {
   const f = { ct: c.domestic ? 'Y' : 'N', mk: c.manufacturerName, mg: c.modelGroupName, md: c.modelName, y1: regY, y2: regY, fuel: fuel ? [fuel] : [] };
   const { total, cars: raw } = await searchCars(f, 'new', 0, 500); // 超過 500 台時取最新刊登的 500 台（不偏向便宜或貴的）
   // 同一台車的重複刊登（照片相同）只算一次，避免統計偏差
-  const seenP = new Set(), all = raw.filter(x => { const k = x.Photo || x.Id; if (seenP.has(k)) return false; seenP.add(k); return true; });
+  const seenP = new Set(), all = raw.filter(x => { const k = x.Photo ? [x.Photo, x.Mileage, x.Badge].join('|') : x.Id; if (seenP.has(k)) return false; seenP.add(k); return true; });
   let cars = all, scope = '同車型、同年份、同燃料';
   const same = all.filter(x => x.Badge && x.Badge === c.gradeName);
   if (same.length >= 5) { cars = same; scope += '、同等級'; }
@@ -237,16 +237,16 @@ async function compareCard(c, fuel, priceMan, cc, rate, mileage) {
 }
 
 // 相似車輛：同車型（太少就放寬到同車系），價格最接近這台的 4 台
-async function similarCard(c, priceMan, rate, selfPhoto) {
+async function similarCard(c, priceMan, rate, selfPhoto, selfKm) {
   const base = { ct: c.domestic ? 'Y' : 'N', mk: c.manufacturerName, mg: c.modelGroupName };
   // 排除這台自己（包含它在 Encar 的重複刊登：照片相同）
-  const notSelf = x => String(x.Id) !== String(id) && !(selfPhoto && x.Photo === selfPhoto);
+  const notSelf = x => String(x.Id) !== String(id) && !(selfPhoto && x.Photo === selfPhoto && x.Mileage === selfKm);
   let { cars } = await searchCars({ ...base, md: c.modelName }, 'new', 0, 80);
   cars = cars.filter(notSelf);
   if (cars.length < 4) cars = (await searchCars(base, 'new', 0, 80)).cars.filter(notSelf);
   if (!cars.length) return '';
   // 同一台車有時會有兩則刊登（照片相同），只留一則
-  const seen = new Set(), key = x => x.Photo || (x.Photos && x.Photos[0] && x.Photos[0].location) || [x.Mileage, x.Price, x.Badge].join('|');
+  const seen = new Set(), key = x => [x.Photo || (x.Photos && x.Photos[0] && x.Photos[0].location) || '', x.Mileage, x.Price, x.Badge].join('|');
   const pick = cars.sort((a, b) => Math.abs(a.Price - priceMan) - Math.abs(b.Price - priceMan))
     .filter(x => { const k = key(x); if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 4);
   return `<div class="card simc"><h2>相似車輛</h2><div class="sims">${pick.map(x => {
@@ -354,7 +354,7 @@ async function similarCard(c, priceMan, rate, selfPhoto) {
   if (!no && $('#cmpBox')) compareCard(c, fuel, priceMan, cc, rate, s.mileage).then(h => { $('#cmpBox').outerHTML = h || ''; }).catch(() => { $('#cmpBox').remove(); });
 
   $('#share2').onclick = $('#share').onclick; // 標題旁的圓形分享按鈕，與底條分享相同
-  similarCard(c, priceMan, rate, ((d.photos || [])[0] || {}).path?.replace(/\d+\.jpg$/, '')).then(h => { $('#simBox').outerHTML = h || ''; }).catch(() => { $('#simBox')?.remove(); });
+  similarCard(c, priceMan, rate, ((d.photos || [])[0] || {}).path?.replace(/\d+\.jpg$/, ''), s.mileage).then(h => { $('#simBox').outerHTML = h || ''; }).catch(() => { $('#simBox')?.remove(); });
   $('#encLink').href = url;
   $('#askLine').onclick = () => askLine(lineText({ title, sub, year: `${c.formYear || ''} 年式`, mileage: km(s.mileage), price: p && !no ? wan(p.price) : '', url }));
   $('#bar').hidden = false;

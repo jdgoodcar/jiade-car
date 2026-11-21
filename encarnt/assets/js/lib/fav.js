@@ -16,7 +16,7 @@ export const isFav = (id, img) => favList().some(x => String(x.id) === String(id
 export function toggleFav(item) {
   const a = favList(), i = a.findIndex(x => String(x.id) === String(item.id));
   if (i >= 0) { a.splice(i, 1); save(a); return false; }
-  if (item.img && a.some(x => x.img === item.img)) return true; // 同一台車的另一則刊登，已經收藏過
+  if (item.img && a.some(x => x.img === item.img && x.km === item.km)) return true; // 同一台車的另一則刊登，已經收藏過
   if (a.length >= FAV_MAX) return null;
   a.unshift({ ...item, id: String(item.id), p0: item.price, at: Date.now() }); save(a); return true;
 }
@@ -25,8 +25,8 @@ export function dedupeFav() {
   const a = favList(), keep = new Map();
   // 同一台車留一筆：優先留原始刊登（照片檔名開頭＝自己的編號），否則留先收藏的
   const orig = x => (x.img || '').includes('/' + x.id + '_');
-  for (const x of a) { if (!x.img) continue; const k = x.img, p = keep.get(k); if (!p || (!orig(p) && orig(x))) keep.set(k, x); }
-  const b = a.filter(x => !x.img || keep.get(x.img) === x);
+  for (const x of a) { if (!x.img) continue; const k = x.img + '|' + x.km, p = keep.get(k); if (!p || (!orig(p) && orig(x))) keep.set(k, x); }
+  const b = a.filter(x => !x.img || keep.get(x.img + '|' + x.km) === x);
   if (b.length !== a.length) save(b);
   return a.length - b.length;
 }
